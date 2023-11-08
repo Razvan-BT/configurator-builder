@@ -22,8 +22,11 @@ export default {
             title_product: "",
             sku_prefix: "",
             productsType: [],
-            product: [],
+            product: {},
             addNewProductButton: false,
+
+
+            stockTempData: [],
         }
     },
     methods: {
@@ -43,10 +46,63 @@ export default {
             this.extra_class_step = "";
             this.title_product = "";
             this.sku_prefix = "";
+            
         },
         createNewProduct() {
             // creez API to SQL dupa generez in JSON
-        }
+            this.productsType.push(this.title_product);
+
+            this.createToast({
+                type: 'success',
+                title: 'Info message',
+                details: this.title_product.toUpperCase() + " added succesfully!"
+            });
+
+            // create new first product
+            let object = {};
+            object = {
+                id: this.makeid(15),
+                title: this.title_product,
+                categories: [],
+                extraClassName: this.extra_class_step,
+                logic: {},
+                skuPrefix: this.sku_prefix,
+            }
+
+            this.stockTempData.push(object);
+
+            this.product = {
+                panels: this.stockTempData
+            }
+            console.log(this.product);
+
+
+            this.addNewProductButton = false;
+            this.extra_class_step = "";
+            this.title_product = "";
+            this.sku_prefix = "";
+        },
+        
+        initGlobalObject() {
+            // 
+        },
+
+        createToast(details) {
+            this.$toast.add({ severity: details.type, summary: details.title, detail: details.details, life: 3000 });
+        },
+
+        makeid(length) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < length) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+            return result;
+        },
+
     },
     mounted() {
         console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
@@ -57,6 +113,7 @@ export default {
 <template>
     <Head title="Setup"/>
     <AuthenticatedLayout>
+        <Toast />
         <div class="container">
             <div class="container-sm">
                 <p class="p-3 h2">Descriere Template</p>
@@ -164,7 +221,18 @@ export default {
     <!-- modal add new product -->
 
         <Dialog v-model:visible="addNewProductButton" modal header="Add new product" :style="{ width: '40vw' }">
-            <form @submit.prevent="submit">
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Description</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
+            </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <form @submit.prevent="submit">
             <div class="p-3">
                     <InputLabel for="title_product" value="Title" />
 
@@ -212,6 +280,11 @@ export default {
                     </PrimaryButton>
                 </div>
             </form>
+
+                </div>
+                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
+            </div>
+
             <!-- logic -->
             <!-- Apply & Cancel -->
         </Dialog>
