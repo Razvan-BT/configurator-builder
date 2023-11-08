@@ -25,13 +25,14 @@ class DashboardController extends Controller
     public function create_new(Request $request) {
         // template name
         $products = $request->input('templateName');
+        $detail = $request->input('templateDetails');
         $data = array();
         // // create new config ID
         $generatedConfiguratorID = mt_rand(10000000000, 99999999999);
         if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
             $configID = mt_rand(10000000000, 99999999999);
 
-            $data = array('configurator_id' => $configID, 'configurator_title' => $products, 'added_by' => 'Razvan');
+            $data = array('configurator_id' => $configID, 'configurator_title' => $products, 'configurator_detail' => $detail, 'added_by' => 'Razvan');
             // Configurators::insert();
 
             DB::table('configurators')->insert($data);

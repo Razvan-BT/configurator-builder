@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PrimarButton from '@/Components/PrimarButton.vue';
 import axios from 'axios';
 </script>
 
@@ -31,6 +32,7 @@ export default {
             ],
             visible: false,
             configurator_name: '',
+            configurator_details: '',
         };
     },
     mounted() {
@@ -42,11 +44,13 @@ export default {
         async sendData() {
             if(this.configurator_name != '') {
                 let data = {
-                    templateName: this.configurator_name
+                    templateName: this.configurator_name,
+                    templateDetails: this.configurator_details,
                 }
                 let response = await this.axiosAPI('/create-configurator', data);
 
                 this.configurator_name = '';
+                this.configurator_details = '';
                 this.visible = false;
 
                 // console.log(response.data.data.configurator_id)
@@ -82,23 +86,26 @@ export default {
 
         <div class="card px-8">
             <DataTable :value="configurators">
-                <template #header>
-                    <div class="flex flex-wrap align-items-center justify-content-between gap-2">
-                        <span class="text-xl text-900 font-bold">Configurators</span>
-                        <Button icon="pi pi-plus" rounded raised @click.stop="visible = true" />
-                    </div>
-                </template>
-                <Column field="configurator_title" header="Name"></Column>
                 <Column header="Image">
                     <template #body="slotProps">
                         <img :src="`${slotProps.data.image}`" :alt="slotProps.data.image" class="w-6rem shadow-2 border-round" />
                     </template>
                 </Column>
+                <template #header>
+                    <div class="flex flex-wrap align-items-center justify-content-between gap-2">
+                        <span class="text-xl text-900 font-bold">Configurators</span>
+                        <PrimarButton @click.stop="visible = true">
+                            <i class="pi pi-plus" style="font-size: 1rem"></i>
+                        </PrimarButton>
+                    </div>
+                </template>
+                <Column field="configurator_title" header="Name"></Column>
+                <Column field="configurator_detail" header="Details"></Column>
                 <Column field="configurator_id" header="ID"></Column>
                 <Column header="Actions">
                     <template #body="slotProps">
                         <div class="card flex gap-3">
-                            <div class="card flex flex-wrap gap-3 justify-content-center">
+                            <div class="card flex flex-wrap justify-content-between">
                                 <Button label="Edit" icon="pi pi-spin pi-cog"
                                 @click="route('testt')"
                                 />
@@ -115,7 +122,7 @@ export default {
 
         <Dialog v-model:visible="visible" modal header="Create new" :style="{ width: '40vw' }">
             <form @submit.prevent="submit">
-                <div>
+                <div class="p-3">
                     <InputLabel for="configurator_name" value="Configurator Title" />
 
                     <TextInput
@@ -124,6 +131,19 @@ export default {
                         class="mt-1 block w-full"
                         autofocus
                         autocomplete="configurator_name"
+                    />
+
+                </div>
+
+                <div class="p-3">
+                    <InputLabel for="configurator_name" value="Configurator Details" />
+
+                    <TextInput
+                        v-model="configurator_details"
+                        type="text"
+                        class="mt-1 block w-full"
+                        autofocus
+                        autocomplete="configurator_details"
                     />
 
                 </div>
