@@ -95,8 +95,18 @@ export default {
         },
 
         createNewOptionForProduct() {
-            console.log("createNewOptionForProduct init");
-            this.createNewCategory = true;
+            if(this.product?.panels) {
+                console.log("createNewOptionForProduct init");
+                this.createNewCategory = true;
+            } else {
+
+                this.createToast({
+                type: 'error',
+                title: 'Error message',
+                details: "There is no valid product!"
+            });
+
+            }
         },
 
         cancelCreateNewCategory() {
@@ -164,6 +174,8 @@ export default {
     },
 
     mounted() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name, this.title);
     },
 
@@ -188,7 +200,7 @@ export default {
         <Toast />
         <div class="container">
             <div class="container-sm">
-                <p class="p-3 h2">{{ this.title?.length ? this.title : "No Title" }}</p>
+                <p class="p-3 h2">{{ this.title?.length ? this.title : "No Titles" }}</p>
             </div>
 
             <!-- Butoane selectie  -->
@@ -211,14 +223,14 @@ export default {
                     <div class="p-2 flex-grow-1">
                         <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
                     </div>
-                    <div class="pt-4 px-1">
-                        <i class="p-1 pi pi-file-edit" style="font-size: 1rem"></i>
+                    <div class="pt-4 px-2">
+                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Edit" style="font-size: 1rem"></i>
                     </div>
-                    <div class="pt-4">
-                        <i class="p-1 pi pi-clone" style="font-size: 1rem"></i>
+                    <div class="pt-4 px-2">
+                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
                     </div>
-                    <div class="pt-4">
-                        <i class="p-1 pi pi-trash" style="font-size: 1rem"></i>
+                    <div class="pt-4 px-2">
+                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Delete" style="font-size: 1rem"></i>
                     </div>
                 </div>
             </div>
@@ -231,22 +243,22 @@ export default {
                             <!-- div titlu + btn -->
                             <div class="d-flex mt-1">
                                 <div class="p-1 flex-grow-1">
-                                    <p class="px-3 h5"><i class="pi pi-eye-slash"></i> {{ items.title }}</p>
+                                    <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Hide"></i> {{ items.title }}</p>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-file-edit" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Edit" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-copy" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Copy" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-arrow-right-arrow-left" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Move" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-clone" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-trash" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                 </div>
                             </div>
                             <!-- div poze grid -->
@@ -255,7 +267,7 @@ export default {
                                     <div class="p-1">
                                         <img style="width: 150px; height: 150px;"
                                             src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
+                                            alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
                                     </div>
                                     <div class="p-1">
                                         <img style="width: 150px; height: 150px;"
@@ -310,7 +322,7 @@ export default {
                     </div>
 
                     <div class="p-4 d-flex justify-center">
-                        <SuccesButton @click="createNewOptionForProduct">
+                        <SuccesButton  @click="createNewOptionForProduct">
                             Add new custom option
                         </SuccesButton>
                     </div>
@@ -432,11 +444,3 @@ export default {
         </Dialog>
     </AuthenticatedLayout>
 </template>
-
-
-<style>
-.images-layout {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-}
-</style>
