@@ -211,11 +211,14 @@ export default {
                     <div class="p-2 flex-grow-1">
                         <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
                     </div>
-                    <div class="p-4">
-                        <i class="p-1 pi pi-plus" style="font-size: 1rem"></i>
+                    <div class="pt-4 px-1">
+                        <i class="p-1 pi pi-file-edit" style="font-size: 1rem"></i>
                     </div>
-                    <div class="p-4">
-                        <i class="p-1 pi pi-plus" style="font-size: 1rem"></i>
+                    <div class="pt-4">
+                        <i class="p-1 pi pi-clone" style="font-size: 1rem"></i>
+                    </div>
+                    <div class="pt-4">
+                        <i class="p-1 pi pi-trash" style="font-size: 1rem"></i>
                     </div>
                 </div>
             </div>
@@ -228,16 +231,22 @@ export default {
                             <!-- div titlu + btn -->
                             <div class="d-flex mt-1">
                                 <div class="p-1 flex-grow-1">
-                                    <p class="px-3 h5"><i class="pi pi-plus"></i> {{ items.title }}</p>
+                                    <p class="px-3 h5"><i class="pi pi-eye-slash"></i> {{ items.title }}</p>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-plus" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-file-edit" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-plus" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-copy" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-plus" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-arrow-right-arrow-left" style="font-size: 1rem"></i>
+                                </div>
+                                <div class="p-1">
+                                    <i class="p-1 pi pi-clone" style="font-size: 1rem"></i>
+                                </div>
+                                <div class="p-1">
+                                    <i class="p-1 pi pi-trash" style="font-size: 1rem"></i>
                                 </div>
                             </div>
                             <!-- div poze grid -->
