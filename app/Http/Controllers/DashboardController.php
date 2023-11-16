@@ -43,6 +43,7 @@ class DashboardController extends Controller
 
     public function view_config($id_c) {
         // dd($id_c);
-        return Inertia::render('Configurator', ['ID' => $id_c]);
+        $data = Configurators::where('configurator_id', '=', $id_c)->get();
+        return Inertia::render('Configurator', ['ID' => $data[0]['configurator_id'], 'title' => $data[0]['configurator_title']]);
     }
 }
