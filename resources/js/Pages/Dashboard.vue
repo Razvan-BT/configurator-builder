@@ -141,9 +141,10 @@ export default {
                         <td>{{ items.configurator_id }}</td>
                         <td>
                             <div class="d-flex flex-center">
-                                <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog" @click="route('configurator/' + items.configurator_id)" />
+                                <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog" @click="route('/configurator/' + items.configurator_id)" />
                                 </div>
                                 <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
+                                <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
                             </div>
 
 
