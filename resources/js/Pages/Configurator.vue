@@ -32,6 +32,9 @@ export default {
             extra_class_stepCategory: "",
             title_productCategory: "",
 
+            createNewCategoryOption: false,
+            newOptionRequest: false,
+
             stockTempData: [],
         }
     },
@@ -95,16 +98,16 @@ export default {
         },
 
         createNewOptionForProduct() {
-            if(this.product?.panels) {
+            if (this.product?.panels) {
                 console.log("createNewOptionForProduct init");
                 this.createNewCategory = true;
             } else {
 
                 this.createToast({
-                type: 'error',
-                title: 'Error message',
-                details: "There is no valid product!"
-            });
+                    type: 'error',
+                    title: 'Error message',
+                    details: "There is no valid product!"
+                });
 
             }
         },
@@ -118,7 +121,7 @@ export default {
 
         // Cand se creeaza o noua categorie de produs
         createNewCategoryPanel() {
-            if(this.selectedProduct) {
+            if (this.selectedProduct) {
                 this.selectedProduct.categories.push({
                     title: this.title_productCategory,
                     extraClassName: this.extra_class_stepCategory,
@@ -143,6 +146,13 @@ export default {
             console.log("getCurrentProduct", getItem);
 
             this.selectCurrentProductIndex = index;
+        },
+
+        editChoiseAttribute(getItem, index) {
+
+            this.createNewCategoryOption = true;
+            this.selectCurrentProductIndex = index;
+            console.log("editChoiseAttributes", this.selectedProductCategories);
         },
 
         createToast(details) {
@@ -176,7 +186,7 @@ export default {
     mounted() {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-        console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name, this.title);
+        console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
     },
 
     computed: {
@@ -224,13 +234,16 @@ export default {
                         <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
                     </div>
                     <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Edit" style="font-size: 1rem"></i>
+                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            data-bs-title="Edit" style="font-size: 1rem"></i>
                     </div>
                     <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
+                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            data-bs-title="Clone" style="font-size: 1rem"></i>
                     </div>
                     <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Delete" style="font-size: 1rem"></i>
+                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            data-bs-title="Delete" style="font-size: 1rem"></i>
                     </div>
                 </div>
             </div>
@@ -239,26 +252,32 @@ export default {
             <div class="mt-5 mb-5">
                 <div class="container-sm p-2 border-1 border-secondary">
                     <div v-if="product.panels?.length" class="mt-2 border-bottom border-bottom">
-                        <div v-for="(items) in selectedProductCategories" class="p-1">
+                        <div v-for="(items, index) in selectedProductCategories" class="p-1">
                             <!-- div titlu + btn -->
                             <div class="d-flex mt-1">
                                 <div class="p-1 flex-grow-1">
-                                    <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Hide"></i> {{ items.title }}</p>
+                                    <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Hide"></i> {{ items.title }}</p>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Edit" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Copy" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        data-bs-title="Copy" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"  data-bs-placement="bottom"  data-bs-title="Move" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom" data-bs-title="Move" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        data-bs-title="Clone" style="font-size: 1rem"></i>
                                 </div>
                                 <div class="p-1">
-                                    <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
+                                    <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                 </div>
                             </div>
                             <!-- div poze grid -->
@@ -314,7 +333,7 @@ export default {
                             <!-- edit attributes -->
 
                             <div class="d-flex p-4">
-                                <EditButton>
+                                <EditButton @click="editChoiseAttribute(items, index)">
                                     Edit attributes
                                 </EditButton>
                             </div>
@@ -322,7 +341,7 @@ export default {
                     </div>
 
                     <div class="p-4 d-flex justify-center">
-                        <SuccesButton  @click="createNewOptionForProduct">
+                        <SuccesButton @click="createNewOptionForProduct">
                             Add new custom option
                         </SuccesButton>
                     </div>
@@ -439,6 +458,97 @@ export default {
                     ...</div>
             </div>
 
+            <!-- logic -->
+            <!-- Apply & Cancel -->
+        </Dialog>
+
+        <!-- modal add new category option -->
+
+        <Dialog v-model:visible="createNewCategoryOption" modal header="Edit Choise Attribute" :style="{ width: '95vw' }">
+
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><strong>
+                        <a href="#">{{ title }}</a>
+                    </strong></li>
+                    <li class="breadcrumb-item active" aria-current="page"><strong>
+                        {{ selectedProduct.title }}</strong></li>
+                    
+                    <li class="breadcrumb-item active" aria-current="page">
+                       <strong>
+                           <a @click="newOptionRequest = false">{{
+                            selectedProductCategories[0].title }}</a>
+                       </strong> 
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Option create - false -->
+            <div v-if="!newOptionRequest">
+                <div class="d-flex">
+                    <div class="p-2 flex-grow-1">
+                        <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
+                            class="mt-1 block w-full" autofocus autocomplete="" />
+                    </div>
+                    <div class="p-3">
+                        <EditButton>
+                            Reorder
+                        </EditButton>
+                    </div>
+                    <div class="p-3">
+                        <EditButton @click="newOptionRequest = true">
+                            New Option
+                        </EditButton>
+                    </div>
+                </div>
+
+                <!-- tabel optiuni -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Preview</th>
+                            <th scope="col">Option</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr @click="console.log('click on tr')">
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            <td>edit</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Option create - false END -->
+
+
+            <div v-if="newOptionRequest">
+                <div class="p-3">
+                    <InputLabel for="optionLabel" value="Option Label" />
+
+                    <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus
+                        autocomplete="" />
+
+                </div>
+
+                <div class="p-3">
+                    <InputLabel for="" value="Thumbnail" />
+                    <svg class="bd-placeholder-img rounded d-block" width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 200x200" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="10%" y="10%" fill="#dee2e6" dy=".3em">200x200</text></svg>
+                </div>
+
+                <div class="p-3">
+                    <InputLabel for="optionSKU" value="SKU" />
+
+                    <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus
+                        autocomplete="" />
+
+                </div>
+            </div>
             <!-- logic -->
             <!-- Apply & Cancel -->
         </Dialog>
