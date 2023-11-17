@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SuccesButton from '@/Components/SuccesButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimarButton from '@/Components/PrimarButton.vue';
@@ -121,6 +122,12 @@ export default {
             </DataTable> -->
 
             <!-- tabel optiuni -->
+            <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                <span class="text-xl text-900 font-bold">Configurators</span>
+                <SuccesButton @click.stop="visible = true">
+                    <i class="pi pi-plus" style="font-size: 1rem"></i>
+                </SuccesButton>
+            </div>
             <table class="table">
                 <thead>
                     <tr>
@@ -141,7 +148,8 @@ export default {
                         <td>{{ items.configurator_id }}</td>
                         <td>
                             <div class="d-flex flex-center">
-                                <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog" @click="route('/configurator/' + items.configurator_id)" />
+                                <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
+                                        @click="route('/configurator/' + items.configurator_id)" />
                                 </div>
                                 <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
                                 <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
