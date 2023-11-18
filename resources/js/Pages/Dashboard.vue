@@ -66,6 +66,10 @@ export default {
         editConfigurator(n, i) {
             console.log(n, i);
         },
+        routeToConf(id) {
+            let routed = route('configurator', { id_c: id} );
+            window.location.href=routed;
+        },
         async axiosAPI(url, data) {
             let dataResponse;
             await axios.post(url, data).then(function (response) {
@@ -125,6 +129,7 @@ export default {
             <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
                 <span class="text-xl text-900 font-bold">Configurators</span>
                 <SuccesButton @click.stop="visible = true">
+                    <span class="px-1">Create new</span>
                     <i class="pi pi-plus" style="font-size: 1rem"></i>
                 </SuccesButton>
             </div>
@@ -132,8 +137,8 @@ export default {
                 <thead>
                     <tr>
                         <th scope="col">Image</th>
-                        <th scope="col">Configurators</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
                         <th scope="col">ID</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -149,7 +154,7 @@ export default {
                         <td>
                             <div class="d-flex flex-center">
                                 <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
-                                        @click="route('/configurator/' + items.configurator_id)" />
+                                        @click="routeToConf(items.configurator_id)" />
                                 </div>
                                 <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
                                 <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>

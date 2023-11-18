@@ -20,3 +20,31 @@
 .alerted-hover:hover {
     color: red;
 }
+
+#drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  #image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 20px;
+  }
+  
+  .image-td-align {
+      display: flex; 
+      justify-content: center;
+  }
+  
+  .wrapped-text { 
+      max-width: 150px;
+      word-wrap:break-word;
+  }
+  .text-td-align {
+      /* position: absolute;
+      top: 50%; */
+  }

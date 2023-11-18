@@ -27,7 +27,7 @@ Route::get('/', [DashboardController::class, 'showData'])->middleware(['auth', '
 Route::post('/create-configurator', [DashboardController::class, 'create_new'])->middleware(['auth', 'verified']);
 
 // API configurator
-Route::get('/configurator/{id_c}', [DashboardController::class, 'view_config'])->middleware(['auth', 'verified'])->name('configurator_detail');
+Route::get('/configurator/{id_c}', [DashboardController::class, 'view_config'])->middleware(['auth', 'verified'])->name('configurator');
 
 // API END
 

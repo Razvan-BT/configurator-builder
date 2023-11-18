@@ -23,9 +23,5 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
-
-        <script>
-             $('div .p-dialog .p-component').addClass('p-dialog-maximized');
-        </script>
     </body>
 </html>

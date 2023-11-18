@@ -19,6 +19,8 @@ export default {
     },
     data() {
         return {
+            imagePreview: null,
+
             extra_class_step: "",
             title_product: "",
             sku_prefix: "",
@@ -26,6 +28,7 @@ export default {
             product: {},
             addNewProductButton: false,
 
+            selectCurrentProductCategoryIndex: -1,
             selectCurrentProductIndex: -1,
             createNewCategory: false,
 
@@ -36,18 +39,48 @@ export default {
             newOptionRequest: false,
 
             stockTempData: [],
+
+            optionSKU: "",
+            optionLabel: "",
         }
     },
     methods: {
+        handleFileSelect(event) {
+            const file = event.target.files[0];
+            this.displayImage(file);
+        },
+        handleDragOver(event) {
+            event.dataTransfer.dropEffect = "copy";
+        },
+        handleDragLeave() {
+            // Handle drag leave styling if needed
+        },
+        handleDrop(event) {
+            event.preventDefault();
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                this.displayImage(files[0]);
+            }
+        },
+        displayImage(file) {
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    this.imagePreview = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        },
+
+        cancelNewOption() {
+            this.newOptionRequest = false;
+        },
+
         createTypeOfProduct() {
             console.log("createNewProduct clicked x3 ");
             this.addNewProductButton = true;
-            // this.productsType.push("New Product");
-
-            // this.data = {
-            //     panels: [],
-
-            // }
         },
         cancelCreateNewProduct() {
             console.log("cancelCreateNewProduct clicked x3");
@@ -125,7 +158,9 @@ export default {
                 this.selectedProduct.categories.push({
                     title: this.title_productCategory,
                     extraClassName: this.extra_class_stepCategory,
-                    panelId: this.selectedProduct?.length ? this.selectedProduct : "",
+                    panelId: this.selectedProduct ? this.selectedProduct.id : "",
+                    type: "img",
+                    options: [],
                     logic: {
                         rules: [],
                         action: 'show'
@@ -150,9 +185,63 @@ export default {
 
         editChoiseAttribute(getItem, index) {
 
+            this.newOptionRequest = false;
             this.createNewCategoryOption = true;
-            this.selectCurrentProductIndex = index;
-            console.log("editChoiseAttributes", this.selectedProductCategories);
+            this.selectCurrentProductCategoryIndex = index;
+            console.log("editChoiseAttributes", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options);
+        },
+
+        generateNewOption() {
+            let data = [];
+            if (this.selectedProduct) {
+                
+                // adaug optiuni dupa butonul de press Appply
+                this.selectedProduct.categories[this.selectCurrentProductCategoryIndex].options.push({
+                    option: {
+                        data: {
+                            label: this.optionLabel,
+                            inputMaxValue: 999999,
+                            inputMinValue: 0,
+                            inputStep: 1,
+                            valuePreview: null,
+                            value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
+                            defaultSelectValue: null,
+                            chargePerCharacter: false,
+                            inputLengthValue: 100,
+                            inputMinLengthValue: 0,
+                            useCustomCharacterPrcies: false,
+                            countSpaceAsCharacter: false,
+                            countSpaceAsCharacterForValidation: true,
+                            showCounterOfEnteredCharacters: false,
+                        }
+                    },
+                    inStock: true,
+                    sku: this.optionSKU,
+                    logic: {
+                        rules: [],
+                        action: "hide"
+                    },
+                    id: this.makeid(24),
+                    inventory: null,
+                    quantityMultiplier: 1,
+                    weight: 0,
+                    showWhenOutOfStock: false,
+                });
+            }
+
+            // resetez valori dupa generare optione
+
+            this.optionSKU = '';
+            this.optionLabel = '';
+            this.newOptionRequest = false;
+            this.createNewCategoryOption = false;
+
+            this.createToast({
+                type: 'info',
+                title: 'Info message',
+                details: "New option added!"
+            });
+            console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
         },
 
         createToast(details) {
@@ -178,7 +267,11 @@ export default {
             handler(data) {
                 this.initGlobalObject();
                 console.log("Object base changed", data);
-
+            }
+        },
+        createNewCategoryOption: {
+            handler(data) {
+                // reset values from add option
             }
         }
     },
@@ -186,7 +279,7 @@ export default {
     mounted() {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-        console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
+        // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
     },
 
     computed: {
@@ -282,51 +375,11 @@ export default {
                             </div>
                             <!-- div poze grid -->
                             <div class="d-flex align-content-start flex-wrap">
-                                <div class="p-4 images-layout">
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
+                                <div v-if="items.options?.length" class="p-4 images-layout">
+                                    <div v-for="(op) in items.options" class="p-1">
+                                        <img style="width: 160px; height: 160px;"
+                                            :src="`${op.option.data.value}`"
                                             alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
-                                    </div>
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            src="https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-4crxSURXBmaNc7TrHlwxhA19.png"
-                                            alt="">
                                     </div>
                                 </div>
                             </div>
@@ -469,16 +522,17 @@ export default {
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><strong>
-                        <a href="#">{{ title }}</a>
-                    </strong></li>
+                            <a href="#">{{ title }}</a>
+                        </strong></li>
                     <li class="breadcrumb-item active" aria-current="page"><strong>
-                        {{ selectedProduct.title }}</strong></li>
-                    
+                            {{ selectedProduct.title }}</strong></li>
+
+                            <!-- get title of current category -->
                     <li class="breadcrumb-item active" aria-current="page">
-                       <strong>
-                           <a @click="newOptionRequest = false">{{
-                            selectedProductCategories[0].title }}</a>
-                       </strong> 
+                        <strong>
+                            <a @click="newOptionRequest = false">{{
+                                selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
+                        </strong>
                     </li>
                 </ol>
             </nav>
@@ -506,20 +560,34 @@ export default {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Preview</th>
-                            <th scope="col">Option</th>
+                            <th class="image-td-align" scope="col">Option</th>
                             <th scope="col">Price</th>
                             <th scope="col">Stock</th>
                             <th scope="col">Edit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr @click="console.log('click on tr')">
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td>edit</td>
+                        <tr v-for="items in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
+                            <td class="image-td-align">
+                                <div class="p-4">
+                                    <div class="p-1">
+                                        <img style="width: 150px; height: 150px;"
+                                            :src="`${items.option.data.value}`"
+                                            alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
+                                        <span class="image-td-align wrapped-text">
+                                           {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                        </span>
+                                        </div>
+                                </div>
+                            </td>
+                            <td class="text-td-align">-</td>
+                            <td class="text-td-align">da</td>
+                            <td class="text-td-align">
+                                <div class="p-1">
+                                    <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        data-bs-title="Edit" style="font-size: 1rem"></i>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -531,23 +599,43 @@ export default {
                 <div class="p-3">
                     <InputLabel for="optionLabel" value="Option Label" />
 
-                    <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus
-                        autocomplete="" />
+                    <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
 
                 </div>
 
                 <div class="p-3">
                     <InputLabel for="" value="Thumbnail" />
-                    <svg class="bd-placeholder-img rounded d-block" width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 200x200" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="10%" y="10%" fill="#dee2e6" dy=".3em">200x200</text></svg>
+
+                    <div>
+                        <div id="drop-area" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
+                            @drop.prevent="handleDrop">
+                            <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
+                            <input type="file" id="file-input" accept=".png, .jpg, .jpeg" @change="handleFileSelect" />
+                            <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-3">
                     <InputLabel for="optionSKU" value="SKU" />
 
-                    <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus
-                        autocomplete="" />
+                    <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
 
                 </div>
+
+                <div class="d-flex flex-row m-3">
+                    <div class="p-2">
+                        <EditButton @click="cancelNewOption()">
+                            BACK
+                        </EditButton>
+                    </div>
+                    <div class="p-2">
+                        <EditButton @click="generateNewOption()">
+                            APPLY
+                        </EditButton>
+                    </div>
+                </div>
+
             </div>
             <!-- logic -->
             <!-- Apply & Cancel -->
