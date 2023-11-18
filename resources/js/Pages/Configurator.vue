@@ -46,6 +46,10 @@ export default {
         }
     },
     methods: {
+        saveProduct() {
+            console.log("PRODUCT", this.product);
+        },
+
         handleFileSelect(event) {
             const file = event.target.files[0];
             this.displayImage(file);
@@ -267,7 +271,7 @@ export default {
         product: {
             handler(data) {
                 this.initGlobalObject();
-                console.log("Object base changed", data);
+                console.log("Object base changed", this.product);
             }
         },
         createNewCategoryOption: {
@@ -303,7 +307,7 @@ export default {
     <AuthenticatedLayout>
         <div class="d-flex flex-row-reverse bld-bar">
             <div class="py-1 px-2">
-                <WarningButton>
+                <WarningButton @click="saveProduct">
                     SAVE PRODUCT
                 </WarningButton>
             </div>
