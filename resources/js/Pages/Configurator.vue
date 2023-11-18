@@ -5,6 +5,7 @@ import SuccesButton from '@/Components/SuccesButton.vue';
 import EditButton from '@/Components/EditButton.vue';
 import { Head } from '@inertiajs/vue3';
 
+import WarningButton from '@/Components/WarningButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -300,6 +301,14 @@ export default {
 <template>
     <Head title="Setup" />
     <AuthenticatedLayout>
+        <div class="d-flex flex-row-reverse bld-bar">
+            <div class="py-1 px-2">
+                <WarningButton>
+                    SAVE PRODUCT
+                </WarningButton>
+            </div>
+            <div class="p-2 px-5">ID: {{ this.ID }}</div>
+        </div>
         <Toast />
         <div class="container">
             <div class="container-sm">
@@ -567,7 +576,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="items in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
+                        <tr class="pointer-hover" v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
                             <td class="image-td-align">
                                 <div class="p-4">
                                     <div class="p-1">
