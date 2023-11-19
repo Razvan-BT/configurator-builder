@@ -21,7 +21,7 @@ export default {
     data() {
         return {
             imagePreview: null,
-
+            isOverlayVisible: false,
             extra_class_step: "",
             title_product: "",
             sku_prefix: "",
@@ -43,11 +43,20 @@ export default {
 
             optionSKU: "",
             optionLabel: "",
+
+            isLoading: true,
+            loaderColor: '#6d5cae',
         }
     },
     methods: {
+        simulateLoading() {
+            setTimeout(() => {
+                this.isLoading = false;
+            }, 3000); // Simulating a 3-second loading time
+        },
         async saveProduct() {
-            
+            this.isOverlayVisible = true;
+
             let data = {
                 configuratorId: this.ID,
                 data: this.product,
@@ -60,6 +69,10 @@ export default {
                 title: 'Info message',
                 details: response.data.message
             });
+
+            if (response) {
+                this.isOverlayVisible = false;
+            }
         },
 
         handleFileSelect(event) {
@@ -221,7 +234,7 @@ export default {
         generateNewOption() {
             let data = [];
             if (this.selectedProduct) {
-                
+
                 // adaug optiuni dupa butonul de press Appply
                 this.selectedProduct.categories[this.selectCurrentProductCategoryIndex].options.push({
                     option: {
@@ -307,6 +320,7 @@ export default {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
+        this.simulateLoading();
     },
 
     computed: {
@@ -327,353 +341,364 @@ export default {
 <template>
     <Head title="Setup" />
     <AuthenticatedLayout>
-        <div class="d-flex flex-row-reverse bld-bar">
-            <div class="py-1 px-2">
-                <WarningButton @click="saveProduct">
-                    SAVE PRODUCT
-                </WarningButton>
-            </div>
-            <div class="p-2 px-5">ID: {{ this.ID }}</div>
-        </div>
-        <Toast />
-        <div class="container">
-            <div class="container-sm">
-                <p class="p-3 h2">{{ this.title?.length ? this.title : "No Titles" }}</p>
-            </div>
+        <div v-if="isLoading" class="loader" :style="{ borderColor: loaderColor }"></div>
 
-            <!-- Butoane selectie  -->
-            <div class="container-sm d-flex flex-wrap">
-                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                    <div v-for="(items, index) in this.product.panels" class="btn-group me-2 mt-2" role="group">
-                        <PrimarButton @click="getCurrentProduct(items, index)">{{ items.title }}</PrimarButton>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <SuccesButton @click="createTypeOfProduct">
-                            <i class="pi pi-plus" style="font-size: 1rem"></i>
-                        </SuccesButton>
+        <div v-if="isLoading" class="loading-text">Loading data...</div>
+
+        <div v-if="!isLoading">
+
+
+            <div class="d-flex flex-row-reverse bld-bar">
+                <div class="py-1 px-2">
+                    <WarningButton @click="saveProduct">
+                        SAVE PRODUCT
+                    </WarningButton>
+                </div>
+                <div class="p-2 px-5">ID: {{ this.ID }}</div>
+            </div>
+            <Toast />
+            <div class="container">
+                <div class="container-sm">
+                    <p class="p-3 h2">{{ this.title?.length ? this.title : "No Titles" }}</p>
+                </div>
+
+                <!-- Butoane selectie  -->
+                <div class="container-sm d-flex flex-wrap">
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                        <div v-for="(items, index) in this.product.panels" class="btn-group me-2 mt-2" role="group">
+                            <PrimarButton @click="getCurrentProduct(items, index)">{{ items.title }}</PrimarButton>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <SuccesButton @click="createTypeOfProduct">
+                                <i class="pi pi-plus" style="font-size: 1rem"></i>
+                            </SuccesButton>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Container Elemente -->
-            <div class="mt-5">
-                <div class="container-sm d-flex p-2 border-1 border-secondary">
-                    <div class="p-2 flex-grow-1">
-                        <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
-                    </div>
-                    <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            data-bs-title="Edit" style="font-size: 1rem"></i>
-                    </div>
-                    <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            data-bs-title="Clone" style="font-size: 1rem"></i>
-                    </div>
-                    <div class="pt-4 px-2">
-                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                            data-bs-title="Delete" style="font-size: 1rem"></i>
+                <!-- Container Elemente -->
+                <div class="mt-5">
+                    <div class="container-sm d-flex p-2 border-1 border-secondary">
+                        <div class="p-2 flex-grow-1">
+                            <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
+                        </div>
+                        <div class="pt-4 px-2">
+                            <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                data-bs-title="Edit" style="font-size: 1rem"></i>
+                        </div>
+                        <div class="pt-4 px-2">
+                            <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                data-bs-title="Clone" style="font-size: 1rem"></i>
+                        </div>
+                        <div class="pt-4 px-2">
+                            <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Container Content -->
-            <div class="mt-5 mb-5">
-                <div class="container-sm p-2 border-1 border-secondary">
-                    <div v-if="product.panels?.length" class="mt-2 border-bottom border-bottom">
-                        <div v-for="(items, index) in selectedProductCategories" class="p-1">
-                            <!-- div titlu + btn -->
-                            <div class="d-flex mt-1">
-                                <div class="p-1 flex-grow-1">
-                                    <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" data-bs-title="Hide"></i> {{ items.title }}</p>
-                                </div>
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
-                                </div>
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                        data-bs-title="Copy" style="font-size: 1rem"></i>
-                                </div>
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom" data-bs-title="Move" style="font-size: 1rem"></i>
-                                </div>
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                        data-bs-title="Clone" style="font-size: 1rem"></i>
-                                </div>
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
-                                </div>
-                            </div>
-                            <!-- div poze grid -->
-                            <div class="d-flex align-content-start flex-wrap">
-                                <div v-if="items.options?.length" class="p-4 images-layout">
-                                    <div v-for="(op) in items.options" class="p-1">
-                                        <img style="width: 160px; height: 160px;"
-                                            :src="`${op.option.data.value}`"
-                                            alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
+                <!-- Container Content -->
+                <div class="mt-5 mb-5">
+                    <div class="container-sm p-2 border-1 border-secondary">
+                        <div v-if="product.panels?.length" class="mt-2 border-bottom border-bottom">
+                            <div v-for="(items, index) in selectedProductCategories" class="p-1">
+                                <!-- div titlu + btn -->
+                                <div class="d-flex mt-1">
+                                    <div class="p-1 flex-grow-1">
+                                        <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" data-bs-title="Hide"></i> {{ items.title }}</p>
+                                    </div>
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
+                                    </div>
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Copy" style="font-size: 1rem"></i>
+                                    </div>
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Move" style="font-size: 1rem"></i>
+                                    </div>
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
+                                    </div>
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- edit attributes -->
-
-                            <div class="d-flex p-4">
-                                <EditButton @click="editChoiseAttribute(items, index)">
-                                    Edit attributes
-                                </EditButton>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 d-flex justify-center">
-                        <SuccesButton @click="createNewOptionForProduct">
-                            Add new custom option
-                        </SuccesButton>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- modal add new product -->
-
-        <Dialog v-model:visible="addNewProductButton" modal header="Add new product" :style="{ width: '40vw' }">
-
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-                        type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Description</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-                    tabindex="0">
-                    <form @submit.prevent="submit">
-                        <div class="p-3">
-                            <InputLabel for="title_product" value="Title" />
-
-                            <TextInput v-model="title_product" type="text" class="mt-1 block w-full" autofocus
-                                autocomplete="" />
-
-                        </div>
-
-                        <div class="p-3">
-                            <InputLabel for="sku_prefix" value="Sku Prefix" />
-
-                            <TextInput v-model="sku_prefix" type="text" class="mt-1 block w-full" autofocus
-                                autocomplete="" />
-
-                        </div>
-
-                        <div class="p-3">
-                            <InputLabel for="extra_class_step" value="Extra class new step" />
-
-                            <TextInput v-model="extra_class_step" type="text" class="mt-1 block w-full" autofocus
-                                autocomplete="" />
-
-                        </div>
-                        <div class="flex items-center justify-end mt-4">
-                            <SuccesButton @click="createNewProduct" class="ml-4">
-                                Apply
-                            </SuccesButton>
-                            <PrimaryButton @click="cancelCreateNewProduct" class="ml-4">
-                                Cancel
-                            </PrimaryButton>
-                        </div>
-                    </form>
-
-                </div>
-                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                    ...</div>
-            </div>
-
-            <!-- logic -->
-            <!-- Apply & Cancel -->
-        </Dialog>
-
-        <!-- modal add new category -->
-
-        <Dialog v-model:visible="createNewCategory" modal header="Add new category option" :style="{ width: '40vw' }">
-
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-                        type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Description</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-                    tabindex="0">
-                    <form @submit.prevent="submit">
-                        <div class="p-3">
-                            <InputLabel for="title_productCategory" value="Title" />
-
-                            <TextInput v-model="title_productCategory" type="text" class="mt-1 block w-full" autofocus
-                                autocomplete="" />
-
-                        </div>
-
-                        <div class="p-3">
-                            <InputLabel for="extra_class_stepCategory" value="Extra class" />
-
-                            <TextInput v-model="extra_class_stepCategory" type="text" class="mt-1 block w-full" autofocus
-                                autocomplete="" />
-
-                        </div>
-                        <div class="flex items-center justify-end mt-4">
-                            <SuccesButton @click="createNewCategoryPanel" class="ml-4">
-                                Apply
-                            </SuccesButton>
-                            <PrimaryButton @click="cancelCreateNewCategory" class="ml-4">
-                                Cancel
-                            </PrimaryButton>
-                        </div>
-                    </form>
-
-                </div>
-                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                    ...</div>
-            </div>
-
-            <!-- logic -->
-            <!-- Apply & Cancel -->
-        </Dialog>
-
-        <!-- modal add new category option -->
-
-        <Dialog v-model:visible="createNewCategoryOption" modal header="Edit Choise Attribute" :style="{ width: '95vw' }">
-
-            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><strong>
-                            <a href="#">{{ title }}</a>
-                        </strong></li>
-                    <li class="breadcrumb-item active" aria-current="page"><strong>
-                            {{ selectedProduct.title }}</strong></li>
-
-                            <!-- get title of current category -->
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <strong>
-                            <a @click="newOptionRequest = false">{{
-                                selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
-                        </strong>
-                    </li>
-                </ol>
-            </nav>
-
-            <!-- Option create - false -->
-            <div v-if="!newOptionRequest">
-                <div class="d-flex">
-                    <div class="p-2 flex-grow-1">
-                        <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
-                            class="mt-1 block w-full" autofocus autocomplete="" />
-                    </div>
-                    <div class="p-3">
-                        <EditButton>
-                            Reorder
-                        </EditButton>
-                    </div>
-                    <div class="p-3">
-                        <EditButton @click="newOptionRequest = true">
-                            New Option
-                        </EditButton>
-                    </div>
-                </div>
-
-                <!-- tabel optiuni -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="image-td-align" scope="col">Option</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Stock</th>
-                            <th scope="col">Edit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="pointer-hover" v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
-                            <td class="image-td-align">
-                                <div class="p-4">
-                                    <div class="p-1">
-                                        <img style="width: 150px; height: 150px;"
-                                            :src="`${items.option.data.value}`"
-                                            alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
-                                        <span class="image-td-align wrapped-text">
-                                           {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
-                                        </span>
+                                <!-- div poze grid -->
+                                <div class="d-flex align-content-start flex-wrap">
+                                    <div v-if="items.options?.length" class="p-4 images-layout">
+                                        <div v-for="(op) in items.options" class="p-1">
+                                            <img style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
+                                                alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
                                         </div>
+                                    </div>
                                 </div>
-                            </td>
-                            <td class="text-td-align">-</td>
-                            <td class="text-td-align">da</td>
-                            <td class="text-td-align">
-                                <div class="p-1">
-                                    <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                        data-bs-title="Edit" style="font-size: 1rem"></i>
+                                <!-- edit attributes -->
+
+                                <div class="d-flex p-4">
+                                    <EditButton @click="editChoiseAttribute(items, index)">
+                                        Edit attributes
+                                    </EditButton>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- Option create - false END -->
+                            </div>
+                        </div>
 
-
-            <div v-if="newOptionRequest">
-                <div class="p-3">
-                    <InputLabel for="optionLabel" value="Option Label" />
-
-                    <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
-
-                </div>
-
-                <div class="p-3">
-                    <InputLabel for="" value="Thumbnail" />
-
-                    <div>
-                        <div id="drop-area" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
-                            @drop.prevent="handleDrop">
-                            <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
-                            <input type="file" id="file-input" accept=".png, .jpg, .jpeg" @change="handleFileSelect" />
-                            <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+                        <div class="p-4 d-flex justify-center">
+                            <SuccesButton @click="createNewOptionForProduct">
+                                Add new custom option
+                            </SuccesButton>
                         </div>
                     </div>
                 </div>
-
-                <div class="p-3">
-                    <InputLabel for="optionSKU" value="SKU" />
-
-                    <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
-
-                </div>
-
-                <div class="d-flex flex-row m-3">
-                    <div class="p-2">
-                        <EditButton @click="cancelNewOption()">
-                            BACK
-                        </EditButton>
-                    </div>
-                    <div class="p-2">
-                        <EditButton @click="generateNewOption()">
-                            APPLY
-                        </EditButton>
-                    </div>
-                </div>
-
             </div>
-            <!-- logic -->
-            <!-- Apply & Cancel -->
-        </Dialog>
+
+
+            <!-- modal add new product -->
+
+            <Dialog v-model:visible="addNewProductButton" modal header="Add new product" :style="{ width: '40vw' }">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Description</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                        tabindex="0">
+                        <form @submit.prevent="submit">
+                            <div class="p-3">
+                                <InputLabel for="title_product" value="Title" />
+
+                                <TextInput v-model="title_product" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
+                            <div class="p-3">
+                                <InputLabel for="sku_prefix" value="Sku Prefix" />
+
+                                <TextInput v-model="sku_prefix" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
+                            <div class="p-3">
+                                <InputLabel for="extra_class_step" value="Extra class new step" />
+
+                                <TextInput v-model="extra_class_step" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+                            <div class="flex items-center justify-end mt-4">
+                                <SuccesButton @click="createNewProduct" class="ml-4">
+                                    Apply
+                                </SuccesButton>
+                                <PrimaryButton @click="cancelCreateNewProduct" class="ml-4">
+                                    Cancel
+                                </PrimaryButton>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                        tabindex="0">
+                        ...</div>
+                </div>
+
+                <!-- logic -->
+                <!-- Apply & Cancel -->
+            </Dialog>
+
+            <!-- modal add new category -->
+
+            <Dialog v-model:visible="createNewCategory" modal header="Add new category option" :style="{ width: '40vw' }">
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Description</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                        tabindex="0">
+                        <form @submit.prevent="submit">
+                            <div class="p-3">
+                                <InputLabel for="title_productCategory" value="Title" />
+
+                                <TextInput v-model="title_productCategory" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
+                            <div class="p-3">
+                                <InputLabel for="extra_class_stepCategory" value="Extra class" />
+
+                                <TextInput v-model="extra_class_stepCategory" type="text" class="mt-1 block w-full"
+                                    autofocus autocomplete="" />
+
+                            </div>
+                            <div class="flex items-center justify-end mt-4">
+                                <SuccesButton @click="createNewCategoryPanel" class="ml-4">
+                                    Apply
+                                </SuccesButton>
+                                <PrimaryButton @click="cancelCreateNewCategory" class="ml-4">
+                                    Cancel
+                                </PrimaryButton>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                        tabindex="0">
+                        ...</div>
+                </div>
+
+                <!-- logic -->
+                <!-- Apply & Cancel -->
+            </Dialog>
+
+            <!-- modal add new category option -->
+
+            <Dialog v-model:visible="createNewCategoryOption" modal header="Edit Choise Attribute"
+                :style="{ width: '95vw' }">
+
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><strong>
+                                <a href="#">{{ title }}</a>
+                            </strong></li>
+                        <li class="breadcrumb-item active" aria-current="page"><strong>
+                                {{ selectedProduct.title }}</strong></li>
+
+                        <!-- get title of current category -->
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <strong>
+                                <a @click="newOptionRequest = false">{{
+                                    selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
+                            </strong>
+                        </li>
+                    </ol>
+                </nav>
+
+                <!-- Option create - false -->
+                <div v-if="!newOptionRequest">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1">
+                            <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
+                                class="mt-1 block w-full" autofocus autocomplete="" />
+                        </div>
+                        <div class="p-3">
+                            <EditButton>
+                                Reorder
+                            </EditButton>
+                        </div>
+                        <div class="p-3">
+                            <EditButton @click="newOptionRequest = true">
+                                New Option
+                            </EditButton>
+                        </div>
+                    </div>
+
+                    <!-- tabel optiuni -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="image-td-align" scope="col">Option</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Stock</th>
+                                <th scope="col">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="pointer-hover"
+                                v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
+                                <td class="image-td-align">
+                                    <div class="p-4">
+                                        <div class="p-1">
+                                            <img style="width: 150px; height: 150px;" :src="`${items.option.data.value}`"
+                                                alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
+                                            <span class="image-td-align wrapped-text">
+                                                {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-td-align">-</td>
+                                <td class="text-td-align">da</td>
+                                <td class="text-td-align">
+                                    <div class="p-1">
+                                        <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                            data-bs-title="Edit" style="font-size: 1rem"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Option create - false END -->
+
+
+                <div v-if="newOptionRequest">
+                    <div class="p-3">
+                        <InputLabel for="optionLabel" value="Option Label" />
+
+                        <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
+
+                    </div>
+
+                    <div class="p-3">
+                        <InputLabel for="" value="Thumbnail" />
+
+                        <div>
+                            <div id="drop-area" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
+                                @drop.prevent="handleDrop">
+                                <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
+                                <input type="file" id="file-input" accept=".png, .jpg, .jpeg" @change="handleFileSelect" />
+                                <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3">
+                        <InputLabel for="optionSKU" value="SKU" />
+
+                        <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
+
+                    </div>
+
+                    <div class="d-flex flex-row m-3">
+                        <div class="p-2">
+                            <EditButton @click="cancelNewOption()">
+                                BACK
+                            </EditButton>
+                        </div>
+                        <div class="p-2">
+                            <EditButton @click="generateNewOption()">
+                                APPLY
+                            </EditButton>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- logic -->
+                <!-- Apply & Cancel -->
+            </Dialog>
+        </div>
+        <div v-if="isOverlayVisible" class="overlay"></div>
     </AuthenticatedLayout>
 </template>
