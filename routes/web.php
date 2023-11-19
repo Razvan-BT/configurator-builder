@@ -28,6 +28,7 @@ Route::post('/create-configurator', [DashboardController::class, 'create_new'])-
 
 // API configurator
 Route::get('/configurator/{id_c}', [DashboardController::class, 'view_config'])->middleware(['auth', 'verified'])->name('configurator');
+Route::post('/saveProduct', [DashboardController::class, 'save_product'])->middleware(['auth', 'verified']);
 
 // API END
 

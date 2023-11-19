@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 use Inertia\Inertia;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -45,5 +46,18 @@ class DashboardController extends Controller
         // dd($id_c);
         $data = Configurators::where('configurator_id', '=', $id_c)->get();
         return Inertia::render('Configurator', ['ID' => $data[0]['configurator_id'], 'title' => $data[0]['configurator_title']]);
+    }
+
+    public function save_product(Request $request) { 
+
+        // dd($request);
+        $fileData = $request->all();
+
+        // Convert the associative array to a JSON string
+        $jsonData = json_encode($fileData['data'], JSON_PRETTY_PRINT);
+
+        Storage::disk('local')->put('products/' . $fileData['configuratorId'] . '.json', $jsonData);
+
+        return response()->json(['message' => "You configurator was saved successfull!"]);
     }
 }

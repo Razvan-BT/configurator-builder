@@ -46,8 +46,20 @@ export default {
         }
     },
     methods: {
-        saveProduct() {
-            console.log("PRODUCT", this.product);
+        async saveProduct() {
+            
+            let data = {
+                configuratorId: this.ID,
+                data: this.product,
+            }
+            let response = await this.axiosAPI('/saveProduct', data);
+            console.log("PRODUCT", response);
+
+            this.createToast({
+                type: 'success',
+                title: 'Info message',
+                details: response.data.message
+            });
         },
 
         handleFileSelect(event) {
@@ -77,6 +89,16 @@ export default {
 
                 reader.readAsDataURL(file);
             }
+        },
+
+        async axiosAPI(url, data) {
+            let dataResponse;
+            await axios.post(url, data).then(function (response) {
+                dataResponse = response;
+            }).catch(function (error) {
+                console.log("[Error from API]: ", error);
+            });
+            return dataResponse;
         },
 
         cancelNewOption() {
