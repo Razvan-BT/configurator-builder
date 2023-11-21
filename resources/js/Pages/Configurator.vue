@@ -26,7 +26,9 @@ export default {
             title_product: "",
             sku_prefix: "",
             productsType: [],
-            product: {},
+            product: {
+                data: {}
+            },
             addNewProductButton: false,
 
             selectCurrentProductCategoryIndex: -1,
@@ -156,8 +158,14 @@ export default {
 
             this.stockTempData.push(object);
 
-            this.product = {
-                panels: this.stockTempData
+            this.product.data = {
+                // data
+                    name: this.title,
+                    base: {
+                        price: 123,
+                    },
+                    panels: this.stockTempData,
+                // }
             }
             // console.log(this.product);
 
@@ -173,7 +181,7 @@ export default {
         },
 
         createNewOptionForProduct() {
-            if (this.product?.panels) {
+            if (this.product.data?.panels) {
                 console.log("createNewOptionForProduct init");
                 this.createNewCategory = true;
             } else {
@@ -329,13 +337,13 @@ export default {
 
     computed: {
         selectedProduct() {
-            if (this.product.panels.length) {
-                return this.product.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0];
+            if (this.product.data.panels.length) {
+                return this.product.data.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0];
             }
         },
         selectedProductCategories() {
-            if (this.product.panels.length) {
-                return this.product.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0].categories;
+            if (this.product.data.panels.length) {
+                return this.product.data.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0].categories;
             }
         }
     }
@@ -368,7 +376,7 @@ export default {
                 <!-- Butoane selectie  -->
                 <div class="container-sm d-flex flex-wrap">
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div v-for="(items, index) in this.product.panels" class="btn-group me-2 mt-2" role="group">
+                        <div v-for="(items, index) in this.product.data.panels" class="btn-group me-2 mt-2" role="group">
                             <PrimarButton @click="getCurrentProduct(items, index)">{{ items.title }}</PrimarButton>
                         </div>
                         <div class="btn-group" role="group">
@@ -383,7 +391,7 @@ export default {
                 <div class="mt-5">
                     <div class="container-sm d-flex p-2 border-1 border-secondary">
                         <div class="p-2 flex-grow-1">
-                            <p class="p-3 h4">{{ product.panels?.length ? selectedProduct.title : 'No title' }}</p>
+                            <p class="p-3 h4">{{ product.data.panels?.length ? selectedProduct.title : 'No title' }}</p>
                         </div>
                         <div class="pt-4 px-2">
                             <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -403,7 +411,7 @@ export default {
                 <!-- Container Content -->
                 <div class="mt-5 mb-5">
                     <div class="container-sm p-2 border-1 border-secondary">
-                        <div v-if="product.panels?.length" class="mt-2 border-bottom border-bottom">
+                        <div v-if="product.data.panels?.length" class="mt-2 border-bottom border-bottom">
                             <div v-for="(items, index) in selectedProductCategories" class="p-1">
                                 <!-- div titlu + btn -->
                                 <div class="d-flex mt-1">
