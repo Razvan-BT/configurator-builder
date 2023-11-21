@@ -49,7 +49,7 @@ export default {
 
             isLoading: true,
             loaderColor: '#6d5cae',
-            
+
         }
     },
     methods: {
@@ -159,13 +159,11 @@ export default {
             this.stockTempData.push(object);
 
             this.product.data = {
-                // data
-                    name: this.title,
-                    base: {
-                        price: 123,
-                    },
-                    panels: this.stockTempData,
-                // }
+                name: this.title,
+                base: {
+                    price: 123,
+                },
+                panels: this.stockTempData,
             }
             // console.log(this.product);
 
@@ -557,7 +555,9 @@ export default {
                             </div>
 
                             <div class="p-3">
-                                <select v-model="typeCategory" class="form-select form-select-lg mb-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" aria-label="Large select example">
+                                <select v-model="typeCategory"
+                                    class="form-select form-select-lg mb-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    aria-label="Large select example">
                                     <option value="img" selected>Image Thumbnail</option>
                                     <option value="text">Text Field</option>
                                     <option value="input">Text Monogram Field</option>
