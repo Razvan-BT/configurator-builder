@@ -35,6 +35,7 @@ export default {
 
             extra_class_stepCategory: "",
             title_productCategory: "",
+            typeCategory: "img", // default
 
             createNewCategoryOption: false,
             newOptionRequest: false,
@@ -46,6 +47,7 @@ export default {
 
             isLoading: true,
             loaderColor: '#6d5cae',
+            
         }
     },
     methods: {
@@ -196,10 +198,12 @@ export default {
         createNewCategoryPanel() {
             if (this.selectedProduct) {
                 this.selectedProduct.categories.push({
+                    id: this.makeid(24),
+                    zIndex: this.selectedProduct.categories?.length + 1, // order elements
+                    type: this.typeCategory?.length ? this.typeCategory : "img",
                     title: this.title_productCategory,
                     extraClassName: this.extra_class_stepCategory,
                     panelId: this.selectedProduct ? this.selectedProduct.id : "",
-                    type: "img",
                     options: [],
                     logic: {
                         rules: [],
@@ -342,7 +346,6 @@ export default {
     <Head title="Setup" />
     <AuthenticatedLayout>
         <div v-if="isLoading" class="loader" :style="{ borderColor: loaderColor }"></div>
-
         <div v-if="isLoading" class="loading-text">Loading data...</div>
 
         <div v-if="!isLoading">
@@ -546,6 +549,28 @@ export default {
                             </div>
 
                             <div class="p-3">
+                                <select v-model="typeCategory" class="form-select form-select-lg mb-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" aria-label="Large select example">
+                                    <option value="img" selected>Image Thumbnail</option>
+                                    <option value="text">Text Field</option>
+                                    <option value="input">Text Monogram Field</option>
+                                    <option value="select">Dropdown</option>
+                                    <option value="multiple">Multiple Select</option>
+                                    <option value="single">Single</option>
+                                    <option value="inputMulti">Multiple inputs</option>
+                                </select>
+                            </div>
+
+                            <!-- const CAT_TYPE = [
+                                'img' => 1,
+                                'text' => 2,
+                                'input' => 3,
+                                'inputMulti' => 4,
+                                'single' => 1,
+                                'multiple' => 5,
+                                'select' => 6,
+                            ]; -->
+
+                            <div class="p-3">
                                 <InputLabel for="extra_class_stepCategory" value="Extra class" />
 
                                 <TextInput v-model="extra_class_stepCategory" type="text" class="mt-1 block w-full"
@@ -630,7 +655,7 @@ export default {
                                 <td class="image-td-align">
                                     <div class="p-4">
                                         <div class="p-1">
-                                            <img style="width: 150px; height: 150px;" :src="`${items.option.data.value}`"
+                                            <img style="width: 51px; height: 51px;" :src="`${items.option.data.value}`"
                                                 alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
                                             <span class="image-td-align wrapped-text">
                                                 {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
