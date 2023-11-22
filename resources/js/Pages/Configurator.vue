@@ -74,7 +74,7 @@ export default {
                 details: response.data.message
             });
 
-            if (response) {
+            if (response?.data.message) {
                 this.isOverlayVisible = false;
             }
         },
@@ -210,6 +210,7 @@ export default {
                     title: this.title_productCategory,
                     extraClassName: this.extra_class_stepCategory,
                     panelId: this.selectedProduct ? this.selectedProduct.id : "",
+                    panelID: this.selectedProduct ? this.selectedProduct.id : "",
                     options: [],
                     logic: {
                         rules: [],
@@ -438,7 +439,8 @@ export default {
                                             data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                     </div>
                                 </div>
-                                <!-- div poze grid -->
+                                <!-- div poze grid --> 
+                                <!-- Vor fi input + dropdown -->
                                 <div class="d-flex align-content-start flex-wrap">
                                     <div v-if="items.options?.length" class="p-4 images-layout">
                                         <div v-for="(op) in items.options" class="p-1">

@@ -92,3 +92,13 @@ const submit = () => {
         </form>
     </GuestLayout>
 </template>
+
+
+<style>
+
+.bg-gray-100 {
+    background-image: url("https://cdn.shopify.com/shopifycloud/identity/assets/gradient/gradient-background-c1d8cb3f0925910cfff2493c4442d4e2c1cb6b8a267903342574faee6f70c26c.png") !important;
+    background-size: cover !important;
+}
+
+</style>
