@@ -60,4 +60,18 @@ class DashboardController extends Controller
 
         return response()->json(['message' => "You configurator was saved successfull!"]);
     }
+
+    public function showImage($filename)
+    {
+        $path = Storage::disk('public')->path("images/{$filename}");
+
+        if (file_exists($path)) {
+            $fileContent = Storage::disk('public')->get("images/{$filename}");
+            $type = Storage::disk('public')->mimeType("images/{$filename}");
+
+            return response($fileContent, 200)->header('Content-Type', $type);
+        } else {
+            abort(404, 'File not found');
+        }
+    }
 }
