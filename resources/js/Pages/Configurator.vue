@@ -341,7 +341,7 @@ export default {
         },
         createNewCategoryOption: {
             handler(data) {
-                // reset values from add option
+                // reset values from add option x btn
             }
         }
     },
@@ -723,7 +723,10 @@ export default {
                                 @drop.prevent="handleDrop">
                                 <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
                                 <input type="file" id="file-input" accept=".png, .jpg, .jpeg" @change="handleFileSelect" />
-                                <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+
+                                <div class="d-flex justify-content-center">
+                                    <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+                                </div>
                             </div>
                         </div>
                     </div>
