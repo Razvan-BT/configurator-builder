@@ -59,12 +59,21 @@ export default {
     methods: {
         simulateLoading() {
             setTimeout(() => {
-                this.isLoading = false;
-
+                // simulare loading + check daca data exist
+                // Atunci incarc ce am in JSON 
                 let response = axios.get("/get-product/" + this.ID);
-                if(response) {
-                    this.initGlobalObject(response);
-                }
+                response.then((result) => {
+                    if ('error' in result.data) {
+                        console.warn("Configurator data ID doesn't exist");
+                        this.isLoading = false;
+                    } else {
+
+                        this.initGlobalObject(result);
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                    this.isLoading = false;
+                });
             }, 3000); // Simulating a 3-second loading time
         },
         async saveProduct() {
@@ -186,9 +195,9 @@ export default {
         },
 
         initGlobalObject(data) {
-            console.log("initGlobalObject init", data);
-
-
+            console.log("initGlobalObject init", data.data.data.panels);
+            this.product.data.panels = data.data.data.panels;
+            this.isLoading = false;
         },
 
         createNewOptionForProduct() {
@@ -362,7 +371,7 @@ export default {
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
         this.simulateLoading();
-        
+
     },
 
     computed: {

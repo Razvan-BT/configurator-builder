@@ -96,9 +96,7 @@ class DashboardController extends Controller
             $type = Storage::disk('public')->mimeType("products/{$product}.json");
 
             return response($fileContent, 200)->header('Content-Type', $type);
-        } else {
-
-            abort(404, 'File not found');
-        }
+        } else return response()->json(['error' => 'not found']);
+        
     }
 }
