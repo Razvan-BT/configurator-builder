@@ -331,6 +331,8 @@ export default {
             this.selectedFile = ''; // elementar daca vreau o sterg
             this.optionSKU = '';
             this.optionLabel = '';
+            this.selectedFile = null;
+            this.imagePreview = '';
             this.newOptionRequest = false;
             this.createNewCategoryOption = false;
             if (this.selectedFile) this.selectedFile = '';
