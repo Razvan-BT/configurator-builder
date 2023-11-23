@@ -264,8 +264,8 @@ export default {
             console.log("editChoiseAttributes", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options);
         },
 
-        async generateNewOption() {
-            let data = [];
+        generateNewOption() {
+            let data = [], status = false, path;
             if (this.selectedProduct) {
                 if (this.selectedFile) {
                     const formData = new FormData();
@@ -274,52 +274,59 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            // this.createToast({
-                            //     type: response?.message ? 'success' : 'error',
-                            //     title: 'Info message',
-                            //     details: response?.message ? response.message : 'Something went wrong!'
-                            // });
-
-                            // adaug optiuni dupa butonul de press Appply
-                            this.selectedProduct.categories[this.selectCurrentProductCategoryIndex].options.push({
-                                option: {
-                                    data: {
-                                        label: this.optionLabel,
-                                        inputMaxValue: 999999,
-                                        inputMinValue: 0,
-                                        inputStep: 1,
-                                        valuePreview: null,
-                                        value: '/storage/' + this.path_image,
-                                        // value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
-                                        defaultSelectValue: null,
-                                        chargePerCharacter: false,
-                                        inputLengthValue: 100,
-                                        inputMinLengthValue: 0,
-                                        useCustomCharacterPrcies: false,
-                                        countSpaceAsCharacter: false,
-                                        countSpaceAsCharacterForValidation: true,
-                                        showCounterOfEnteredCharacters: false,
-                                    }
-                                },
-                                inStock: true,
-                                sku: this.optionSKU,
-                                logic: {
-                                    rules: [],
-                                    action: "hide"
-                                },
-                                id: this.makeid(24),
-                                inventory: null,
-                                quantityMultiplier: 1,
-                                weight: 0,
-                                showWhenOutOfStock: false,
-                            });
+                            this.addNewOption(response.data.image_path);
                         })
                         .catch(error => {
                             console.log(error);
                         });
+
                 }
+
             }
             // resetez valori dupa generare optione
+
+            console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
+        },
+
+        createToast(details) {
+            this.$toast.add({ severity: details.type, summary: details.title, detail: details.details, life: 3000 });
+        },
+
+        addNewOption(path) {
+            //  adaug dupa response in alta functie deoarece nu imi permite requestul..
+            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.push({
+                option: {
+                    data: {
+                        label: this.optionLabel,
+                        inputMaxValue: 999999,
+                        inputMinValue: 0,
+                        inputStep: 1,
+                        valuePreview: null,
+                        value: '/storage/' + path,
+                        // value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
+                        defaultSelectValue: null,
+                        chargePerCharacter: false,
+                        inputLengthValue: 100,
+                        inputMinLengthValue: 0,
+                        useCustomCharacterPrcies: false,
+                        countSpaceAsCharacter: false,
+                        countSpaceAsCharacterForValidation: true,
+                        showCounterOfEnteredCharacters: false,
+                    }
+                },
+                inStock: true,
+                sku: this.optionSKU,
+                logic: {
+                    rules: [],
+                    action: "hide"
+                },
+                id: this.makeid(24),
+                inventory: null,
+                quantityMultiplier: 1,
+                weight: 0,
+                showWhenOutOfStock: false,
+            });
+
 
             this.selectedFile = ''; // elementar daca vreau o sterg
             this.optionSKU = '';
@@ -332,11 +339,6 @@ export default {
                 title: 'Info message',
                 details: "New option added!"
             });
-            console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
-        },
-
-        createToast(details) {
-            this.$toast.add({ severity: details.type, summary: details.title, detail: details.details, life: 3000 });
         },
 
         makeid(length) {
