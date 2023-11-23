@@ -41,5 +41,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/storage/image/{filename}', [DashboardController::class, 'showImage'])->name('image.show');
+Route::post('/upload-image', [DashboardController::class, 'uploadImage']);
 
 require __DIR__.'/auth.php';

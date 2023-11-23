@@ -74,4 +74,17 @@ class DashboardController extends Controller
             abort(404, 'File not found');
         }
     }
+
+    public function uploadImage(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Store the uploaded image
+        $imagePath = $request->file('image')->store('images', 'public');
+
+        return response()->json(['message' => 'Image uploaded successfully', 'image_path' => $imagePath]);
+    }
 }

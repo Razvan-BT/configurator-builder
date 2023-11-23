@@ -49,7 +49,8 @@ export default {
 
             isLoading: true,
             loaderColor: '#6d5cae',
-
+            selectedFile: '',
+            path_image: '',
         }
     },
     methods: {
@@ -80,8 +81,8 @@ export default {
         },
 
         handleFileSelect(event) {
-            const file = event.target.files[0];
-            this.displayImage(file);
+            this.selectedFile = event.target.files[0];
+            this.displayImage(this.selectedFile);
         },
         handleDragOver(event) {
             event.dataTransfer.dropEffect = "copy";
@@ -242,51 +243,69 @@ export default {
             console.log("editChoiseAttributes", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options);
         },
 
-        generateNewOption() {
+        async generateNewOption() {
             let data = [];
             if (this.selectedProduct) {
+                if (this.selectedFile) {
+                    const formData = new FormData();
+                    formData.append('image', this.selectedFile);
 
-                // adaug optiuni dupa butonul de press Appply
-                this.selectedProduct.categories[this.selectCurrentProductCategoryIndex].options.push({
-                    option: {
-                        data: {
-                            label: this.optionLabel,
-                            inputMaxValue: 999999,
-                            inputMinValue: 0,
-                            inputStep: 1,
-                            valuePreview: null,
-                            value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
-                            defaultSelectValue: null,
-                            chargePerCharacter: false,
-                            inputLengthValue: 100,
-                            inputMinLengthValue: 0,
-                            useCustomCharacterPrcies: false,
-                            countSpaceAsCharacter: false,
-                            countSpaceAsCharacterForValidation: true,
-                            showCounterOfEnteredCharacters: false,
-                        }
-                    },
-                    inStock: true,
-                    sku: this.optionSKU,
-                    logic: {
-                        rules: [],
-                        action: "hide"
-                    },
-                    id: this.makeid(24),
-                    inventory: null,
-                    quantityMultiplier: 1,
-                    weight: 0,
-                    showWhenOutOfStock: false,
-                });
+                    axios.post('/upload-image', formData)
+                        .then(response => {
+                            this.path_image = response.data?.image_path ? response.data.image_path : '';
+                            // this.createToast({
+                            //     type: response?.message ? 'success' : 'error',
+                            //     title: 'Info message',
+                            //     details: response?.message ? response.message : 'Something went wrong!'
+                            // });
+
+                            // adaug optiuni dupa butonul de press Appply
+                            this.selectedProduct.categories[this.selectCurrentProductCategoryIndex].options.push({
+                                option: {
+                                    data: {
+                                        label: this.optionLabel,
+                                        inputMaxValue: 999999,
+                                        inputMinValue: 0,
+                                        inputStep: 1,
+                                        valuePreview: null,
+                                        value: '/storage/' + this.path_image,
+                                        // value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
+                                        defaultSelectValue: null,
+                                        chargePerCharacter: false,
+                                        inputLengthValue: 100,
+                                        inputMinLengthValue: 0,
+                                        useCustomCharacterPrcies: false,
+                                        countSpaceAsCharacter: false,
+                                        countSpaceAsCharacterForValidation: true,
+                                        showCounterOfEnteredCharacters: false,
+                                    }
+                                },
+                                inStock: true,
+                                sku: this.optionSKU,
+                                logic: {
+                                    rules: [],
+                                    action: "hide"
+                                },
+                                id: this.makeid(24),
+                                inventory: null,
+                                quantityMultiplier: 1,
+                                weight: 0,
+                                showWhenOutOfStock: false,
+                            });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
             }
-
             // resetez valori dupa generare optione
 
+            this.selectedFile = ''; // elementar daca vreau o sterg
             this.optionSKU = '';
             this.optionLabel = '';
             this.newOptionRequest = false;
             this.createNewCategoryOption = false;
-
+            if (this.selectedFile) this.selectedFile = '';
             this.createToast({
                 type: 'info',
                 title: 'Info message',
@@ -439,7 +458,7 @@ export default {
                                             data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                     </div>
                                 </div>
-                                <!-- div poze grid --> 
+                                <!-- div poze grid -->
                                 <!-- Vor fi input + dropdown -->
                                 <div class="d-flex align-content-start flex-wrap">
                                     <div v-if="items.options?.length" class="p-4 images-layout">
