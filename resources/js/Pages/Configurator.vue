@@ -27,6 +27,9 @@ export default {
             sku_prefix: "",
             productsType: [],
             product: {
+                settings: {
+                    defaultOptions: {}
+                },
                 data: {}
             },
             addNewProductButton: false,
@@ -57,6 +60,11 @@ export default {
         simulateLoading() {
             setTimeout(() => {
                 this.isLoading = false;
+
+                let response = axios.get("/get-product/" + this.ID);
+                if(response) {
+                    this.initGlobalObject(response);
+                }
             }, 3000); // Simulating a 3-second loading time
         },
         async saveProduct() {
@@ -151,10 +159,12 @@ export default {
             object = {
                 id: this.makeid(15),
                 title: this.title_product,
+                description: "",
                 categories: [],
                 extraClassName: this.extra_class_step,
                 logic: {},
                 skuPrefix: this.sku_prefix,
+                zIndex: 0,
             }
 
             this.stockTempData.push(object);
@@ -175,8 +185,10 @@ export default {
             this.sku_prefix = "";
         },
 
-        initGlobalObject() {
-            console.log("initGlobalObject init");
+        initGlobalObject(data) {
+            console.log("initGlobalObject init", data);
+
+
         },
 
         createNewOptionForProduct() {
@@ -335,7 +347,6 @@ export default {
     watch: {
         product: {
             handler(data) {
-                this.initGlobalObject();
                 console.log("Object base changed", this.product);
             }
         },
@@ -351,6 +362,7 @@ export default {
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
         this.simulateLoading();
+        
     },
 
     computed: {

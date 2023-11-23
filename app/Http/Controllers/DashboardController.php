@@ -56,7 +56,7 @@ class DashboardController extends Controller
         // Convert the associative array to a JSON string
         $jsonData = json_encode($fileData['data'], JSON_PRETTY_PRINT);
 
-        Storage::disk('local')->put('products/' . $fileData['configuratorId'] . '.json', $jsonData);
+        Storage::disk('products')->put($fileData['configuratorId'] . '.json', $jsonData);
 
         return response()->json(['message' => "You configurator was saved successfull!"]);
     }
@@ -86,5 +86,19 @@ class DashboardController extends Controller
         $imagePath = $request->file('image')->store('images', 'public');
 
         return response()->json(['message' => 'Image uploaded successfully', 'image_path' => $imagePath]);
+    }
+
+    public function getProduct_data($product) {
+        $path = Storage::disk('public')->path("products/{$product}.json");
+
+        if(file_exists($path)) {
+            $fileContent = Storage::disk('public')->get("products/{$product}.json");
+            $type = Storage::disk('public')->mimeType("products/{$product}.json");
+
+            return response($fileContent, 200)->header('Content-Type', $type);
+        } else {
+
+            abort(404, 'File not found');
+        }
     }
 }
