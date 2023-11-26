@@ -54,6 +54,10 @@ export default {
             loaderColor: '#6d5cae',
             selectedFile: '',
             path_image: '',
+
+            editOption: false,
+            editOptionID: -1,
+
         }
     },
     methods: {
@@ -95,6 +99,45 @@ export default {
             if (response?.data.message) {
                 this.isOverlayVisible = false;
             }
+        },
+
+        editCurrentOption(path) {
+            // cand voi face edit la o optiune din edit choise 
+            /**
+             * Doar schimb sku
+             * label si poza + reset valori la normal
+             */
+            if(!this.editOption) return;
+            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
+            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
+            if(path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
+            console.log("Razvan debug 22", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID]);
+
+            this.editOption = false;
+            this.editOptionID = -1;
+            this.optionSKU = '';
+            this.optionLabel = '';
+            this.selectedFile = null;
+            this.imagePreview = '';
+            this.newOptionRequest = false;
+            this.createNewCategoryOption = false;
+            if (this.selectedFile) this.selectedFile = '';
+            this.createToast({
+                type: 'info',
+                title: 'Info message',
+                details: "Option edited successfull!"
+            });
+        },
+
+        editChosedOption(option, index) {
+            // repopulez input dupa save --> doar optiunea selectata
+            this.newOptionRequest = true;
+            this.editOption = true;
+            this.editOptionID = index;
+            this.optionSKU = option.sku;
+            this.imagePreview = option.option.data.value;
+            this.optionLabel = option.option.data.label;
+            console.log("editChosedOption", option.sku)
         },
 
         handleFileSelect(event) {
@@ -287,17 +330,20 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            this.addNewOption(response.data.image_path);
+                            if(!this.editOption) this.addNewOption(response.data.image_path);
+                            else this.editCurrentOption(response.data.image_path);
                         })
                         .catch(error => {
                             console.log(error);
                         });
 
+                } else {
+
+                    if(this.editOption) this.editCurrentOption();
                 }
 
             }
             // resetez valori dupa generare optione
-
             console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
         },
 
@@ -731,9 +777,9 @@ export default {
                                     </div>
                                 </td>
                                 <td class="text-td-align">-</td>
-                                <td class="text-td-align">da</td>
+                                <td class="text-td-align">-</td>
                                 <td class="text-td-align">
-                                    <div class="p-1">
+                                    <div @click="editChosedOption(items, index)" class="p-1">
                                         <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                             data-bs-title="Edit" style="font-size: 1rem"></i>
                                     </div>
