@@ -164,6 +164,8 @@ export default {
 
             // create new product
             // @ start JSON
+            // if (!this.product.data?.panels) {
+
             let object = {};
             object = {
                 id: this.makeid(15),
@@ -176,15 +178,26 @@ export default {
                 zIndex: 0,
             }
 
-            this.stockTempData.push(object);
+            /**
+             * Daca am citit un produs cu date;
+             * atunci cand creez o alta categorie --> sa fie adaugata dupa restul
+             */
+            if (this.product.data?.panels) {
+                this.product.data.panels.push(object);
 
-            this.product.data = {
-                name: this.title,
-                base: {
-                    price: 123,
-                },
-                panels: this.stockTempData,
+            } else {
+
+                this.stockTempData.push(object);
+                this.product.data = {
+                    name: this.title,
+                    base: {
+                        price: 123,
+                    },
+                    panels: [...this.stockTempData],
+                }
             }
+
+            // }
             // console.log(this.product);
 
 

@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/get-product/{product}', [DashboardController::class, 'getProduct_data']);
+Route::get('/   /{product}', [DashboardController::class, 'getProduct_data']);
 Route::get('/storage/image/{filename}', [DashboardController::class, 'showImage'])->name('image.show');
 Route::post('/upload-image', [DashboardController::class, 'uploadImage']);
 
