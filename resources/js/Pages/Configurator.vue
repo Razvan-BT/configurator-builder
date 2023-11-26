@@ -107,10 +107,10 @@ export default {
              * Doar schimb sku
              * label si poza + reset valori la normal
              */
-            if(!this.editOption) return;
+            if (!this.editOption) return;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
-            if(path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
+            if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
             console.log("Razvan debug 22", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID]);
 
             this.editOption = false;
@@ -330,7 +330,7 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            if(!this.editOption) this.addNewOption(response.data.image_path);
+                            if (!this.editOption) this.addNewOption(response.data.image_path);
                             else this.editCurrentOption(response.data.image_path);
                         })
                         .catch(error => {
@@ -339,7 +339,7 @@ export default {
 
                 } else {
 
-                    if(this.editOption) this.editCurrentOption();
+                    if (this.editOption) this.editCurrentOption();
                 }
 
             }
@@ -814,7 +814,7 @@ export default {
                             </div>
 
                             <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR</h4>
-                            
+
                             <div class="p-1 d-flex justify-content-center">
                                 <PrimaryButton class="ml-4">
                                     Select an image from gallery

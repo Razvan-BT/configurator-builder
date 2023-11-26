@@ -67,8 +67,8 @@ export default {
             console.log(n, i);
         },
         routeToConf(id) {
-            let routed = route('configurator', { id_c: id} );
-            window.location.href=routed;
+            let routed = route('configurator', { id_c: id });
+            window.location.href = routed;
         },
         async axiosAPI(url, data) {
             let dataResponse;
@@ -133,40 +133,42 @@ export default {
                     <i class="pi pi-plus" style="font-size: 1rem"></i>
                 </SuccesButton>
             </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Image</th>
-                        <th scope="col">Title</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(items) in configurators">
-                        <th scope="row">
-                            <img :src="`${items.image}`" :alt="items.image" class="w-6rem shadow-2 border-round" />
-                        </th>
-                        <td>{{ items.configurator_title }}</td>
-                        <td>{{ items.configurator_detail }}</td>
-                        <td>{{ items.configurator_id }}</td>
-                        <td>
-                            <div class="d-flex flex-center">
-                                <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
-                                        @click="routeToConf(items.configurator_id)" />
+            <div class="d-flex justify-content-center">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Image</th>
+                            <th scope="col">Title</th>
+                            <!-- <th scope="col">Description</th> -->
+                            <th scope="col">ID</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(items) in configurators">
+                            <th scope="row">
+                                <img :src="`${items.image}`" :alt="items.image" class="w-6rem shadow-2 border-round" />
+                            </th>
+                            <td>{{ items.configurator_title }}</td>
+                            <!-- <td>{{ items.configurator_detail }}</td> -->
+                            <td>{{ items.configurator_id }}</td>
+                            <td>
+                                <div class="d-flex flex-center">
+                                    <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
+                                            @click="routeToConf(items.configurator_id)" />
+                                    </div>
+                                    <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
+                                    <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
                                 </div>
-                                <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
-                                <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
-                            </div>
 
 
 
 
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <Dialog v-model:visible="visible" modal header="Create new" :style="{ width: '40vw' }">
                 <form @submit.prevent="submit">
@@ -194,5 +196,6 @@ export default {
 
             </Dialog>
         </div>
+
     </AuthenticatedLayout>
 </template>
