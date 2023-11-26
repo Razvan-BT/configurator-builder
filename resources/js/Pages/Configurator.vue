@@ -278,7 +278,7 @@ export default {
         },
 
         generateNewOption() {
-            let data = [], status = false, path;
+            let data = [], status = false;
             if (this.selectedProduct) {
                 if (this.selectedFile) {
                     const formData = new FormData();
