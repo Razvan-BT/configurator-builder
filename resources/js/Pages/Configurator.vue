@@ -767,13 +767,13 @@ export default {
                                 v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
                                 <td class="image-td-align">
                                     <div class="p-4">
-                                        <div class="p-1">
+                                        <div class="p-1 d-flex justify-content-center">
                                             <img style="width: 51px; height: 51px;" :src="`${items.option.data.value}`"
                                                 alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
-                                            <span class="image-td-align wrapped-text">
-                                                {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
-                                            </span>
                                         </div>
+                                        <span style="text-align: center;" class="image-td-align wrapped-text">
+                                            {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-td-align">-</td>
