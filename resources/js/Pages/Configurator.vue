@@ -812,6 +812,14 @@ export default {
                                     <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
                                 </div>
                             </div>
+
+                            <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR</h4>
+                            
+                            <div class="p-1 d-flex justify-content-center">
+                                <PrimaryButton class="ml-4">
+                                    Select an image from gallery
+                                </PrimaryButton>
+                            </div>
                         </div>
                     </div>
 
