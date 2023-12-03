@@ -59,7 +59,10 @@ export default {
             editOptionID: -1,
 
             editPanel: false,
+
             deleteElementVar: false,
+            deleteElementCat: '',
+            deleteElementId: '',
 
         }
     },
@@ -214,14 +217,18 @@ export default {
                     console.log('Element panel: ', this.selectedProduct);
                     // delete all element with same panel ID 
                     this.deleteElementVar = true;
-                    this.sendConfirmation('panel', this.selectedProduct);
+
+                    this.deleteElementCat = 'panel';
+                    this.deleteElementId = this.selectedProduct;
                     break;
                 }
                 case 'category': {
                     console.log('Element panel categories: ', id);
                     // delete all element with same panel ID 
                     this.deleteElementVar = true;
-                    this.sendConfirmation('category', id);
+
+                    this.deleteElementCat = 'category';
+                    this.deleteElementId = id;
                     break;
                 }
                 default: {
@@ -238,7 +245,22 @@ export default {
         },
 
         sendConfirmation() {
-            // 
+            switch(this.deleteElementCat) {
+                case 'panel': {
+                    this.product.data.panels.filter((el, index) => {
+                        if(this.deleteElementId.id == el.id && this.selectedProduct.id == el.id) {
+                            console.log("RAzvan delete", el)
+                            this.product.data.panels.splice(this.product.data.panels.indexOf(el.id), 1);
+                            if(this.product.data.panels?.length > 1) this.selectCurrentProductIndex = 0;
+                            else this.selectCurrentProductIndex = 0;
+                            this.deleteElementVar = false;
+                            this.deleteElementId = '';
+                            this.deleteElementCat = '';
+                        }
+                    });
+                    break;
+                }
+            }
         },
 
         createNewProduct() {
@@ -861,12 +883,12 @@ export default {
                 </div>
                 <div class="d-flex flex-row m-3">
                         <div class="p-2">
-                            <EditButton>
+                            <EditButton @click="cancelConfirmation()">
                                 CANCEL
                             </EditButton>
                         </div>
                         <div class="p-2">
-                            <EditButton>
+                            <EditButton @click="sendConfirmation()">
                                 CONFIRM
                             </EditButton>
                         </div>
