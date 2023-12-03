@@ -92,13 +92,3 @@ const submit = () => {
         </form>
     </GuestLayout>
 </template>
-
-
-<style>
-
-.bg-gray-100 {
-    background-image: url("/storage/image/background.jpg") !important;
-    background-size: cover !important;
-}
-
-</style>

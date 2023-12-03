@@ -58,6 +58,9 @@ export default {
             editOption: false,
             editOptionID: -1,
 
+            editPanel: false,
+            deleteElementVar: false,
+
         }
     },
     methods: {
@@ -189,14 +192,77 @@ export default {
         },
         cancelCreateNewProduct() {
             console.log("cancelCreateNewProduct clicked x3");
+            if (this.editPanel) this.editPanel = false;
             this.addNewProductButton = false;
             this.extra_class_step = "";
             this.title_product = "";
             this.sku_prefix = "";
+            this.selectCurrentProductIndex = -1;
 
         },
+
+        deleteElement(element, id = null) {
+            /**
+             * element 1 - panel
+             * element 2 - categorie
+             * element 3 - optiune
+             */
+
+            switch (element) {
+                case 'panel': {
+                    if (id !== null) return;
+                    console.log('Element panel: ', this.selectedProduct);
+                    // delete all element with same panel ID 
+                    this.deleteElementVar = true;
+                    this.sendConfirmation('panel', this.selectedProduct);
+                    break;
+                }
+                case 'category': {
+                    console.log('Element panel categories: ', id);
+                    // delete all element with same panel ID 
+                    this.deleteElementVar = true;
+                    this.sendConfirmation('category', id);
+                    break;
+                }
+                default: {
+                    this.createToast({
+                        type: 'error',
+                        title: 'Error message',
+                        details: "Error to delete element check console."
+                    });
+                    console.error('deleteEmelent are impossible - element not set');
+                    break;
+                }
+            }
+
+        },
+
+        sendConfirmation() {
+            // 
+        },
+
         createNewProduct() {
             // creez API to SQL dupa generez in JSON
+
+            if (this.editPanel) {
+                this.createToast({
+                    type: 'success',
+                    title: 'Info message',
+                    details: this.title_product.toUpperCase() + " was edited succesfully!"
+                });
+
+                this.selectedProduct.title = this.title_product || "";
+                this.selectedProduct.skuPrefix = this.sku_prefix || "";
+                this.selectedProduct.extraClassName = this.extra_class_step || "";
+
+                this.addNewProductButton = false;
+                this.extra_class_step = "";
+                this.title_product = "";
+                this.sku_prefix = "";
+                this.editPanel = false; // resetez daca a fost edit
+                return;
+            }
+
             this.productsType.push(this.title_product);
 
             this.createToast({
@@ -402,6 +468,20 @@ export default {
             });
         },
 
+        editCurrentPanel() {
+            if (this.product.data.panels?.length) {
+                this.editPanel = true;
+                this.addNewProductButton = true;
+
+                this.title_product = this.selectedProduct.title || "";
+                this.sku_prefix = this.selectedProduct.skuPrefix || "";
+                this.extra_class_step = this.selectedProduct.extraClassName || "";
+
+                // todo: repopulare logica produs
+                console.log("Razvan selected product", this.selectedProduct);
+            }
+        },
+
         makeid(length) {
             let result = '';
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -460,7 +540,7 @@ export default {
 
         <div v-if="!isLoading">
 
-
+            <ConfirmPopup></ConfirmPopup>
             <div class="d-flex flex-row-reverse bld-bar">
                 <div class="py-1 px-2">
                     <WarningButton @click="saveProduct">
@@ -496,16 +576,17 @@ export default {
                             <p class="p-3 h4">{{ product.data.panels?.length ? selectedProduct.title : 'No title' }}</p>
                         </div>
                         <div class="pt-4 px-2">
-                            <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                data-bs-title="Edit" style="font-size: 1rem"></i>
+                            <i @click="editCurrentPanel()" class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
                             <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                 data-bs-title="Clone" style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
-                            <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
-                                data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
+                            <i @click="deleteElement('panel')" class="p-1 pi pi-trash hovered alerted-hover"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete"
+                                style="font-size: 1rem"></i>
                         </div>
                     </div>
                 </div>
@@ -529,22 +610,32 @@ export default {
                                         <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Copy" style="font-size: 1rem"></i>
                                     </div>
-                                    <div class="p-1">
+                                    <!-- <div class="p-1">
                                         <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Move" style="font-size: 1rem"></i>
-                                    </div>
+                                    </div> -->
                                     <div class="p-1">
                                         <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
                                     </div>
                                     <div class="p-1">
-                                        <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                        <i @click="deleteElement('category', items)"
+                                            class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
                                     </div>
                                 </div>
                                 <!-- div poze grid -->
                                 <!-- Vor fi input + dropdown -->
                                 <div class="d-flex align-content-start flex-wrap">
+
+                                    <!-- <div v-if="items.type == 'text' ||
+                                        items.type == 'input' ||
+                                        items.type == 'inputMulti'
+                                        ">
+                                        <div v-for="(op) in items.options" class="p-1">
+                                            <input type="text" :placeholder="`${op.option.data.label}`">
+                                        </div>
+                                    </div> -->
                                     <div v-if="items.options?.length" class="p-4 images-layout">
                                         <div v-for="(op) in items.options" class="p-1">
                                             <img style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
@@ -574,7 +665,7 @@ export default {
 
             <!-- modal add new product -->
 
-            <Dialog v-model:visible="addNewProductButton" modal header="Add new product" :style="{ width: '40vw' }">
+            <Dialog v-model:visible="addNewProductButton" modal header="Product" :style="{ width: '60vw' }">
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -626,7 +717,59 @@ export default {
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                         tabindex="0">
-                        ...</div>
+
+                        <!-- logica panels -->
+                        <div class="container mb-3">
+                            <div class="d-flex m-2">
+                                <div class="p-2 w-100 p-2 m-2">
+                                    <span class="fs-5 p-1">If</span>
+                                    <select v-model="panelLogic" class="logic-list">
+                                        <option>Test</option>
+                                    </select>
+                                    <span class="fs-5 p-1">'s custom option</span>
+                                    <select v-model="optionLogic" class="logic-list">
+                                        <option>Test 2</option>
+                                    </select>
+                                    <span class="fs-5 p-1">is</span>
+                                    <select v-model="ruleLogic" class="logic-list">
+                                        <option>One Of..</option>
+                                    </select>
+
+                                    <div class="p-2 m-2">
+                                        <label class="p-1 fs-6" for="checkBox">
+                                            <input type="checkbox" name="checkbox">
+                                            Veste
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- delete logic btn -->
+
+                                <div class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
+                                    <span>delete</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="p-1 d-flex justify-content-center">
+                            <PrimaryButton>
+                                Add new rule
+                            </PrimaryButton>
+                        </div>
+
+                        <div class="container mb-3">
+                            <span class="fs-5 p-1">
+                                then this layer should be:
+                            </span>
+                            <div class="p-1 d-flex justify-content-center">
+                                <select class="logic-list-show">
+                                    <option>Not Selected</option>
+                                    <option>Shown</option>
+                                    <option>Hidden</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- logic -->
@@ -709,7 +852,27 @@ export default {
                 <!-- logic -->
                 <!-- Apply & Cancel -->
             </Dialog>
+            <!-- dialog confirm delete -->
+            <Dialog v-model:visible="deleteElementVar" modal header="Confirm message" :style="{ width: '40vw' }">
+                <div class="d-flex m-3">
+                    <p class="h6">
+                        Are you sure to delete it?
+                    </p>
+                </div>
+                <div class="d-flex flex-row m-3">
+                        <div class="p-2">
+                            <EditButton>
+                                CANCEL
+                            </EditButton>
+                        </div>
+                        <div class="p-2">
+                            <EditButton>
+                                CONFIRM
+                            </EditButton>
+                        </div>
+                    </div>
 
+            </Dialog>
             <!-- modal add new category option -->
 
             <Dialog v-model:visible="createNewCategoryOption" modal header="Edit Choise Attribute"

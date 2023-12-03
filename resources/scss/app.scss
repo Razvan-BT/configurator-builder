@@ -80,6 +80,26 @@
 
 }
 
+
+.logic-list {
+    background-color: #5d6bc4;
+    color: white;
+}
+
+.logic-list-show {
+    background-color: #bec5f1;
+    color: rgb(32, 32, 32);
+    width: 100%;
+}
+
+.btn-delete-logic {
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    background-color:#ed674b;
+    color: white;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
