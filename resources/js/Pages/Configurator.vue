@@ -249,10 +249,23 @@ export default {
                 case 'panel': {
                     this.product.data.panels.filter((el, index) => {
                         if(this.deleteElementId.id == el.id && this.selectedProduct.id == el.id) {
-                            console.log("RAzvan delete", el)
+                            console.log("Razvan delete panel", el)
                             this.product.data.panels.splice(this.product.data.panels.indexOf(el.id), 1);
                             if(this.product.data.panels?.length > 1) this.selectCurrentProductIndex = 0;
                             else this.selectCurrentProductIndex = 0;
+                            this.deleteElementVar = false;
+                            this.deleteElementId = '';
+                            this.deleteElementCat = '';
+                        }
+                    });
+                    break;
+                }
+                case 'category': {
+                    // delete category
+                    this.selectedProductCategories.filter((el, index) => {
+                        if(this.deleteElementId.id == el.id) {
+                            console.log("Razvan delete category", el)
+                            this.selectedProductCategories.splice(this.selectedProductCategories.indexOf(el.id), 1);
                             this.deleteElementVar = false;
                             this.deleteElementId = '';
                             this.deleteElementCat = '';
