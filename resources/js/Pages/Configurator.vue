@@ -64,6 +64,9 @@ export default {
             deleteElementCat: '',
             deleteElementId: '',
 
+            panelLogic: 'Select Step',
+            optionLogic: 'Select Custom Option',
+            ruleLogic: 'Any choice'
         }
     },
     methods: {
@@ -541,7 +544,7 @@ export default {
             handler(data) {
                 // reset values from add option x btn
             }
-        }
+        },
     },
 
     mounted() {
@@ -759,15 +762,17 @@ export default {
                                 <div class="p-2 w-100 p-2 m-2">
                                     <span class="fs-5 p-1">If</span>
                                     <select v-model="panelLogic" class="logic-list">
-                                        <option>Test</option>
+                                        <option>Select Step</option>
                                     </select>
                                     <span class="fs-5 p-1">'s custom option</span>
                                     <select v-model="optionLogic" class="logic-list">
-                                        <option>Test 2</option>
+                                        <option>Select Custom Option</option>
                                     </select>
                                     <span class="fs-5 p-1">is</span>
                                     <select v-model="ruleLogic" class="logic-list">
+                                        <option>Any choice</option>
                                         <option>One Of..</option>
+                                        <option>Not equal</option>
                                     </select>
 
                                     <div class="p-2 m-2">
@@ -955,8 +960,6 @@ export default {
                         <thead>
                             <tr>
                                 <th class="image-td-align" scope="col">Option</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Stock</th>
                                 <th scope="col">Edit</th>
                             </tr>
                         </thead>
@@ -974,8 +977,7 @@ export default {
                                         </span>
                                     </div>
                                 </td>
-                                <td class="text-td-align">-</td>
-                                <td class="text-td-align">-</td>
+
                                 <td class="text-td-align">
                                     <div @click="editChosedOption(items, index)" class="p-1">
                                         <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
