@@ -66,7 +66,11 @@ export default {
 
             panelLogic: 'Select Step',
             optionLogic: 'Select Custom Option',
-            ruleLogic: 'Any choice'
+            ruleLogic: 'Any choice',
+
+            panelLogicOptions: [],
+            optionLogicOptions: [],
+            ruleLogicOptions: [], // is option X 
         }
     },
     methods: {
@@ -82,6 +86,12 @@ export default {
                     } else {
 
                         this.initGlobalObject(result);
+
+                        if (this.product.data.panels.length) {
+                            // Populate logic 
+
+                            this.repopulateLogic();
+                        }
                     }
                 }).catch((error) => {
                     console.log(error);
@@ -89,6 +99,22 @@ export default {
                 });
             }, 3000); // Simulating a 3-second loading time
         },
+
+        repopulateLogic() {
+            this.panelLogicOptions = []; // reset
+            this.product.data.panels.filter((value, index) => {
+                // panels
+                let obj = {
+                    id: value.id,
+                    title: value.title,
+                    categories: value.categories
+                };
+
+                this.panelLogicOptions.push(obj);
+
+            });
+        },
+
         async saveProduct() {
             this.isOverlayVisible = true;
 
@@ -248,13 +274,13 @@ export default {
         },
 
         sendConfirmation() {
-            switch(this.deleteElementCat) {
+            switch (this.deleteElementCat) {
                 case 'panel': {
                     this.product.data.panels.filter((el, index) => {
-                        if(this.deleteElementId.id == el.id && this.selectedProduct.id == el.id) {
+                        if (this.deleteElementId.id == el.id && this.selectedProduct.id == el.id) {
                             console.log("Razvan delete panel", el)
                             this.product.data.panels.splice(this.product.data.panels.indexOf(el.id), 1);
-                            if(this.product.data.panels?.length > 1) this.selectCurrentProductIndex = 0;
+                            if (this.product.data.panels?.length > 1) this.selectCurrentProductIndex = 0;
                             else this.selectCurrentProductIndex = 0;
                             this.deleteElementVar = false;
                             this.deleteElementId = '';
@@ -266,7 +292,7 @@ export default {
                 case 'category': {
                     // delete category
                     this.selectedProductCategories.filter((el, index) => {
-                        if(this.deleteElementId.id == el.id) {
+                        if (this.deleteElementId.id == el.id) {
                             console.log("Razvan delete category", el)
                             this.selectedProductCategories.splice(this.selectedProductCategories.indexOf(el.id), 1);
                             this.deleteElementVar = false;
@@ -545,6 +571,39 @@ export default {
                 // reset values from add option x btn
             }
         },
+        panelLogic: function (newVal, oldVal) {
+            if (this.panelLogic == 'Select Step') {
+                this.optionLogicOptions = [];
+            }
+            else {
+                let arrayWithCategory = [];
+                if (this.panelLogicOptions?.length) {
+                    this.panelLogicOptions.filter((value, index) => {
+                        if (this.panelLogic == value.title) {
+                            value.categories.forEach((cat) => {
+                                let obj = {
+                                    id: cat.id,
+                                    title: cat.title,
+                                    cat: value
+                                }
+                                arrayWithCategory.push(obj);
+                            });
+                        }
+                    });
+                }
+
+                console.log("WTF", arrayWithCategory[0].cat.categories)
+                // filtrez categoriile
+                arrayWithCategory[0].cat.categories.filter((value, index) => {
+                    let obj = {
+                        id: value.id,
+                        label: value.title
+                    }
+                    this.optionLogicOptions.push(obj);
+                })
+
+            }
+        }
     },
 
     mounted() {
@@ -552,7 +611,6 @@ export default {
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
         this.simulateLoading();
-
     },
 
     computed: {
@@ -763,10 +821,12 @@ export default {
                                     <span class="fs-5 p-1">If</span>
                                     <select v-model="panelLogic" class="logic-list">
                                         <option>Select Step</option>
+                                        <option v-for="op in panelLogicOptions">{{ op.title }}</option>
                                     </select>
                                     <span class="fs-5 p-1">'s custom option</span>
                                     <select v-model="optionLogic" class="logic-list">
                                         <option>Select Custom Option</option>
+                                        <option v-for="op in optionLogicOptions">{{ op.label }}</option>
                                     </select>
                                     <span class="fs-5 p-1">is</span>
                                     <select v-model="ruleLogic" class="logic-list">
@@ -900,17 +960,17 @@ export default {
                     </p>
                 </div>
                 <div class="d-flex flex-row m-3">
-                        <div class="p-2">
-                            <EditButton @click="cancelConfirmation()">
-                                CANCEL
-                            </EditButton>
-                        </div>
-                        <div class="p-2">
-                            <EditButton @click="sendConfirmation()">
-                                CONFIRM
-                            </EditButton>
-                        </div>
+                    <div class="p-2">
+                        <EditButton @click="cancelConfirmation()">
+                            CANCEL
+                        </EditButton>
                     </div>
+                    <div class="p-2">
+                        <EditButton @click="sendConfirmation()">
+                            CONFIRM
+                        </EditButton>
+                    </div>
+                </div>
 
             </Dialog>
             <!-- modal add new category option -->
