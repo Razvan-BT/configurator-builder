@@ -66,11 +66,45 @@ export default {
 
             panelLogic: 'Select Step',
             optionLogic: 'Select Custom Option',
-            ruleLogic: 'Any choice',
+            ruleLogic: {},
+
+            rulesPanel: {
+                logic: {
+                    rules: []
+                },
+                action: "show"
+            },
+            rulesPanelPanels: [],
+            selectedValues: {},
+            rulesPanelCategories: [],
+            selectedCategories: {},
+
+            selectedPanel: {},
+
+            rulesCategories: [],
+            rulesOptions: [],
 
             panelLogicOptions: [],
-            optionLogicOptions: [],
-            ruleLogicOptions: [], // is option X 
+            optionLogicOptionsCategories: [],
+            ruleLogicOptions: [],
+            // logic	
+            // rules	
+            //  0	
+            // panel	"hC_6c1sZN2ukgyNcEAEmgEG0"
+            // category	"KoxhvZg3GNIHd09pwdyVxZ6t"
+            // option	"oneof"
+            // type	"panel"
+            // operator	"||"
+            // layer	""
+            // active	""
+            // logicRuleLabel	""
+            // options	
+            // 0	"EOMGhXBq9hgiN_x8YWoKG5uC"
+            // 1	"0pIos6M5Hy9ieI8tFOAzudQ6"
+            // 2	"OPqFn9Bek9-WMlkmpDePmfum"
+            // 3	"Z0EX-wbH8n827a6kGq2-8ANO"
+            // 4	"nqNX3dJzrHGyF3tRb3r07APR"
+            // action	"show"
         }
     },
     methods: {
@@ -112,6 +146,86 @@ export default {
 
                 this.panelLogicOptions.push(obj);
 
+            });
+        },
+
+        createNewRule(where) {
+            // creez o noula regula in 
+            /*
+                panel,
+                categorie,
+                optiune
+            */
+
+            if (where == 'panel') {
+                // preiau paneluriile pentru fiecare index ID
+                this.rulesPanelPanels = [];
+                let panels = {};
+                this.panelLogicOptions.filter((value, index) => {
+                    panels = {
+                        panels: this.product.data.panels,
+                    }
+                });
+                this.rulesPanelPanels.push(panels);
+                let obj = {
+
+                    panel: "",
+                    category: "",
+                    option: "",
+                    operator: "||",
+                    layer: "",
+                    active: "",
+                    logicRuleLabel: "",
+                    options: []
+
+                }
+                this.rulesPanel.logic.rules.push(obj);
+
+                let returnIndex = this.rulesPanel.logic.rules.length;
+                if(returnIndex == 0) this.selectedValues[0] = 'Select Step';
+                else {
+                    this.selectedValues[returnIndex] = 'Select Step';
+                    this.selectedCategories[returnIndex] = 'Select Custom Option';
+                    this.ruleLogic[returnIndex] = 'anychoice';
+                }
+            }
+        },
+
+        getCategoriesAfterPanel(panel) {
+            let obj = [];
+            this.product.data.panels.filter((value, index) => {
+                if (value.id == panel) {
+                    obj.push(value.categories)
+                }
+            })
+            return obj[0];
+        },
+
+        getOptionsAfterPanelAndCategory(panel, caty) {
+            let obj = [];
+            this.product.data.panels.filter((value, index) => {
+                if (value.id == panel) {
+                    value.categories.filter((cat, idx) => {
+                        if (cat.id == caty) obj.push(cat.options);
+                    })
+                }
+            })
+            return obj[0];
+        },
+
+        deleteCurrentLogic(index) {
+            delete this.selectedValues[index];
+            delete this.selectedCategories[index];
+            delete this.ruleLogic[index];
+
+
+            console.log("Delete ITEM: ", this.rulesPanel.logic.rules.splice(index, 1));
+            // this.rulesPanel.splice(index, 1);
+
+            this.rulesPanel.logic.rules.forEach((value, idx) => {
+                this.selectedValues[index] = value.panel;
+                this.selectedCategories[index] = value.category;
+                this.ruleLogic[index] = 'anychoice';
             });
         },
 
@@ -571,37 +685,32 @@ export default {
                 // reset values from add option x btn
             }
         },
-        panelLogic: function (newVal, oldVal) {
-            if (this.panelLogic == 'Select Step') {
-                this.optionLogicOptions = [];
-            }
-            else {
-                let arrayWithCategory = [];
-                if (this.panelLogicOptions?.length) {
-                    this.panelLogicOptions.filter((value, index) => {
-                        if (this.panelLogic == value.title) {
-                            value.categories.forEach((cat) => {
-                                let obj = {
-                                    id: cat.id,
-                                    title: cat.title,
-                                    cat: value
-                                }
-                                arrayWithCategory.push(obj);
-                            });
+        selectedValues: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValues) {
+
+                    this.rulesPanel.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.panel = newValues[i];
+                            this.selectedValues[index - 1];
                         }
                     });
                 }
+            },
+        },
+        selectedCategories: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.selectedCategories) {
 
-                console.log("WTF", arrayWithCategory[0].cat.categories)
-                // filtrez categoriile
-                arrayWithCategory[0].cat.categories.filter((value, index) => {
-                    let obj = {
-                        id: value.id,
-                        label: value.title
-                    }
-                    this.optionLogicOptions.push(obj);
-                })
-
+                    console.log("Category changed", newValue[i])
+                    this.rulesPanel.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.category = newValue[i];
+                        }
+                    });
+                }
             }
         }
     },
@@ -624,7 +733,8 @@ export default {
                 return this.product.data.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0].categories;
             }
         }
-    }
+    },
+
 }
 </script>
 
@@ -815,44 +925,103 @@ export default {
                         tabindex="0">
 
                         <!-- logica panels -->
-                        <div class="container mb-3">
-                            <div class="d-flex m-2">
+                        <!-- <div class="container mb-3">
+                            <div v-for="(value, index) in rulesPanel" class="d-flex m-2">
                                 <div class="p-2 w-100 p-2 m-2">
-                                    <span class="fs-5 p-1">If</span>
-                                    <select v-model="panelLogic" class="logic-list">
+                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or'}}</span>
+                                    <select @change="selectedPanelLogic($event, index)" class="logic-list">
                                         <option>Select Step</option>
-                                        <option v-for="op in panelLogicOptions">{{ op.title }}</option>
+                                        <option v-for="op in rulesPanel[index].product.panels" :value="op.id">{{ op.title }}</option>
                                     </select>
-                                    <span class="fs-5 p-1">'s custom option</span>
-                                    <select v-model="optionLogic" class="logic-list">
-                                        <option>Select Custom Option</option>
-                                        <option v-for="op in optionLogicOptions">{{ op.label }}</option>
-                                    </select>
-                                    <span class="fs-5 p-1">is</span>
-                                    <select v-model="ruleLogic" class="logic-list">
-                                        <option>Any choice</option>
-                                        <option>One Of..</option>
-                                        <option>Not equal</option>
-                                    </select>
+                                    <span v-if="rulesPanel[index].product.categories?.length">
+                                        <span class="fs-5 p-1">'s custom option</span>
+                                        <select @change="selectedCategoriesLogic($event, index)" class="logic-list">
+                                            <option>Select Custom Option</option>
+                                            <option v-for="op in rulesPanel[index].product.categories" :value="op.id">{{ op.title }}</option>
+                                        </select>
+                                        <span class="fs-5 p-1">is</span>
+                                        <select @change="changeRuleLogic($event, index)" class="logic-list">
+                                            <option value="anychoice">Any choice</option>
+                                            <option value="oneof">One Of..</option>
+                                            <option value="notequal">Not equal</option>
+                                            <option v-for="op in rulesPanel[index].product.options" :value="op.id">{{ op.option.data.label }}</option>
+                                        </select>
+                                    </span>
 
-                                    <div class="p-2 m-2">
-                                        <label class="p-1 fs-6" for="checkBox">
-                                            <input type="checkbox" name="checkbox">
-                                            Veste
-                                        </label>
+                                    <div>
+                                        <span
+                                            v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'notequal'">
+                                            <div v-for="op in rulesPanel[index].product.options" class="p-2 m-2">
+                                                <label class="fs-6" for="checkBox">
+                                                    <input type="checkbox" name="checkbox">
+                                                    {{  op.option.data.label  }}
+                                                </label>
+                                            </div>
+                                        </span>
                                     </div>
                                 </div>
-                                <!-- delete logic btn -->
 
-                                <div class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
-                                    <span>delete</span>
+                                <div @click="deleteCurrentRuleLogic(index)" class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
+                                    <div class="align-btn-text">
+                                        <span>delete</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> -->
+
+                        <div class="container mb-3">
+                            <div v-for="(value, index) in rulesPanel.logic.rules" :key="index" class="d-flex m-2">
+                                <div class="p-2 w-100 p-2 m-2">
+                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <select v-model="selectedValues[index]" class="logic-list">
+                                        <option>Select Step</option>
+                                        <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
+                                        </option>
+                                    </select>
+                                    <span v-if="getCategoriesAfterPanel(selectedValues[index])?.length">
+                                        <span class="fs-5 p-1">'s custom option</span>
+                                        <select v-model="selectedCategories[index]" class="logic-list">
+                                            <option>Select Custom Option</option>
+                                            <option v-for="op in getCategoriesAfterPanel(selectedValues[index])"
+                                                :value="op.id">{{ op.title }}</option>
+                                        </select>
+                                        <span class="fs-5 p-1">is</span>
+                                        <select v-model="ruleLogic[index]" class="logic-list">
+                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="oneof">One Of..</option>
+                                            <option value="notequal">Not equal</option>
+                                            <option
+                                                v-for="op in getOptionsAfterPanelAndCategory(selectedValues[index], selectedCategories[index])"
+                                                :value="op.option.id">{{ op.option.data.label }}</option>
+                                        </select>
+                                    </span>
+
+                                    <div>
+                                        <span v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'notequal'">
+                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValues[index], selectedCategories[index])"
+                                                class="p-2 m-2">
+                                                <label class="fs-6" for="checkBox">
+                                                    <input type="checkbox" name="checkbox">
+                                                    {{ op.option.data.label }}
+                                                </label>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div @click.stop="deleteCurrentLogic(index)"
+                                    class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
+                                    <div class="align-btn-text">
+                                        <span>delete</span>
+                                    </div>
                                 </div>
                             </div>
 
                         </div>
 
                         <div class="p-1 d-flex justify-content-center">
-                            <PrimaryButton>
+                            <PrimaryButton @click="createNewRule('panel')">
                                 Add new rule
                             </PrimaryButton>
                         </div>
