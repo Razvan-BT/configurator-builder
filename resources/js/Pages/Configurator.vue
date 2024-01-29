@@ -828,7 +828,7 @@ export default {
             if (this.product.data.panels?.length) {
                 this.editPanel = true;
                 this.addNewProductButton = true;
-
+                this.editCategory = false;
                 this.title_product = this.selectedProduct.title || "";
                 this.sku_prefix = this.selectedProduct.skuPrefix || "";
                 this.extra_class_step = this.selectedProduct.extraClassName || "";
