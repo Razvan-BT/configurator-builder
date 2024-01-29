@@ -1407,7 +1407,11 @@ export default {
                                 <div @click.stop="deleteCurrentLogic(index)"
                                     class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
                                     <div class="align-btn-text">
-                                        <span>delete</span>
+                                        <span>
+                                            <i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" data-bs-title="Delete"
+                                                style="font-size: 1rem"></i>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -1556,7 +1560,9 @@ export default {
                                 <div @click.stop="deleteCurrentLogicCategory(index)"
                                     class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
                                     <div class="align-btn-text">
-                                        <span>delete</span>
+                                        <span><i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" data-bs-title="Delete"
+                                                style="font-size: 1rem"></i></span>
                                     </div>
                                 </div>
                             </div>
@@ -1813,7 +1819,9 @@ export default {
                                 <div @click.stop="deleteCurrentLogicCategoryOption(index)"
                                     class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
                                     <div class="align-btn-text">
-                                        <span>delete</span>
+                                        <span><i class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" data-bs-title="Delete"
+                                                style="font-size: 1rem"></i></span>
                                     </div>
                                 </div>
                             </div>
