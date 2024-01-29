@@ -1049,7 +1049,7 @@ export default {
                         <div v-for="(items, index) in this.product.data.panels" class="btn-group me-2 mt-2" role="group">
                             <PrimarButton @click="getCurrentProduct(items, index)">{{ items.title }}</PrimarButton>
                         </div>
-                        <div class="btn-group" role="group">
+                        <div class="btn-group me-2 mt-2" role="group">
                             <SuccesButton @click="createTypeOfProduct">
                                 <i class="pi pi-plus" style="font-size: 1rem"></i>
                             </SuccesButton>
