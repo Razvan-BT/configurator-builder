@@ -451,10 +451,7 @@ export default {
                 description: "",
                 categories: [],
                 extraClassName: this.extra_class_step,
-                logic: {
-                    rules: [],
-                    action: 'hide'
-                },
+                logic: this.rulesPanel.logic,
                 skuPrefix: this.sku_prefix,
                 zIndex: 0,
             }
