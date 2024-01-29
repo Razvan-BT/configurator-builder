@@ -59,6 +59,7 @@ export default {
             editOptionID: -1,
 
             editPanel: false,
+            editCategory: false, // verifica daca am logica
 
             deleteElementVar: false,
             deleteElementCat: '',
@@ -74,6 +75,15 @@ export default {
                 },
                 action: "show"
             },
+
+            rulesCategory: {
+                logic: {
+                    rules: []
+                },
+                action: "show"
+            },
+
+            // panel
             rulesPanelPanels: [],
             selectedValues: {},
             rulesPanelCategories: [],
@@ -86,6 +96,10 @@ export default {
             optionLogicOptionsCategories: [],
             ruleLogicOptions: [],
 
+            // category
+            selectedValueCategory: {},
+            ruleLogicCategory: {},
+            selectedCategoriesCategory: {},
         }
     },
     methods: {
@@ -134,8 +148,7 @@ export default {
             // creez o noula regula in 
             /*
                 panel,
-                categorie,
-                optiune
+                categorie
             */
 
             if (where == 'panel') {
@@ -172,6 +185,43 @@ export default {
                     this.selectedCategories[returnIndex] = 'Select Custom Option';
                     this.ruleLogic[returnIndex] = 'anychoice';
                 }
+
+            } else {
+
+                // preiau paneluriile pentru category dupa index ID
+                this.rulesPanelPanels = [];
+                let panels = {};
+                this.panelLogicOptions.filter((value, index) => {
+                    panels = {
+                        panels: this.product.data.panels,
+                    }
+                });
+                this.rulesPanelPanels.push(panels);
+                let obj = {
+
+                    panel: "",
+                    category: "",
+                    option: "oneof",
+                    operator: "||",
+                    layer: "",
+                    active: "",
+                    logicRuleLabel: "",
+                    options: []
+
+                }
+                this.rulesCategory.logic.action = "show";
+                this.rulesCategory.logic.rules.push(obj);
+
+                // this.selectedProduct.logic = this.rulesPanel.logic;
+
+                let returnIndex = this.rulesCategory.logic.rules.length;
+                if (returnIndex == 0) this.selectedValueCategory[0] = 'Select Step';
+                else {
+                    this.selectedValueCategory[returnIndex] = 'Select Step';
+                    this.selectedCategoriesCategory[returnIndex] = 'Select Custom Option';
+                    this.ruleLogicCategory[returnIndex] = 'anychoice';
+                }
+
             }
         },
 
@@ -214,6 +264,22 @@ export default {
         },
 
         // logic for panel END
+
+        // logic category start
+        deleteCurrentLogicCategory(index) {
+            delete this.selectedValueCategory[index];
+            delete this.selectedCategoriesCategory[index];
+            delete this.ruleLogicCategory[index];
+
+            console.log("Delete ITEM: ", this.rulesCategory.logic.rules.splice(index, 1));
+
+            this.rulesCategory.logic.rules.forEach((value, idx) => {
+                this.selectedValueCategory[index] = value.panel;
+                this.selectedCategoriesCategory[index] = value.category;
+                this.ruleLogicCategory[index] = 'anychoice';
+            });
+        },
+        // end
         async saveProduct() {
             // console.log("TEEST", this.selectedProduct.logic)
             this.isOverlayVisible = true;
@@ -505,22 +571,34 @@ export default {
         initLogic() {
             // reinit logic
             // panel
-            this.repopulateLogic();
-            this.rulesPanelPanels = [];
-            let panels = {};
-            this.panelLogicOptions.filter((value, index) => {
-                panels = {
-                    panels: this.product.data.panels,
-                }
-            });
+            if (!this.editCategory) {
+                this.repopulateLogic();
+                this.rulesPanelPanels = [];
+                let panels = {};
+                this.panelLogicOptions.filter((value, index) => {
+                    panels = {
+                        panels: this.product.data.panels,
+                    }
+                });
 
-            this.rulesPanelPanels.push(panels);
-            if (this.rulesPanel.logic.rules?.length) {
-                this.rulesPanel.logic.rules.forEach((value, index) => {
-                    this.selectedValues[index] = value.panel;
-                    this.selectedCategories[index] = value.category;
-                    this.ruleLogic[index] = value.option;
-                })
+                this.rulesPanelPanels.push(panels);
+                if (this.rulesPanel.logic.rules?.length) {
+                    this.rulesPanel.logic.rules.forEach((value, index) => {
+                        this.selectedValues[index] = value.panel;
+                        this.selectedCategories[index] = value.category;
+                        this.ruleLogic[index] = value.option;
+                    })
+                }
+            } else {
+                // init category
+                if (this.rulesCategory.logic.rules?.length) {
+                    this.rulesCategory.logic.rules.forEach((value, index) => {
+                        console.log("Init logic category", value)
+                        this.selectedValueCategory[index] = value.panel;
+                        this.selectedCategoriesCategory[index] = value.category;
+                        this.ruleLogicCategory[index] = value.option;
+                    })
+                }
             }
         },
 
@@ -528,6 +606,30 @@ export default {
             if (this.product.data?.panels) {
                 console.log("createNewOptionForProduct init");
                 this.createNewCategory = true;
+
+                this.rulesPanelPanels = [];
+                let panels = {};
+                this.panelLogicOptions.filter((value, index) => {
+                    panels = {
+                        panels: this.product.data.panels,
+                    }
+                });
+
+                this.rulesPanelPanels.push(panels);
+
+                this.rulesCategory.logic = {
+                    rules: [],
+                    action: 'hide'
+                }
+
+                this.selectedValueCategory = {};
+                this.selectedCategoriesCategory = {};
+                this.ruleLogicCategory = {};
+
+                this.title_productCategory = '';
+                this.typeCategory = 'select';
+                this.extra_class_stepCategory = '';
+
             } else {
 
                 this.createToast({
@@ -544,32 +646,41 @@ export default {
             this.createNewCategory = false;
             this.extra_class_stepCategory = "";
             this.title_productCategory = "";
+            this.selectCurrentProductCategoryIndex = -1;
+            this.editCategory = false;
         },
 
         // Cand se creeaza o noua categorie de produs
         createNewCategoryPanel() {
-            if (this.selectedProduct) {
-                this.selectedProduct.categories.push({
-                    id: this.makeid(24),
-                    zIndex: this.selectedProduct.categories?.length + 1, // order elements
-                    type: this.typeCategory?.length ? this.typeCategory : "img",
-                    title: this.title_productCategory,
-                    extraClassName: this.extra_class_stepCategory,
-                    panelId: this.selectedProduct ? this.selectedProduct.id : "",
-                    panelID: this.selectedProduct ? this.selectedProduct.id : "",
-                    options: [],
-                    logic: {
-                        rules: [],
-                        action: 'show'
-                    }
-                });
-            }
+            if (!this.editCategory) {
+                if (this.selectedProduct) {
+                    this.selectedProduct.categories.push({
+                        id: this.makeid(24),
+                        zIndex: this.selectedProduct.categories?.length + 1, // order elements
+                        type: this.typeCategory?.length ? this.typeCategory : "img",
+                        title: this.title_productCategory,
+                        extraClassName: this.extra_class_stepCategory,
+                        panelId: this.selectedProduct ? this.selectedProduct.id : "",
+                        panelID: this.selectedProduct ? this.selectedProduct.id : "",
+                        options: [],
+                        logic: this.rulesCategory.logic
+                    });
+                }
 
-            this.createToast({
-                type: 'success',
-                title: 'Info message',
-                details: this.title_productCategory.toUpperCase() + " category added succesfully!"
-            });
+                this.createToast({
+                    type: 'success',
+                    title: 'Info message',
+                    details: this.title_productCategory.toUpperCase() + " category added succesfully!"
+                });
+            } else {
+
+                this.createToast({
+                    type: 'info',
+                    title: 'Info message',
+                    details: this.title_productCategory.toUpperCase() + " category edited succesfully!"
+                });
+
+            }
 
             this.cancelCreateNewCategory();
         },
@@ -578,7 +689,7 @@ export default {
             console.log("getCurrentProduct", getItem);
 
             this.selectCurrentProductIndex = index;
-            
+
             this.rulesPanel.logic.rules = [];
             this.selectedValues = {};
             this.selectedCategories = {};
@@ -675,6 +786,43 @@ export default {
             });
         },
 
+        editCurrentCategory(index) {
+            console.log("editCurrentCategory xx2", this.selectedProductCategories[index]);
+            // reset logica category
+
+            this.editCategory = true;
+
+            this.rulesPanelPanels = [];
+            let panels = {};
+            this.panelLogicOptions.filter((value, index) => {
+                panels = {
+                    panels: this.product.data.panels,
+                }
+            });
+
+            this.rulesPanelPanels.push(panels);
+
+            this.rulesCategory.logic = {
+                rules: [],
+                action: 'hide'
+            }
+
+            this.selectedValueCategory = {};
+            this.selectedCategoriesCategory = {};
+            this.ruleLogicCategory = {};
+
+            this.createNewCategory = true;
+            this.selectCurrentProductCategoryIndex = index;
+
+            this.title_productCategory = this.selectedProductCategories[index].title;
+            this.typeCategory = this.selectedProductCategories[index].type;
+            this.extra_class_stepCategory = this.selectedProductCategories[index].extraClassName;
+
+            this.rulesCategory.logic = this.selectedProductCategories[index].logic;
+            this.rulesCategory.logic.action = "show";
+            this.initLogic();
+        },
+
         editCurrentPanel() {
             console.log("editCurrentPanel xx2")
             if (this.product.data.panels?.length) {
@@ -687,7 +835,7 @@ export default {
                 // this.rulesPanel.logic = this.selectedProduct.logic || {rules: [], action: 'hide'};
 
                 console.log("editCurrentPanel Razvan selected product", this.selectedProduct, this.rulesPanel.logic);
-                
+
                 // repopulez llogic panel cu panel ID selectat.
                 if (this.selectedProduct.logic.rules?.length) {
 
@@ -697,8 +845,8 @@ export default {
                             console.warn("Configurator data ID doesn't exist");
                         } else {
 
-                            if(result.data.data.panels?.length) result.data.data.panels.forEach((v, i) => {
-                                if(v.id == this.selectedProduct.id) {
+                            if (result.data.data.panels?.length) result.data.data.panels.forEach((v, i) => {
+                                if (v.id == this.selectedProduct.id) {
 
                                     this.rulesPanel.logic = v.logic;
                                     this.rulesPanel.logic.action = "show";
@@ -735,7 +883,7 @@ export default {
         },
         newOptionRequest: {
             handler(data) {
-                if(!data) {
+                if (!data) {
                     console.log(data)
                     this.optionSKU = '';
                     this.optionLabel = '';
@@ -797,6 +945,51 @@ export default {
                         if (index == i) {
                             val.option = newValue[i];
                             this.ruleLogic[index - 1];
+                        }
+                    });
+                }
+            }
+        },
+        // category
+        selectedValueCategory: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValueCategory) {
+
+                    this.rulesCategory.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.panel = newValues[i];
+                            this.selectedValueCategory[index - 1];
+                        }
+                    });
+                }
+            },
+        },
+        selectedCategoriesCategory: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.selectedCategoriesCategory) {
+
+                    console.log("Category changed", newValue[i])
+                    this.rulesCategory.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.category = newValue[i];
+                            this.selectedCategoriesCategory[index - 1];
+                        }
+                    });
+                }
+            }
+        },
+        ruleLogicCategory: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.ruleLogicCategory) {
+
+                    console.log("Option rule changed", newValue[i])
+                    this.rulesCategory.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.option = newValue[i];
+                            this.ruleLogicCategory[index - 1];
                         }
                     });
                 }
@@ -898,8 +1091,9 @@ export default {
                                                 data-bs-placement="bottom" data-bs-title="Hide"></i> {{ items.title }}</p>
                                     </div>
                                     <div class="p-1">
-                                        <i class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
+                                        <i @click="editCurrentCategory(index)" class="p-1 pi pi-file-edit hovered"
+                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit"
+                                            style="font-size: 1rem"></i>
                                     </div>
                                     <div class="p-1">
                                         <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
@@ -1092,7 +1286,7 @@ export default {
 
             <!-- modal add new category -->
 
-            <Dialog v-model:visible="createNewCategory" modal header="Add new category option" :style="{ width: '40vw' }">
+            <Dialog v-model:visible="createNewCategory" modal header="Add new category option" :style="{ width: '50vw' }">
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -1160,7 +1354,80 @@ export default {
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                         tabindex="0">
-                        ...</div>
+
+                        <!-- logica category -->
+
+                        <div class="container mb-3">
+                            <div v-for="(value, index) in rulesCategory.logic.rules" :key="index" class="d-flex m-2">
+                                <div class="p-2 w-100 p-2 m-2">
+                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <select v-model="selectedValueCategory[index]" class="logic-list">
+                                        <option>Select Step</option>
+                                        <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
+                                        </option>
+                                    </select>
+                                    <span v-if="getCategoriesAfterPanel(selectedValueCategory[index])?.length">
+                                        <span class="fs-5 p-1">'s custom option</span>
+                                        <select v-model="selectedCategoriesCategory[index]" class="logic-list">
+                                            <option>Select Custom Option</option>
+                                            <option v-for="op in getCategoriesAfterPanel(selectedValueCategory[index])"
+                                                :value="op.id">{{ op.title }}</option>
+                                        </select>
+                                        <span class="fs-5 p-1">is</span>
+                                        <select v-model="ruleLogicCategory[index]" class="logic-list">
+                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="oneof">One Of..</option>
+                                            <option value="notequal">Not equal</option>
+                                            <option
+                                                v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategory[index], selectedCategoriesCategory[index])"
+                                                :value="op.id">{{ op.option.data.label }}</option>
+                                        </select>
+                                    </span>
+
+                                    <div>
+                                        <span
+                                            v-if="ruleLogicCategory[index] == 'oneof' || ruleLogicCategory[index] == 'notequal'">
+                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategory[index], selectedCategoriesCategory[index])"
+                                                class="p-2 m-2">
+                                                <label class="fs-6" for="checkBox">
+                                                    <input type="checkbox" name="checkbox">
+                                                    {{ op.option.data.label }}
+                                                </label>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div @click.stop="deleteCurrentLogicCategory(index)"
+                                    class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
+                                    <div class="align-btn-text">
+                                        <span>delete</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="p-1 d-flex justify-content-center">
+                            <PrimaryButton @click="createNewRule('category')">
+                                Add new rule
+                            </PrimaryButton>
+                        </div>
+
+                        <div class="container mb-3">
+                            <span class="fs-5 p-1">
+                                then this layer should be:
+                            </span>
+                            <div class="p-1 d-flex justify-content-center">
+                                <select class="logic-list-show">
+                                    <option>Not Selected</option>
+                                    <option>Shown</option>
+                                    <option>Hidden</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 <!-- logic -->
