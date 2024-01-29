@@ -373,6 +373,12 @@ export default {
 
         },
 
+        cancelConfirmation() {
+            this.deleteElementVar = false;
+            this.deleteElementId = '';
+            this.deleteElementCat = '';
+        },
+
         sendConfirmation() {
             switch (this.deleteElementCat) {
                 case 'panel': {
