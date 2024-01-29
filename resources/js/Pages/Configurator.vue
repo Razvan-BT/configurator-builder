@@ -733,6 +733,18 @@ export default {
                 console.log("Object base changed", this.product);
             }
         },
+        newOptionRequest: {
+            handler(data) {
+                if(!data) {
+                    console.log(data)
+                    this.optionSKU = '';
+                    this.optionLabel = '';
+                    this.selectedFile = null;
+                    this.imagePreview = '';
+                    if (this.selectedFile) this.selectedFile = '';
+                }
+            }
+        },
         createNewCategoryOption: {
             handler(data) {
                 // reset values from add option x btn
@@ -1191,7 +1203,7 @@ export default {
                         <!-- get title of current category -->
                         <li class="breadcrumb-item active" aria-current="page">
                             <strong>
-                                <a @click="newOptionRequest = false">{{
+                                <a @click="newOptionRequest = false;">{{
                                     selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
                             </strong>
                         </li>
