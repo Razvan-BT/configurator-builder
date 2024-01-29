@@ -160,6 +160,7 @@ export default {
                     options: []
 
                 }
+                this.rulesPanel.logic.action = "show";
                 this.rulesPanel.logic.rules.push(obj);
 
                 // this.selectedProduct.logic = this.rulesPanel.logic;
@@ -495,7 +496,6 @@ export default {
             console.log("initGlobalObject init", data.data.data.panels);
             this.product.data.panels = data.data.data.panels;
 
-            this.initLogic();
             this.isLoading = false;
         },
 
@@ -681,7 +681,7 @@ export default {
                 this.title_product = this.selectedProduct.title || "";
                 this.sku_prefix = this.selectedProduct.skuPrefix || "";
                 this.extra_class_step = this.selectedProduct.extraClassName || "";
-                this.rulesPanel.logic = this.selectedProduct.logic || {rules: [], action: 'hide'};
+                // this.rulesPanel.logic = this.selectedProduct.logic || {rules: [], action: 'hide'};
 
                 console.log("editCurrentPanel Razvan selected product", this.selectedProduct, this.rulesPanel.logic);
                 
@@ -698,6 +698,7 @@ export default {
                                 if(v.id == this.selectedProduct.id) {
 
                                     this.rulesPanel.logic = v.logic;
+                                    this.rulesPanel.logic.action = "show";
                                     this.initLogic();
                                 }
                             });
