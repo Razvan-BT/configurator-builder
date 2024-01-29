@@ -79,32 +79,13 @@ export default {
             rulesPanelCategories: [],
             selectedCategories: {},
 
-            selectedPanel: {},
-
             rulesCategories: [],
             rulesOptions: [],
 
             panelLogicOptions: [],
             optionLogicOptionsCategories: [],
             ruleLogicOptions: [],
-            // logic	
-            // rules	
-            //  0	
-            // panel	"hC_6c1sZN2ukgyNcEAEmgEG0"
-            // category	"KoxhvZg3GNIHd09pwdyVxZ6t"
-            // option	"oneof"
-            // type	"panel"
-            // operator	"||"
-            // layer	""
-            // active	""
-            // logicRuleLabel	""
-            // options	
-            // 0	"EOMGhXBq9hgiN_x8YWoKG5uC"
-            // 1	"0pIos6M5Hy9ieI8tFOAzudQ6"
-            // 2	"OPqFn9Bek9-WMlkmpDePmfum"
-            // 3	"Z0EX-wbH8n827a6kGq2-8ANO"
-            // 4	"nqNX3dJzrHGyF3tRb3r07APR"
-            // action	"show"
+
         }
     },
     methods: {
@@ -171,7 +152,7 @@ export default {
 
                     panel: "",
                     category: "",
-                    option: "",
+                    option: "oneof",
                     operator: "||",
                     layer: "",
                     active: "",
@@ -181,8 +162,10 @@ export default {
                 }
                 this.rulesPanel.logic.rules.push(obj);
 
+                // this.selectedProduct.logic = this.rulesPanel.logic;
+
                 let returnIndex = this.rulesPanel.logic.rules.length;
-                if(returnIndex == 0) this.selectedValues[0] = 'Select Step';
+                if (returnIndex == 0) this.selectedValues[0] = 'Select Step';
                 else {
                     this.selectedValues[returnIndex] = 'Select Step';
                     this.selectedCategories[returnIndex] = 'Select Custom Option';
@@ -191,6 +174,7 @@ export default {
             }
         },
 
+        // logic for panel
         getCategoriesAfterPanel(panel) {
             let obj = [];
             this.product.data.panels.filter((value, index) => {
@@ -218,7 +202,6 @@ export default {
             delete this.selectedCategories[index];
             delete this.ruleLogic[index];
 
-
             console.log("Delete ITEM: ", this.rulesPanel.logic.rules.splice(index, 1));
             // this.rulesPanel.splice(index, 1);
 
@@ -229,7 +212,9 @@ export default {
             });
         },
 
+        // logic for panel END
         async saveProduct() {
+            // console.log("TEEST", this.selectedProduct.logic)
             this.isOverlayVisible = true;
 
             let data = {
@@ -335,6 +320,7 @@ export default {
         createTypeOfProduct() {
             console.log("createNewProduct clicked x3 ");
             this.addNewProductButton = true;
+
         },
         cancelCreateNewProduct() {
             console.log("cancelCreateNewProduct clicked x3");
@@ -344,7 +330,6 @@ export default {
             this.title_product = "";
             this.sku_prefix = "";
             this.selectCurrentProductIndex = -1;
-
         },
 
         deleteElement(element, id = null) {
@@ -432,7 +417,12 @@ export default {
                 this.selectedProduct.title = this.title_product || "";
                 this.selectedProduct.skuPrefix = this.sku_prefix || "";
                 this.selectedProduct.extraClassName = this.extra_class_step || "";
+                this.selectedProduct.logic = this.rulesPanel.logic || {};
 
+                this.rulesPanel.logic = {
+                    rules: [],
+                    action: 'hide'
+                }
                 this.addNewProductButton = false;
                 this.extra_class_step = "";
                 this.title_product = "";
@@ -460,7 +450,10 @@ export default {
                 description: "",
                 categories: [],
                 extraClassName: this.extra_class_step,
-                logic: {},
+                logic: {
+                    rules: [],
+                    action: 'hide'
+                },
                 skuPrefix: this.sku_prefix,
                 zIndex: 0,
             }
@@ -492,12 +485,40 @@ export default {
             this.extra_class_step = "";
             this.title_product = "";
             this.sku_prefix = "";
+            this.rulesPanel.logic = {
+                rules: [],
+                action: 'hide'
+            };
         },
 
         initGlobalObject(data) {
             console.log("initGlobalObject init", data.data.data.panels);
             this.product.data.panels = data.data.data.panels;
+
+            this.initLogic();
             this.isLoading = false;
+        },
+
+        initLogic() {
+            // reinit logic
+            // panel
+            this.repopulateLogic();
+            this.rulesPanelPanels = [];
+            let panels = {};
+            this.panelLogicOptions.filter((value, index) => {
+                panels = {
+                    panels: this.product.data.panels,
+                }
+            });
+
+            this.rulesPanelPanels.push(panels);
+            if (this.rulesPanel.logic.rules?.length) {
+                this.rulesPanel.logic.rules.forEach((value, index) => {
+                    this.selectedValues[index] = value.panel;
+                    this.selectedCategories[index] = value.category;
+                    this.ruleLogic[index] = value.option;
+                })
+            }
         },
 
         createNewOptionForProduct() {
@@ -554,6 +575,11 @@ export default {
             console.log("getCurrentProduct", getItem);
 
             this.selectCurrentProductIndex = index;
+            
+            this.rulesPanel.logic.rules = [];
+            this.selectedValues = {};
+            this.selectedCategories = {};
+            this.ruleLogic = {};
         },
 
         editChoiseAttribute(getItem, index) {
@@ -647,6 +673,7 @@ export default {
         },
 
         editCurrentPanel() {
+            console.log("editCurrentPanel xx2")
             if (this.product.data.panels?.length) {
                 this.editPanel = true;
                 this.addNewProductButton = true;
@@ -654,9 +681,31 @@ export default {
                 this.title_product = this.selectedProduct.title || "";
                 this.sku_prefix = this.selectedProduct.skuPrefix || "";
                 this.extra_class_step = this.selectedProduct.extraClassName || "";
+                this.rulesPanel.logic = this.selectedProduct.logic || {rules: [], action: 'hide'};
 
-                // todo: repopulare logica produs
-                console.log("Razvan selected product", this.selectedProduct);
+                console.log("editCurrentPanel Razvan selected product", this.selectedProduct, this.rulesPanel.logic);
+                
+                // repopulez llogic panel cu panel ID selectat.
+                if (this.selectedProduct.logic.rules?.length) {
+
+                    let response = axios.get("/get-product/" + this.ID);
+                    response.then((result) => {
+                        if ('error' in result.data) {
+                            console.warn("Configurator data ID doesn't exist");
+                        } else {
+
+                            if(result.data.data.panels?.length) result.data.data.panels.forEach((v, i) => {
+                                if(v.id == this.selectedProduct.id) {
+
+                                    this.rulesPanel.logic = v.logic;
+                                    this.initLogic();
+                                }
+                            });
+                        }
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                }
             }
         },
 
@@ -685,6 +734,14 @@ export default {
                 // reset values from add option x btn
             }
         },
+        addNewProductButton: {
+            handler(data) {
+                console.log("Click X Btn addNewProductButton", data);
+                if (!data) {
+                    this.cancelCreateNewProduct();
+                }
+            }
+        },
         selectedValues: {
             deep: true,
             handler(newValues, oldValues) {
@@ -708,11 +765,27 @@ export default {
                     this.rulesPanel.logic.rules.filter((val, index) => {
                         if (index == i) {
                             val.category = newValue[i];
+                            this.selectedCategories[index - 1];
                         }
                     });
                 }
             }
-        }
+        },
+        ruleLogic: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.ruleLogic) {
+
+                    console.log("Option rule changed", newValue[i])
+                    this.rulesPanel.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.option = newValue[i];
+                            this.ruleLogic[index - 1];
+                        }
+                    });
+                }
+            }
+        },
     },
 
     mounted() {
@@ -925,50 +998,6 @@ export default {
                         tabindex="0">
 
                         <!-- logica panels -->
-                        <!-- <div class="container mb-3">
-                            <div v-for="(value, index) in rulesPanel" class="d-flex m-2">
-                                <div class="p-2 w-100 p-2 m-2">
-                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or'}}</span>
-                                    <select @change="selectedPanelLogic($event, index)" class="logic-list">
-                                        <option>Select Step</option>
-                                        <option v-for="op in rulesPanel[index].product.panels" :value="op.id">{{ op.title }}</option>
-                                    </select>
-                                    <span v-if="rulesPanel[index].product.categories?.length">
-                                        <span class="fs-5 p-1">'s custom option</span>
-                                        <select @change="selectedCategoriesLogic($event, index)" class="logic-list">
-                                            <option>Select Custom Option</option>
-                                            <option v-for="op in rulesPanel[index].product.categories" :value="op.id">{{ op.title }}</option>
-                                        </select>
-                                        <span class="fs-5 p-1">is</span>
-                                        <select @change="changeRuleLogic($event, index)" class="logic-list">
-                                            <option value="anychoice">Any choice</option>
-                                            <option value="oneof">One Of..</option>
-                                            <option value="notequal">Not equal</option>
-                                            <option v-for="op in rulesPanel[index].product.options" :value="op.id">{{ op.option.data.label }}</option>
-                                        </select>
-                                    </span>
-
-                                    <div>
-                                        <span
-                                            v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'notequal'">
-                                            <div v-for="op in rulesPanel[index].product.options" class="p-2 m-2">
-                                                <label class="fs-6" for="checkBox">
-                                                    <input type="checkbox" name="checkbox">
-                                                    {{  op.option.data.label  }}
-                                                </label>
-                                            </div>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div @click="deleteCurrentRuleLogic(index)" class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
-                                    <div class="align-btn-text">
-                                        <span>delete</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div> -->
 
                         <div class="container mb-3">
                             <div v-for="(value, index) in rulesPanel.logic.rules" :key="index" class="d-flex m-2">
@@ -993,7 +1022,7 @@ export default {
                                             <option value="notequal">Not equal</option>
                                             <option
                                                 v-for="op in getOptionsAfterPanelAndCategory(selectedValues[index], selectedCategories[index])"
-                                                :value="op.option.id">{{ op.option.data.label }}</option>
+                                                :value="op.id">{{ op.option.data.label }}</option>
                                         </select>
                                     </span>
 
