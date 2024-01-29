@@ -112,6 +112,8 @@ export default {
             selectedValueCategoryOption: {},
             ruleLogicCategoryOption: {},
             selectedCategoriesCategoryOption: {},
+
+            logicVisible: '', // seteaza vizibilitatea optiuni care are logica
         }
     },
     methods: {
@@ -1429,10 +1431,10 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select class="logic-list-show">
-                                    <option>Not Selected</option>
-                                    <option>Shown</option>
-                                    <option>Hidden</option>
+                                <select v-model="logicVisible" class="logic-list-show">
+                                    <option value="show">Not Selected</option>
+                                    <option value="show">Shown</option>
+                                    <option value="hide">Hidden</option>
                                 </select>
                             </div>
                         </div>
@@ -1580,10 +1582,10 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select class="logic-list-show">
-                                    <option>Not Selected</option>
-                                    <option>Shown</option>
-                                    <option>Hidden</option>
+                                <select v-model="logicVisible" class="logic-list-show">
+                                    <option value="show">Not Selected</option>
+                                    <option value="show">Shown</option>
+                                    <option value="hide">Hidden</option>
                                 </select>
                             </div>
                         </div>
@@ -1839,10 +1841,10 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select class="logic-list-show">
-                                    <option>Not Selected</option>
-                                    <option>Shown</option>
-                                    <option>Hidden</option>
+                                <select v-model="logicVisible" class="logic-list-show">
+                                    <option value="show">Not Selected</option>
+                                    <option value="show">Shown</option>
+                                    <option value="hide">Hidden</option>
                                 </select>
                             </div>
                         </div>
