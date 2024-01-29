@@ -83,6 +83,13 @@ export default {
                 action: "show"
             },
 
+            rulesCategoryOption: {
+                logic: {
+                    rules: []
+                },
+                action: "show"
+            },
+
             // panel
             rulesPanelPanels: [],
             selectedValues: {},
@@ -100,6 +107,11 @@ export default {
             selectedValueCategory: {},
             ruleLogicCategory: {},
             selectedCategoriesCategory: {},
+
+            // options
+            selectedValueCategoryOption: {},
+            ruleLogicCategoryOption: {},
+            selectedCategoriesCategoryOption: {},
         }
     },
     methods: {
@@ -186,7 +198,7 @@ export default {
                     this.ruleLogic[returnIndex] = 'anychoice';
                 }
 
-            } else {
+            } else if (where == 'category') {
 
                 // preiau paneluriile pentru category dupa index ID
                 this.rulesPanelPanels = [];
@@ -222,6 +234,42 @@ export default {
                     this.ruleLogicCategory[returnIndex] = 'anychoice';
                 }
 
+            } else if (where == 'option') {
+
+                // option 
+                // preiau paneluriile pentru category option dupa index ID
+                this.rulesPanelPanels = [];
+                let panels = {};
+                this.panelLogicOptions.filter((value, index) => {
+                    panels = {
+                        panels: this.product.data.panels,
+                    }
+                });
+                this.rulesPanelPanels.push(panels);
+                let obj = {
+
+                    panel: "",
+                    category: "",
+                    option: "oneof",
+                    operator: "||",
+                    layer: "",
+                    active: "",
+                    logicRuleLabel: "",
+                    options: []
+
+                }
+                this.rulesCategoryOption.logic.action = "show";
+                this.rulesCategoryOption.logic.rules.push(obj);
+
+                // this.selectedProduct.logic = this.rulesPanel.logic;
+
+                let returnIndex = this.rulesCategoryOption.logic.rules.length;
+                if (returnIndex == 0) this.selectedValueCategoryOption[0] = 'Select Step';
+                else {
+                    this.selectedValueCategoryOption[returnIndex] = 'Select Step';
+                    this.selectedCategoriesCategoryOption[returnIndex] = 'Select Custom Option';
+                    this.ruleLogicCategoryOption[returnIndex] = 'anychoice';
+                }
             }
         },
 
@@ -280,6 +328,21 @@ export default {
             });
         },
         // end
+        // logic cat option start
+        deleteCurrentLogicCategoryOption(index) {
+            delete this.selectedValueCategoryOption[index];
+            delete this.selectedCategoriesCategoryOption[index];
+            delete this.ruleLogicCategoryOption[index];
+
+            console.log("Delete ITEM: ", this.rulesCategoryOption.logic.rules.splice(index, 1));
+
+            this.rulesCategoryOption.logic.rules.forEach((value, idx) => {
+                this.selectedValueCategoryOption[index] = value.panel;
+                this.selectedCategoriesCategoryOption[index] = value.category;
+                this.ruleLogicCategoryOption[index] = 'anychoice';
+            });
+        },
+        // end
         async saveProduct() {
             // console.log("TEEST", this.selectedProduct.logic)
             this.isOverlayVisible = true;
@@ -312,6 +375,7 @@ export default {
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
             if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
+            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
             console.log("Razvan debug 22", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID]);
 
             this.editOption = false;
@@ -338,7 +402,33 @@ export default {
             this.optionSKU = option.sku;
             this.imagePreview = option.option.data.value;
             this.optionLabel = option.option.data.label;
-            console.log("editChosedOption", option.sku)
+
+            // resetez logica pt optiune
+            this.rulesCategoryOption.logic = {
+                rules: [],
+                action: 'hide'
+            };
+
+            this.selectedValueCategoryOption = {};
+            this.selectedCategoriesCategoryOption = {};
+            this.ruleLogicCategoryOption = {};
+
+            //  repopulez cu optiuni de logica daca are 
+            if (option.logic.rules?.length) {
+                this.rulesCategoryOption.logic = option.logic;
+            }
+
+            this.rulesPanelPanels = [];
+            let panels = {};
+            this.panelLogicOptions.filter((value, index) => {
+                panels = {
+                    panels: this.product.data.panels,
+                }
+            });
+            this.rulesPanelPanels.push(panels);
+
+            this.initLogic();
+            console.log("editChosedOption", option)
         },
 
         handleFileSelect(event) {
@@ -482,7 +572,7 @@ export default {
 
             if (this.editPanel) {
                 this.createToast({
-                    type: 'success',
+                    type: 'info',
                     title: 'Info message',
                     details: this.title_product.toUpperCase() + " was edited succesfully!"
                 });
@@ -597,6 +687,17 @@ export default {
                         this.selectedValueCategory[index] = value.panel;
                         this.selectedCategoriesCategory[index] = value.category;
                         this.ruleLogicCategory[index] = value.option;
+                    })
+                }
+            }
+            if (this.editOption) {
+                // init option
+                if (this.rulesCategoryOption.logic.rules?.length) {
+                    this.rulesCategoryOption.logic.rules.forEach((value, index) => {
+                        console.log("Init logic category option", value)
+                        this.selectedValueCategoryOption[index] = value.panel;
+                        this.selectedCategoriesCategoryOption[index] = value.category;
+                        this.ruleLogicCategoryOption[index] = value.option;
                     })
                 }
             }
@@ -885,6 +986,15 @@ export default {
             handler(data) {
                 if (!data) {
                     console.log(data)
+                    this.rulesCategoryOption.logic = {
+                        rules: [],
+                        action: 'hide'
+                    };
+
+                    this.selectedValueCategoryOption = {};
+                    this.selectedCategoriesCategoryOption = {};
+                    this.ruleLogicCategoryOption = {};
+
                     this.optionSKU = '';
                     this.optionLabel = '';
                     this.selectedFile = null;
@@ -990,6 +1100,51 @@ export default {
                         if (index == i) {
                             val.option = newValue[i];
                             this.ruleLogicCategory[index - 1];
+                        }
+                    });
+                }
+            }
+        },
+        // options
+        selectedValueCategoryOption: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValueCategoryOption) {
+
+                    this.rulesCategoryOption.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.panel = newValues[i];
+                            this.selectedValueCategoryOption[index - 1];
+                        }
+                    });
+                }
+            },
+        },
+        selectedCategoriesCategoryOption: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.selectedCategoriesCategoryOption) {
+
+                    console.log("Category changed", newValue[i])
+                    this.rulesCategoryOption.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.category = newValue[i];
+                            this.selectedCategoriesCategoryOption[index - 1];
+                        }
+                    });
+                }
+            }
+        },
+        ruleLogicCategoryOption: {
+            deep: true,
+            handler(newValue, oldValue) {
+                for (let i in this.ruleLogicCategoryOption) {
+
+                    console.log("Option rule changed", newValue[i])
+                    this.rulesCategoryOption.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.option = newValue[i];
+                            this.ruleLogicCategoryOption[index - 1];
                         }
                     });
                 }
@@ -1476,117 +1631,216 @@ export default {
                         </li>
                     </ol>
                 </nav>
-
-                <!-- Option create - false -->
-                <div v-if="!newOptionRequest">
-                    <div class="d-flex">
-                        <div class="p-2 flex-grow-1">
-                            <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
-                                class="mt-1 block w-full" autofocus autocomplete="" />
-                        </div>
-                        <div class="p-3">
-                            <EditButton>
-                                Reorder
-                            </EditButton>
-                        </div>
-                        <div class="p-3">
-                            <EditButton @click="newOptionRequest = true">
-                                New Option
-                            </EditButton>
-                        </div>
-                    </div>
-
-                    <!-- tabel optiuni -->
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th class="image-td-align" scope="col">Option</th>
-                                <th scope="col">Edit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="pointer-hover"
-                                v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
-                                <td class="image-td-align">
-                                    <div class="p-4">
-                                        <div class="p-1 d-flex justify-content-center">
-                                            <img style="width: 51px; height: 51px;" :src="`${items.option.data.value}`"
-                                                alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
-                                        </div>
-                                        <span style="text-align: center;" class="image-td-align wrapped-text">
-                                            {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td class="text-td-align">
-                                    <div @click="editChosedOption(items, index)" class="p-1">
-                                        <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                            data-bs-title="Edit" style="font-size: 1rem"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Option create - false END -->
-
-
-                <div v-if="newOptionRequest">
-                    <div class="p-3">
-                        <InputLabel for="optionLabel" value="Option Label" />
-
-                        <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
-
-                    </div>
-
-                    <div class="p-3">
-                        <InputLabel for="" value="Thumbnail" />
-
-                        <div>
-                            <div id="drop-area" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
-                                @drop.prevent="handleDrop">
-                                <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
-                                <input type="file" id="file-input" accept=".png, .jpg, .jpeg" @change="handleFileSelect" />
-
-                                <div class="d-flex justify-content-center">
-                                    <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" id="image-preview" />
+                <ul v-if="newOptionRequest" class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Edit</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Logic</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                        tabindex="0">
+                        <!-- Option create - false -->
+                        <div v-if="!newOptionRequest">
+                            <div class="d-flex">
+                                <div class="p-2 flex-grow-1">
+                                    <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
+                                        class="mt-1 block w-full" autofocus autocomplete="" />
+                                </div>
+                                <div class="p-3">
+                                    <EditButton>
+                                        Reorder
+                                    </EditButton>
+                                </div>
+                                <div class="p-3">
+                                    <EditButton @click="newOptionRequest = true">
+                                        New Option
+                                    </EditButton>
                                 </div>
                             </div>
 
-                            <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR</h4>
+                            <!-- tabel optiuni -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="image-td-align" scope="col">Option</th>
+                                        <th scope="col">Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="pointer-hover"
+                                        v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
+                                        <td class="image-td-align">
+                                            <div class="p-4">
+                                                <div class="p-1 d-flex justify-content-center">
+                                                    <img style="width: 51px; height: 51px;"
+                                                        :src="`${items.option.data.value}`" alt="" data-bs-toggle="tooltip"
+                                                        data-bs-title="Order 1">
+                                                </div>
+                                                <span style="text-align: center;" class="image-td-align wrapped-text">
+                                                    {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                                </span>
+                                            </div>
+                                        </td>
 
+                                        <td class="text-td-align">
+                                            <div @click="editChosedOption(items, index)" class="p-1">
+                                                <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom" data-bs-title="Edit"
+                                                    style="font-size: 1rem"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Option create - false END -->
+
+
+                        <div v-if="newOptionRequest">
+                            <div class="p-3">
+                                <InputLabel for="optionLabel" value="Option Label" />
+
+                                <TextInput v-model="optionLabel" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
+                            <div class="p-3">
+                                <InputLabel for="" value="Thumbnail" />
+
+                                <div>
+                                    <div id="drop-area" @dragover.prevent="handleDragOver"
+                                        @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
+                                        <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
+                                        <input type="file" id="file-input" accept=".png, .jpg, .jpeg"
+                                            @change="handleFileSelect" />
+
+                                        <div class="d-flex justify-content-center">
+                                            <img v-if="imagePreview" :src="imagePreview" alt="Image Preview"
+                                                id="image-preview" />
+                                        </div>
+                                    </div>
+
+                                    <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR
+                                    </h4>
+
+                                    <div class="p-1 d-flex justify-content-center">
+                                        <PrimaryButton class="ml-4">
+                                            Select an image from gallery
+                                        </PrimaryButton>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-3">
+                                <InputLabel for="optionSKU" value="SKU" />
+
+                                <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
+                            <div class="d-flex flex-row m-3">
+                                <div class="p-2">
+                                    <EditButton @click="cancelNewOption()">
+                                        BACK
+                                    </EditButton>
+                                </div>
+                                <div class="p-2">
+                                    <EditButton @click="generateNewOption()">
+                                        APPLY
+                                    </EditButton>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- logic -->
+                        <!-- Apply & Cancel -->
+                    </div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                        tabindex="0">
+
+
+                        <!-- logica category option -->
+
+                        <div class="container mb-3">
+                            <div v-for="(value, index) in rulesCategoryOption.logic.rules" :key="index" class="d-flex m-2">
+                                <div class="p-2 w-100 p-2 m-2">
+                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <select v-model="selectedValueCategoryOption[index]" class="logic-list">
+                                        <option>Select Step</option>
+                                        <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
+                                        </option>
+                                    </select>
+                                    <span v-if="getCategoriesAfterPanel(selectedValueCategoryOption[index])?.length">
+                                        <span class="fs-5 p-1">'s custom option</span>
+                                        <select v-model="selectedCategoriesCategoryOption[index]" class="logic-list">
+                                            <option>Select Custom Option</option>
+                                            <option
+                                                v-for="op in getCategoriesAfterPanel(selectedValueCategoryOption[index])"
+                                                :value="op.id">{{ op.title }}</option>
+                                        </select>
+                                        <span class="fs-5 p-1">is</span>
+                                        <select v-model="ruleLogicCategoryOption[index]" class="logic-list">
+                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="oneof">One Of..</option>
+                                            <option value="notequal">Not equal</option>
+                                            <option
+                                                v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index])"
+                                                :value="op.id">{{ op.option.data.label }}</option>
+                                        </select>
+                                    </span>
+
+                                    <div>
+                                        <span
+                                            v-if="ruleLogicCategoryOption[index] == 'oneof' || ruleLogicCategoryOption[index] == 'notequal'">
+                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index])"
+                                                class="p-2 m-2">
+                                                <label class="fs-6" for="checkBox">
+                                                    <input type="checkbox" name="checkbox">
+                                                    {{ op.option.data.label }}
+                                                </label>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div @click.stop="deleteCurrentLogicCategoryOption(index)"
+                                    class="p-1 flex-shrink-1 btn-delete-logic border border-warning">
+                                    <div class="align-btn-text">
+                                        <span>delete</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="p-1 d-flex justify-content-center">
+                            <PrimaryButton @click="createNewRule('option')">
+                                Add new rule
+                            </PrimaryButton>
+                        </div>
+
+                        <div class="container mb-3">
+                            <span class="fs-5 p-1">
+                                then this layer should be:
+                            </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <PrimaryButton class="ml-4">
-                                    Select an image from gallery
-                                </PrimaryButton>
+                                <select class="logic-list-show">
+                                    <option>Not Selected</option>
+                                    <option>Shown</option>
+                                    <option>Hidden</option>
+                                </select>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="p-3">
-                        <InputLabel for="optionSKU" value="SKU" />
-
-                        <TextInput v-model="optionSKU" type="text" class="mt-1 block w-full" autofocus autocomplete="" />
 
                     </div>
-
-                    <div class="d-flex flex-row m-3">
-                        <div class="p-2">
-                            <EditButton @click="cancelNewOption()">
-                                BACK
-                            </EditButton>
-                        </div>
-                        <div class="p-2">
-                            <EditButton @click="generateNewOption()">
-                                APPLY
-                            </EditButton>
-                        </div>
-                    </div>
-
                 </div>
-                <!-- logic -->
-                <!-- Apply & Cancel -->
             </Dialog>
         </div>
         <div v-if="isOverlayVisible" class="overlay"></div>
