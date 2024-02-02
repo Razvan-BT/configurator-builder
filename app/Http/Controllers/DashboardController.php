@@ -99,4 +99,10 @@ class DashboardController extends Controller
         } else return response()->json(['error' => 'not found']);
         
     }
+
+    public function deleteConfigurator(Request $request) {
+        $id = $request->input('id');
+        $deleted = DB::table('configurators')->where('configurator_id', '=', $id)->delete();
+        return response()->json(['status' => 'Configurator '. $id .' was removed successfull!', 'debug' => $deleted]);
+    }
 }

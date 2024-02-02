@@ -113,7 +113,7 @@ export default {
             ruleLogicCategoryOption: {},
             selectedCategoriesCategoryOption: {},
 
-            logicVisible: '', // seteaza vizibilitatea optiuni care are logica
+            logicVisible: 'show', // seteaza vizibilitatea optiuni care are logica
         }
     },
     methods: {

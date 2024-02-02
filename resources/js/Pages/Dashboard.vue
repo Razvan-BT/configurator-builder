@@ -63,13 +63,32 @@ export default {
                 }, 4000);
             }
         },
+
         editConfigurator(n, i) {
             console.log(n, i);
         },
+
         routeToConf(id) {
             let routed = route('configurator', { id_c: id });
             window.location.href = routed;
         },
+
+        async deleteConf(id) {
+            let response = await this.axiosAPI('/delete-configurator', {
+                id: id
+            });
+
+            if(response.status == 200) {
+                this.$toast.add({ severity: 'error', summary: 'Info Message', detail: response.data.status, life: 3000 });
+            }
+
+            this.configurators.filter((value, index) => {
+                if(value.configurator_id == id) {
+                    this.configurators.splice(index, 1);
+                }
+            });
+        },
+
         async axiosAPI(url, data) {
             let dataResponse;
             await axios.post(url, data).then(function (response) {
@@ -90,40 +109,6 @@ export default {
         <Toast />
 
         <div class="card px-8">
-            <!-- <DataTable :value="configurators">
-                <Column header="Image">
-                    <template #body="slotProps">
-                        <img :src="`${slotProps.data.image}`" :alt="slotProps.data.image" class="w-6rem shadow-2 border-round" />
-                    </template>
-                </Column>
-                <template #header>
-                    <div class="flex flex-wrap align-items-center justify-content-between gap-2">
-                        <span class="text-xl text-900 font-bold">Configurators</span>
-                        <PrimarButton @click.stop="visible = true">
-                            <i class="pi pi-plus" style="font-size: 1rem"></i>
-                        </PrimarButton>
-                    </div>
-                </template>
-                <Column field="configurator_title" header="Name"></Column>
-                <Column field="configurator_detail" header="Details"></Column>
-                <Column field="configurator_id" header="ID"></Column>
-                <Column header="Actions">
-                    <template #body="slotProps">
-                        <div class="card flex gap-3">
-                            <div class="card flex flex-wrap justify-content-between">
-                                <Button label="Edit" icon="pi pi-spin pi-cog"
-                                @click="route('testt')"
-                                />
-                                <Button label="Delete" icon="pi pi-trash" 
-                            
-                                />
-                            </div>
-
-                        </div>
-                    </template>
-                </Column>
-                <template #footer> In total there are {{ configurators ? configurators.length : 0 }} products. </template>
-            </DataTable> -->
 
             <!-- tabel optiuni -->
             <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
@@ -157,7 +142,7 @@ export default {
                                     <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
                                             @click="routeToConf(items.configurator_id)" />
                                     </div>
-                                    <div class="p-2"><Button label="Delete" icon="pi pi-trash" /></div>
+                                    <div class="p-2"><Button label="Delete" icon="pi pi-trash" @click="deleteConf(items.configurator_id)"/></div>
                                     <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
                                 </div>
 
