@@ -122,7 +122,7 @@ export default {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Image</th>
+                            <!-- <th scope="col">Image</th> -->
                             <th scope="col">Title</th>
                             <!-- <th scope="col">Description</th> -->
                             <th scope="col">ID</th>
@@ -131,9 +131,9 @@ export default {
                     </thead>
                     <tbody>
                         <tr v-for="(items) in configurators">
-                            <th scope="row">
+                            <!-- <th scope="row">
                                 <img :src="`${items.image}`" :alt="items.image" class="w-6rem shadow-2 border-round" />
-                            </th>
+                            </th> -->
                             <td>{{ items.configurator_title }}</td>
                             <!-- <td>{{ items.configurator_detail }}</td> -->
                             <td>{{ items.configurator_id }}</td>
@@ -143,7 +143,7 @@ export default {
                                             @click="routeToConf(items.configurator_id)" />
                                     </div>
                                     <div class="p-2"><Button label="Delete" icon="pi pi-trash" @click="deleteConf(items.configurator_id)"/></div>
-                                    <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div>
+                                    <!-- <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div> -->
                                 </div>
 
 

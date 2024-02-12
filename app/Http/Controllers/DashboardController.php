@@ -29,11 +29,15 @@ class DashboardController extends Controller
         $detail = $request->input('templateDetails');
         $data = array();
         // // create new config ID
-        $generatedConfiguratorID = mt_rand(10000000000, 99999999999);
+        $generatedConfiguratorID = mt_rand(100000000000, 999999999999);
         if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
-            $configID = mt_rand(10000000000, 99999999999);
+            $configID = mt_rand(100000000000, 999999999999);
 
-            $data = array('configurator_id' => $configID, 'configurator_title' => $products, 'configurator_detail' => $detail, 'added_by' => 'Razvan');
+            $data = array('configurator_id' => $configID, 
+                'configurator_title' => $products, 
+                'configurator_detail' => $detail, 
+                'added_by' => '-'
+            );
             // Configurators::insert();
 
             DB::table('configurators')->insert($data);

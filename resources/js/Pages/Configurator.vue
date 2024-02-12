@@ -114,6 +114,10 @@ export default {
             selectedCategoriesCategoryOption: {},
 
             logicVisible: 'show', // seteaza vizibilitatea optiuni care are logica
+
+            cloneElement: false,
+            cloneElementType: 0,
+            cloneElementId: -1
         }
     },
     methods: {
@@ -531,10 +535,49 @@ export default {
 
         },
 
+        cloneElementConfirm(index, type) {
+            this.cloneElement = true;
+            this.cloneElementId = index;
+            this.cloneElementType = type;
+        },
+
+        confirmClone() {
+            let makeId = this.makeid(3);
+            if(this.cloneElementType == 2) 
+            {
+                // clonez categorya
+                let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementId]));
+                if (currentElement) {
+                    let id = currentElement.id;
+                    currentElement.title += ' - COPY';
+                    this.selectedProduct.categories.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)));
+                    currentElement = {};
+                }
+            } else if(this.cloneElementType == 1)  {
+
+                let currentElement = JSON.parse(JSON.stringify(this.selectedProduct));
+                if (currentElement) {
+                    let id = currentElement.id;
+                    currentElement.title += ' - COPY';
+                    this.product.data.panels.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)));
+                    currentElement = {};
+                }
+            }
+
+            this.cloneElement = false;
+            this.cloneElementType = 0; // 1 - panel 2 - category
+            this.cloneElementId = -1; // id panel or category
+        },
+
         cancelConfirmation() {
             this.deleteElementVar = false;
             this.deleteElementId = '';
             this.deleteElementCat = '';
+
+            //  clone element\
+            this.cloneElement = false;
+            this.cloneElementType = {}; // 1 - panel 2 - category
+            this.cloneElementId = -1; // id panel or category
         },
 
         sendConfirmation() {
@@ -1225,7 +1268,9 @@ export default {
                                 data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
-                            <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            <i  
+                            @click="cloneElementConfirm(index, 1)" 
+                            class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                 data-bs-title="Clone" style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
@@ -1252,6 +1297,7 @@ export default {
                                             data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit"
                                             style="font-size: 1rem"></i>
                                     </div>
+                                    <!-- another panel copy -->
                                     <div class="p-1">
                                         <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Copy" style="font-size: 1rem"></i>
@@ -1261,8 +1307,9 @@ export default {
                                             data-bs-placement="bottom" data-bs-title="Move" style="font-size: 1rem"></i>
                                     </div> -->
                                     <div class="p-1">
-                                        <i class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" data-bs-title="Clone" style="font-size: 1rem"></i>
+                                        <i @click="cloneElementConfirm(index, 2)" class="p-1 pi pi-clone hovered"
+                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone"
+                                            style="font-size: 1rem"></i>
                                     </div>
                                     <div class="p-1">
                                         <i @click="deleteElement('category', items)"
@@ -1617,6 +1664,29 @@ export default {
                 </div>
 
             </Dialog>
+
+            <!-- dialog clone element -->
+            <Dialog v-model:visible="cloneElement" modal header="Confirm message" :style="{ width: '40vw' }">
+                <div class="d-flex m-3">
+                    <p class="h6">
+                        Are you sure to clone this element?
+                    </p>
+                </div>
+                <div class="d-flex flex-row m-3">
+                    <div class="p-2">
+                        <EditButton @click="cancelConfirmation()">
+                            CANCEL
+                        </EditButton>
+                    </div>
+                    <div class="p-2">
+                        <EditButton @click="confirmClone()">
+                            CONFIRM
+                        </EditButton>
+                    </div>
+                </div>
+
+            </Dialog>
+
             <!-- modal add new category option -->
 
             <Dialog v-model:visible="createNewCategoryOption" modal header="Edit Choise Attribute"
