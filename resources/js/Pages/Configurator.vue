@@ -117,7 +117,11 @@ export default {
 
             cloneElement: false,
             cloneElementType: 0,
-            cloneElementId: -1
+            cloneElementId: -1,
+
+            cloneElementToPanel: false,
+            cloneElementToPanelId: '',
+            cloneElementToPanelCategory: -1
         }
     },
     methods: {
@@ -536,15 +540,33 @@ export default {
         },
 
         cloneElementConfirm(index, type) {
-            this.cloneElement = true;
-            this.cloneElementId = index;
-            this.cloneElementType = type;
+            
+            if(type !== 3) {
+                this.cloneElement = true;
+                this.cloneElementId = index;
+                this.cloneElementType = type;
+            } else {
+                this.cloneElementToPanelCategory = index;
+                this.cloneElementToPanel = true;
+            } 
         },
 
         confirmClone() {
             let makeId = this.makeid(3);
-            if(this.cloneElementType == 2) 
-            {
+            if(this.cloneElementToPanelId != '') {
+                let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementToPanelCategory]));
+                let id = currentElement.id;
+
+                this.product.data.panels.filter((value, index) => {
+                    if(value.id == this.cloneElementToPanelId) {
+                        value.categories.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)))
+                    }
+                })
+
+                currentElement = {};
+            }
+
+            if (this.cloneElementType == 2) {
                 // clonez categorya
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementId]));
                 if (currentElement) {
@@ -553,7 +575,7 @@ export default {
                     this.selectedProduct.categories.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)));
                     currentElement = {};
                 }
-            } else if(this.cloneElementType == 1)  {
+            } else if (this.cloneElementType == 1) {
 
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProduct));
                 if (currentElement) {
@@ -567,6 +589,13 @@ export default {
             this.cloneElement = false;
             this.cloneElementType = 0; // 1 - panel 2 - category
             this.cloneElementId = -1; // id panel or category
+
+            // clone category to panel;
+            this.cloneElementToPanel = false;
+            this.cloneElementToPanelId = '';
+            this.cloneElementToPanelCategory = -1;
+
+            console.log("Confirm clone")
         },
 
         cancelConfirmation() {
@@ -578,6 +607,11 @@ export default {
             this.cloneElement = false;
             this.cloneElementType = {}; // 1 - panel 2 - category
             this.cloneElementId = -1; // id panel or category
+      
+            // clone category to panel;
+            this.cloneElementToPanel = false;
+            this.cloneElementToPanelId = '';
+            this.cloneElementToPanelCategory = -1;
         },
 
         sendConfirmation() {
@@ -1268,10 +1302,9 @@ export default {
                                 data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
-                            <i  
-                            @click="cloneElementConfirm(index, 1)" 
-                            class="p-1 pi pi-clone hovered" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                data-bs-title="Clone" style="font-size: 1rem"></i>
+                            <i @click="cloneElementConfirm(index, 1)" class="p-1 pi pi-clone hovered"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone"
+                                style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
                             <i @click="deleteElement('panel')" class="p-1 pi pi-trash hovered alerted-hover"
@@ -1289,8 +1322,7 @@ export default {
                                 <!-- div titlu + btn -->
                                 <div class="d-flex mt-1">
                                     <div class="p-1 flex-grow-1">
-                                        <p class="px-3 h5"><i class="pi pi-eye-slash hovered" data-bs-toggle="tooltip"
-                                                data-bs-placement="bottom" data-bs-title="Hide"></i> {{ items.title }}</p>
+                                        <p class="px-3 h5">{{ items.title }}</p>
                                     </div>
                                     <div class="p-1">
                                         <i @click="editCurrentCategory(index)" class="p-1 pi pi-file-edit hovered"
@@ -1299,7 +1331,7 @@ export default {
                                     </div>
                                     <!-- another panel copy -->
                                     <div class="p-1">
-                                        <i class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
+                                        <i @click="cloneElementConfirm(index, 3)"  class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" data-bs-title="Copy" style="font-size: 1rem"></i>
                                     </div>
                                     <!-- <div class="p-1">
@@ -1665,6 +1697,35 @@ export default {
 
             </Dialog>
 
+            <!-- dialog clone element to another panel-->
+            <Dialog v-model:visible="cloneElementToPanel" modal header="Confirm message" :style="{ width: '40vw' }">
+                <div class="d-flex m-3">
+                    <p class="h6">
+                       Choose an panel
+                    </p>
+                </div>
+                <div class="d-flex justify-center p-3">
+                    <select class="w-100" v-model="cloneElementToPanelId">
+                        <option value="">Select panel</option>
+                        <option v-for="element in this.product.data.panels" :value="element.id">{{ element.title }}</option>
+                    </select>
+                </div>
+                <div class="d-flex flex-row m-3">
+                    <div class="p-2">
+                        <EditButton @click="cancelConfirmation()">
+                            CANCEL
+                        </EditButton>
+                    </div>
+                    <div class="p-2">
+                        <EditButton @click="confirmClone()">
+                            CONFIRM
+                        </EditButton>
+                    </div>
+                </div>
+
+           
+            </Dialog>
+
             <!-- dialog clone element -->
             <Dialog v-model:visible="cloneElement" modal header="Confirm message" :style="{ width: '40vw' }">
                 <div class="d-flex m-3">
@@ -1725,15 +1786,11 @@ export default {
                         <!-- Option create - false -->
                         <div v-if="!newOptionRequest">
                             <div class="d-flex">
-                                <div class="p-2 flex-grow-1">
+                                <!-- <div class="p-2 flex-grow-1">
                                     <TextInput v-model="title_productCategory" placeholder="Search..." type="text"
                                         class="mt-1 block w-full" autofocus autocomplete="" />
                                 </div>
-                                <div class="p-3">
-                                    <EditButton>
-                                        Reorder
-                                    </EditButton>
-                                </div>
+                        -->
                                 <div class="p-3">
                                     <EditButton @click="newOptionRequest = true">
                                         New Option
@@ -1804,14 +1861,14 @@ export default {
                                         </div>
                                     </div>
 
-                                    <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR
+                                    <!-- <h4 class="m-1" style="text-align: center; font-weight: bold; font-style: italic;">OR
                                     </h4>
 
                                     <div class="p-1 d-flex justify-content-center">
                                         <PrimaryButton class="ml-4">
                                             Select an image from gallery
                                         </PrimaryButton>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
 
