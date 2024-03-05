@@ -404,6 +404,47 @@ export default {
             });
         },
 
+
+        deleteChosedOption(option, index) {
+            // delete current option
+            // tin option pentru debug, index pentru delete.
+
+            if(index >= 0) {
+                this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.filter((value, idx) => {
+                    if(option.id == value.id) {
+                        // delete prima optiune selectata.
+                        this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.splice(idx, 1);
+                        
+                        // reset tot 
+                        this.optionSKU = "";
+                        this.imagePreview = "";
+                        this.optionLabel = "";
+
+                        // resetez logica pt optiune
+                        this.rulesCategoryOption.logic = {
+                            rules: [],
+                            action: 'hide'
+                        };
+
+                        this.selectedValueCategoryOption = {};
+                        this.selectedCategoriesCategoryOption = {};
+                        this.ruleLogicCategoryOption = {};
+
+                        this.createToast({
+                            type: 'warn',
+                            title: 'Info message',
+                            details: "Option deleted succesfully!"
+                        });
+
+                        this.newOptionRequest = false;
+                        this.createNewCategoryOption = false;
+                        this.selectCurrentProductCategoryIndex = -1;
+                    }
+                });
+            }
+        },
+
+
         editChosedOption(option, index) {
             // repopulez input dupa save --> doar optiunea selectata
             this.newOptionRequest = true;
@@ -854,13 +895,22 @@ export default {
                     details: this.title_productCategory.toUpperCase() + " category added succesfully!"
                 });
             } else {
-
-                this.createToast({
-                    type: 'info',
-                    title: 'Info message',
-                    details: this.title_productCategory.toUpperCase() + " category edited succesfully!"
-                });
-
+                // to do --- urgent
+                // edit an category
+                if (this.selectedProduct) {
+                    let title = this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title;
+                    if(title != null) {
+                        this.createToast({
+                            type: 'info',
+                            title: 'Info message',
+                            details: title.toUpperCase() + " category edited succesfully!"
+                        });
+                    }
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].type = this.typeCategory?.length ? this.typeCategory : "img",
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title = this.title_productCategory,
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].extraClassName = this.extra_class_stepCategory,
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic = this.rulesCategory.logic
+                }
             }
 
             this.cancelCreateNewCategory();
@@ -995,7 +1045,7 @@ export default {
             this.createNewCategory = true;
             this.selectCurrentProductCategoryIndex = index;
 
-            this.title_productCategory = this.selectedProductCategories[index].title;
+            this.title_productCategory = this.selectedProductCategories[index].title ?? 'No Title';
             this.typeCategory = this.selectedProductCategories[index].type;
             this.extra_class_stepCategory = this.selectedProductCategories[index].extraClassName;
 
@@ -1824,11 +1874,16 @@ export default {
                                         </td>
 
                                         <td class="text-td-align">
-                                            <div @click="editChosedOption(items, index)" class="p-1">
-                                                <i class="p-1 pi pi-file-edit" data-bs-toggle="tooltip"
+                                            <div class="p-1">
+                                                <i @click="editChosedOption(items, index)" class="p-1 pi pi-file-edit warning-hover" data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom" data-bs-title="Edit"
                                                     style="font-size: 1rem"></i>
+
+                                                <i @click="deleteChosedOption(items, index)" class="p-3 pi pi-trash alerted-hover" data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom" data-bs-title="Delete"
+                                                        style="font-size: 1rem"></i>
                                             </div>
+
                                         </td>
                                     </tr>
                                 </tbody>
