@@ -456,6 +456,7 @@ export default {
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 this.displayImage(files[0]);
+                this.selectedFile = files[0];
             }
         },
         displayImage(file) {
