@@ -113,7 +113,9 @@ export default {
             ruleLogicCategoryOption: {},
             selectedCategoriesCategoryOption: {},
 
-            logicVisible: 'show', // seteaza vizibilitatea optiuni care are logica
+            logicVisible_panels: 'show', // seteaza vizibilitatea optiuni care are logica, panels
+            logicVisible_category: 'show',
+            logicVisible_options: 'show',
 
             cloneElement: false,
             cloneElementType: 0,
@@ -231,7 +233,7 @@ export default {
                     options: []
 
                 }
-                this.rulesCategory.logic.action = "show";
+                this.rulesCategory.logic.action = this.logicVisible_category;
                 this.rulesCategory.logic.rules.push(obj);
 
                 // this.selectedProduct.logic = this.rulesPanel.logic;
@@ -385,7 +387,9 @@ export default {
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
             if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
+            else this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '';
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
+            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic.action = this.logicVisible_options;
             console.log("Razvan debug 22", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID]);
 
             this.editOption = false;
@@ -453,11 +457,11 @@ export default {
             this.optionSKU = option.sku;
             this.imagePreview = option.option.data.value;
             this.optionLabel = option.option.data.label;
-
+            this.logicVisible_options = option.logic.action;
             // resetez logica pt optiune
             this.rulesCategoryOption.logic = {
                 rules: [],
-                action: 'hide'
+                action: this.logicVisible_options
             };
 
             this.selectedValueCategoryOption = {};
@@ -594,7 +598,7 @@ export default {
         },
 
         confirmClone() {
-            let makeId = this.makeid(3);
+            let makeId = this.makeid(5);
             if(this.cloneElementToPanelId != '') {
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementToPanelCategory]));
                 let id = currentElement.id;
@@ -640,6 +644,7 @@ export default {
             console.log("Confirm clone")
         },
 
+
         cancelConfirmation() {
             this.deleteElementVar = false;
             this.deleteElementId = '';
@@ -662,7 +667,7 @@ export default {
                     this.product.data.panels.filter((el, index) => {
                         if (this.deleteElementId.id == el.id && this.selectedProduct.id == el.id) {
                             console.log("Razvan delete panel", el)
-                            this.product.data.panels.splice(this.product.data.panels.indexOf(el.id), 1);
+                            this.product.data.panels.splice(index, 1);
                             if (this.product.data.panels?.length > 1) this.selectCurrentProductIndex = 0;
                             else this.selectCurrentProductIndex = 0;
                             this.deleteElementVar = false;
@@ -677,7 +682,7 @@ export default {
                     this.selectedProductCategories.filter((el, index) => {
                         if (this.deleteElementId.id == el.id) {
                             console.log("Razvan delete category", el)
-                            this.selectedProductCategories.splice(this.selectedProductCategories.indexOf(el.id), 1);
+                            this.selectedProductCategories.splice(index, 1);
                             this.deleteElementVar = false;
                             this.deleteElementId = '';
                             this.deleteElementCat = '';
@@ -700,8 +705,10 @@ export default {
 
                 this.selectedProduct.title = this.title_product || "";
                 this.selectedProduct.skuPrefix = this.sku_prefix || "";
+                this.selectedProduct.description = "";
                 this.selectedProduct.extraClassName = this.extra_class_step || "";
                 this.selectedProduct.logic = this.rulesPanel.logic || {};
+                this.selectedProduct.logic.action = this.logicVisible_panels|| 'show';
 
                 this.rulesPanel.logic = {
                     rules: [],
@@ -800,6 +807,7 @@ export default {
                         this.ruleLogic[index] = value.option;
                     })
                 }
+                this.logicVisible_panels = this.selectedProduct.logic.action;
             } else {
                 // init category
                 if (this.rulesCategory.logic.rules?.length) {
@@ -810,6 +818,8 @@ export default {
                         this.ruleLogicCategory[index] = value.option;
                     })
                 }
+
+                this.logicVisible_category = this.rulesCategory.logic.action;
             }
             if (this.editOption) {
                 // init option
@@ -841,7 +851,7 @@ export default {
 
                 this.rulesCategory.logic = {
                     rules: [],
-                    action: 'hide'
+                    action: this.logicVisible_category
                 }
 
                 this.selectedValueCategory = {};
@@ -955,11 +965,21 @@ export default {
                 } else {
 
                     if (this.editOption) this.editCurrentOption();
+
                 }
 
             }
             // resetez valori dupa generare optione
             console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
+        },
+
+        
+        deleteCurrentImage(option, index) {
+            console.log("Delete current image (options)", option, index);
+            this.selectedFile = '';
+            this.imagePreview = '';
+            this.path_image = '';
+            this.editCurrentOption();
         },
 
         createToast(details) {
@@ -970,6 +990,9 @@ export default {
             //  adaug dupa response in alta functie deoarece nu imi permite requestul..
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.push({
                 option: {
+                    preview: {
+                        type: 'img',
+                    },
                     data: {
                         label: this.optionLabel,
                         inputMaxValue: 999999,
@@ -1035,7 +1058,7 @@ export default {
 
             this.rulesCategory.logic = {
                 rules: [],
-                action: 'hide'
+                action: 'show',
             }
 
             this.selectedValueCategory = {};
@@ -1048,9 +1071,10 @@ export default {
             this.title_productCategory = this.selectedProductCategories[index].title ?? 'No Title';
             this.typeCategory = this.selectedProductCategories[index].type;
             this.extra_class_stepCategory = this.selectedProductCategories[index].extraClassName;
+            
+            this.logicVisible_category = this.selectedProductCategories[index].logic.action;
 
             this.rulesCategory.logic = this.selectedProductCategories[index].logic;
-            this.rulesCategory.logic.action = "show";
             this.initLogic();
         },
 
@@ -1107,6 +1131,21 @@ export default {
     },
 
     watch: {
+        logicVisible_panels: {
+            handler(data) {
+                if(this.selectedProduct) {
+                    this.selectedProduct.logic.action = data;
+                }
+            }
+        },
+        logicVisible_category: {
+            handler(data) {
+                if(this.selectedProduct) {
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.action = data;
+                }
+            }
+        },
+
         product: {
             handler(data) {
                 console.log("Object base changed", this.product);
@@ -1129,6 +1168,7 @@ export default {
                     this.optionLabel = '';
                     this.selectedFile = null;
                     this.imagePreview = '';
+                    this.logicVisible_options = '';
                     if (this.selectedFile) this.selectedFile = '';
                 }
             }
@@ -1561,8 +1601,8 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select v-model="logicVisible" class="logic-list-show">
-                                    <option value="show">Not Selected</option>
+                                <select v-model="logicVisible_panels" class="logic-list-show">
+                                    <option value="">Not Selected</option>
                                     <option value="show">Shown</option>
                                     <option value="hide">Hidden</option>
                                 </select>
@@ -1712,8 +1752,8 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select v-model="logicVisible" class="logic-list-show">
-                                    <option value="show">Not Selected</option>
+                                <select v-model="logicVisible_category" class="logic-list-show">
+                                    <option value="">Not Selected</option>
                                     <option value="show">Shown</option>
                                     <option value="hide">Hidden</option>
                                 </select>
@@ -1905,6 +1945,9 @@ export default {
                                 <InputLabel for="" value="Thumbnail" />
 
                                 <div>
+                                    <div @click.stop="deleteCurrentImage(items, index)" class="trash-btn-img">
+                                        <i class="p-1 pi pi-trash"></i>
+                                    </div>
                                     <div id="drop-area" @dragover.prevent="handleDragOver"
                                         @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
                                         <p>Drag & drop a PNG, JPG, or JPEG file here or click to select one.</p>
@@ -1938,13 +1981,13 @@ export default {
 
                             <div class="d-flex flex-row m-3">
                                 <div class="p-2">
-                                    <EditButton @click="cancelNewOption()">
-                                        BACK
+                                    <EditButton @click="generateNewOption()">
+                                        APPLY
                                     </EditButton>
                                 </div>
                                 <div class="p-2">
-                                    <EditButton @click="generateNewOption()">
-                                        APPLY
+                                    <EditButton @click="cancelNewOption()">
+                                        BACK
                                     </EditButton>
                                 </div>
                             </div>
@@ -2024,11 +2067,23 @@ export default {
                                 then this layer should be:
                             </span>
                             <div class="p-1 d-flex justify-content-center">
-                                <select v-model="logicVisible" class="logic-list-show">
-                                    <option value="show">Not Selected</option>
+                                <select v-model="logicVisible_options" class="logic-list-show">
+                                    <option value="">Not Selected</option>
                                     <option value="show">Shown</option>
                                     <option value="hide">Hidden</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row m-3">
+                            <div class="p-2">
+                                <EditButton @click="generateNewOption()">
+                                    APPLY
+                                </EditButton>
+                            </div>
+                            <div class="p-2">
+                                <EditButton @click="cancelNewOption()">
+                                    BACK
+                                </EditButton>
                             </div>
                         </div>
 

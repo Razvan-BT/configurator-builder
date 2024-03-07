@@ -23,6 +23,20 @@
     color: rgb(207, 173, 59);
 }
 
+.trash-btn-img {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    background: rgb(212, 130, 36);
+    margin-top: 1%;
+    right: 4%;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
 
 #drop-area {
     border: 2px dashed #ccc;
