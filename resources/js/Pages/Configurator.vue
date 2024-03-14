@@ -245,7 +245,7 @@ export default {
                 else {
                     this.selectedValueCategory[returnIndex] = 'Select Step';
                     this.selectedCategoriesCategory[returnIndex] = 'Select Custom Option';
-                    this.ruleLogicCategory[returnIndex] = 'anychoice';
+                    this.ruleLogicCategory[returnIndex] = 'any';
                 }
 
             } else if (where == 'option') {
@@ -282,7 +282,7 @@ export default {
                 else {
                     this.selectedValueCategoryOption[returnIndex] = 'Select Step';
                     this.selectedCategoriesCategoryOption[returnIndex] = 'Select Custom Option';
-                    this.ruleLogicCategoryOption[returnIndex] = 'anychoice';
+                    this.ruleLogicCategoryOption[returnIndex] = 'any';
                 }
             }
         },
@@ -602,7 +602,7 @@ export default {
             this.rulesPanel.logic.rules.forEach((value, idx) => {
                 this.selectedValues[index] = value.panel;
                 this.selectedCategories[index] = value.category;
-                this.ruleLogic[index] = 'anychoice';
+                this.ruleLogic[index] = 'any';
             });
         },
 
@@ -619,7 +619,7 @@ export default {
             this.rulesCategory.logic.rules.forEach((value, idx) => {
                 this.selectedValueCategory[index] = value.panel;
                 this.selectedCategoriesCategory[index] = value.category;
-                this.ruleLogicCategory[index] = 'anychoice';
+                this.ruleLogicCategory[index] = 'any';
             });
         },
         // end
@@ -634,7 +634,7 @@ export default {
             this.rulesCategoryOption.logic.rules.forEach((value, idx) => {
                 this.selectedValueCategoryOption[index] = value.panel;
                 this.selectedCategoriesCategoryOption[index] = value.category;
-                this.ruleLogicCategoryOption[index] = 'anychoice';
+                this.ruleLogicCategoryOption[index] = 'any';
             });
         },
         // end
@@ -921,7 +921,7 @@ export default {
         },
 
         confirmClone() {
-            let makeId = this.makeid(5);
+            let makeId = this.makeid(1);
             if (this.cloneElementToPanelId != '') {
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementToPanelCategory]));
                 let id = currentElement.id;
