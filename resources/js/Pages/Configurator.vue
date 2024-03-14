@@ -698,7 +698,7 @@ export default {
             if (!this.editOption) return;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
-            if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
+            if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = path;
             else if (path == 'delete') this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '';
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic.action = this.logicVisible_options;
@@ -1291,8 +1291,8 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            if (!this.editOption) this.addNewOption(response.data.server_host + this.path_image);
-                            else this.editCurrentOption(response.data.server_host + this.path_image);
+                            if (!this.editOption) this.addNewOption(response.data.server_host + '/storage/' + this.path_image);
+                            else this.editCurrentOption(response.data.server_host + '/storage/' + this.path_image);
                         })
                         .catch(error => {
                             console.log(error);
@@ -1335,7 +1335,7 @@ export default {
                         inputMinValue: 0,
                         inputStep: 1,
                         valuePreview: null,
-                        value: '/storage/' + path,
+                        value: path,
                         // value: "https://cdn.thecustomproductbuilder.com/45402292382/manufacture-paris-7027336872094-Z43Fm9TPy0MfmgrmgxBl5j7r.png", // VALUE E IMG
                         defaultSelectValue: null,
                         chargePerCharacter: false,
