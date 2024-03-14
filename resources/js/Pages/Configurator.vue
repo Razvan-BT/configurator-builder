@@ -123,7 +123,9 @@ export default {
 
             cloneElementToPanel: false,
             cloneElementToPanelId: '',
-            cloneElementToPanelCategory: -1
+            cloneElementToPanelCategory: -1,
+
+            checkPanelOption: true,
         }
     },
     methods: {
@@ -308,6 +310,287 @@ export default {
             return obj[0];
         },
 
+        getOptionsAfterPanelAndCategoryIfChecked(panel, caty, ruleId) {
+            let obj = [];
+            this.product.data.panels.filter((value, index) => {
+                if (value.id == panel) {
+                    value.categories.filter((cat, idx) => {
+                        if (cat.id == caty) obj.push(cat.options);
+                    })
+
+                    if (this.editPanel) {
+                        setTimeout(() => {
+                            this.checkBoxPanels(ruleId);
+                        }, 3000);
+                    }
+                }
+            })
+
+            return obj[0];
+        },
+
+        checkBoxPanels(ruleId) {
+            // filtrez checked
+            console.log(
+                "Debug ruleId", ruleId
+            )
+            // this.selectedProduct.forEach((value, index) => {
+                this.selectedProduct.logic.rules.filter((rulesf, idx) => {
+                    if (idx == ruleId) {
+                        if (rulesf.options?.length) {
+                            rulesf.options.filter((fs, idx23) => {
+
+                                // panels
+                                let elements = document.querySelectorAll('.checkedPanelOp_' + ruleId);
+
+                                for (let i = 0; i < elements.length; i++) {
+                                    if (elements[i].getAttribute('data-option') == fs) {
+                                        elements[i].setAttribute('checked', "true");
+                                    }
+                                }
+
+                            })
+                        }
+                    }
+                })
+            // })
+
+            // category
+
+            // this.selectedProductCategories.filter((value, index) => {
+                this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules.filter((rulesf, idx) => {
+                    if (idx == ruleId) {
+                        if (rulesf.options?.length) {
+                            rulesf.options.filter((fs, idx23) => {
+
+                                console.log("Debug category checkboxes", fs)
+
+                                // category
+                                let category = document.querySelectorAll('.checkedCategoryOp_' + ruleId);
+
+                                for (let i = 0; i < category.length; i++) {
+                                    if (category[i].getAttribute('data-option') == fs) {
+                                        category[i].setAttribute('checked', "true");
+                                    }
+                                }
+
+                            })
+                        }
+                    }
+                })
+            // })
+        },
+
+        checkBoxOptions(ruleId) {
+            // options
+            //  option.filter((value, index) => {
+            this.rulesCategoryOption.logic.rules.filter((rulesf, idx) => {
+                if (idx == ruleId) {
+                    if (rulesf.options?.length) {
+                        rulesf.options.filter((fs, idx23) => {
+
+                            // category
+                            let options = document.querySelectorAll('.checkedOptionsOp_' + ruleId);
+
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].getAttribute('data-option') == fs) {
+                                    options[i].setAttribute('checked', "true");
+                                }
+                            }
+
+                        })
+                    }
+                }
+            })
+            // })
+        },
+
+        // panels
+        checkBoxOptionsPanel(event, option, index) {
+            console.log("[checkBoxOptionsPanel] Debug options", option)
+            if (this.editPanel) {
+                if (this.selectedProduct) {
+                    // daca este true 
+                    if (event.target.checked) {
+                        if (this.selectedProduct.logic.rules?.length) {
+                            this.selectedProduct.logic.rules.forEach((e, idx) => {
+                                if (index == idx) {
+                                    console.log(" this.rulesPanel", this.rulesPanel)
+                                    if (this.rulesPanel.logic.rules[idx].options.indexOf(option.id) === -1)
+                                        this.selectedProduct.logic.rules.options = this.rulesPanel.logic.rules[idx].options.push(option.id);
+                                };
+                            });
+                        }
+                    } else {
+
+                        if (this.selectedProduct.logic.rules?.length) {
+                            this.selectedProduct.logic.rules.forEach((e, idx) => {
+                                if (index == idx) {
+                                    this.rulesPanel.logic.rules[idx].options.filter((op, idx2) => {
+                                        if (op == option.id) {
+                                            if (this.rulesPanel.logic.rules[idx].options.indexOf(option.id) !== -1)
+                                            this.selectedProduct.logic.rules.options = this.rulesPanel.logic.rules[idx].options.splice(idx2, 1);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    console.log("Check box option panel: ", option, this.rulesPanel.logic.rules[index].options, index);
+                }
+            } else {
+
+                // daca este creata o regula -> fara a edita panelul
+
+                if (event.target.checked) {
+                    if (!this.rulesPanel.logic.rules[index].options?.length) {
+
+                        this.rulesPanel.logic.rules[index].options.push(option.id);
+
+                    } else {
+
+                        if (this.rulesPanel.logic.rules[index].options.indexOf(option.id) === -1)
+                            this.selectedProduct.logic.rules.options = this.rulesPanel.logic.rules[index].options.push(option.id);
+
+                    }
+                } else {
+                    if (this.rulesPanel.logic.rules[index].options?.length) {
+
+                            this.selectedProduct.logic.rules.options = this.rulesPanel.logic.rules[index].options.push(option.id);
+
+                    }
+
+                }
+            }
+        },
+
+        // category
+        checkBoxOptionsCategory(event, option, index) {
+            if (this.editCategory) {
+                console.log("[checkBoxOptionsCategory] Debug options", this.selectedProductCategories)
+                if (this.selectedProductCategories) {
+                    // daca este true 
+                    if (event.target.checked) {
+                        if (this.selectedProductCategories[0].logic.rules?.length) {
+                            this.selectedProductCategories[0].logic.rules.forEach((e, idx) => {
+                                if (index == idx) {
+                                    console.log(" this.rulesCategory", this.selectedProductCategories)
+                                    if (this.rulesCategory.logic.rules[idx].options.indexOf(option.id) === -1)
+                                        this.rulesCategory.logic.rules[idx].options.push(option.id);
+                                };
+                            });
+                        }
+                    } else {
+
+                        if (this.selectedProductCategories[0].logic.rules?.length) {
+                            this.selectedProductCategories[0].logic.rules.forEach((e, idx) => {
+                                if (index == idx) {
+                                    this.rulesCategory.logic.rules[idx].options.filter((op, idx2) => {
+                                        if (op == option.id) {
+                                            if (this.rulesCategory.logic.rules[idx].options.indexOf(option.id) !== -1)
+                                                this.rulesCategory.logic.rules[idx].options.splice(idx2, 1);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    console.log("Check box option category: ", option, this.rulesCategory.logic.rules[index].options, index);
+                } else {
+                    // daca este creata o regula -> fara a edita categoria
+
+                    if (event.target.checked) {
+                        if (!this.rulesCategory.logic.rules[index].options?.length) {
+
+                            this.rulesCategory.logic.rules[index].options.push(option.id);
+
+                        } else {
+
+                            if (this.rulesCategory.logic.rules[index].options.indexOf(option.id) === -1)
+                                this.rulesCategory.logic.rules[index].options.push(option.id);
+
+                        }
+                    } else {
+                        if (this.rulesCategory.logic.rules[index].options?.length) {
+
+                            this.rulesCategory.logic.rules[index].options.push(option.id);
+
+                        }
+
+                    }
+                }
+            }
+        },
+
+        // options
+        checkBoxOptionsOption(event, option, index) {
+            console.log("[checkBoxOptionsOption] Debug options", this.selectedProductCategories, this.editOptionID)
+            if (this.editOption) {
+                if (option) {
+                    // daca este true 
+                    if (event.target.checked) {
+                        if (this.selectedProductCategories[0].options?.length) {
+                            this.selectedProductCategories[0].options.forEach((e, idx) => {
+                                if (idx == this.editOptionID) {
+                                    e.logic.rules.forEach((oRusle, rId) => {
+                                        if (index == rId) {
+                                            if (this.rulesCategoryOption.logic.rules[rId].options.indexOf(option.id) === -1)
+                                                this.rulesCategoryOption.logic.rules[rId].options.push(option.id);
+                                        };
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+
+                        if (this.selectedProductCategories[0].options?.length) {
+                            this.selectedProductCategories[0].options.forEach((e, idx) => {
+                                if (idx == this.editOptionID) {
+                                    e.logic.rules.forEach((oRusle, rId) => {
+                                        if (index == rId) {
+                                            if (oRusle.options?.length) {
+                                                oRusle.options.forEach((opt, optIdx) => {
+                                                    if (opt == option.id) {
+                                                        if (this.rulesCategoryOption.logic.rules[rId].options.indexOf(option.id) !== -1)
+                                                            this.rulesCategoryOption.logic.rules[rId].options.splice(optIdx, 1);
+                                                    }
+                                                })
+                                            }
+                                        };
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    console.log("Check box option panel: ", option, this.rulesCategoryOption.logic.rules[index].options, index);
+                }
+            } else {
+
+                // cand creez o optiune noua -> fara a fi editata.
+                if (event.target.checked) {
+                    if (!this.rulesCategoryOption.logic.rules[index].options?.length) {
+
+                        this.rulesCategoryOption.logic.rules[index].options.push(option.id);
+
+                    } else {
+
+                        if (this.rulesCategoryOption.logic.rules[index].options.indexOf(option.id) === -1)
+                            this.rulesCategoryOption.logic.rules[index].options.push(option.id);
+
+                    }
+                } else {
+                    if (this.rulesCategoryOption.logic.rules[index].options?.length) {
+
+                        this.rulesCategoryOption.logic.rules[index].options.push(option.id);
+
+                    }
+
+                }
+
+            }
+        },
+
+
         deleteCurrentLogic(index) {
             delete this.selectedValues[index];
             delete this.selectedCategories[index];
@@ -359,6 +642,35 @@ export default {
             // console.log("TEEST", this.selectedProduct.logic)
             this.isOverlayVisible = true;
 
+            //  refac default options
+            let arrayWithPanels = {};
+            this.product.data.panels.forEach((panels, index) => {
+                panels.categories.filter((cat, idx) => {
+                    arrayWithPanels[cat.id] = cat.panelId;
+                })
+            })
+
+            const defaultObject = {};
+            const differentObject = {};
+
+            for (const key in arrayWithPanels) {
+                const value = arrayWithPanels[key];
+                if (!defaultObject.hasOwnProperty(value)) {
+                    defaultObject[value] = {};
+                }
+                defaultObject[value][key] = [];
+            }
+
+            for (const value in defaultObject) {
+                if (Object.keys(defaultObject[value]).length > 1) {
+                    differentObject[value] = defaultObject[value];
+                }
+            }
+
+            // console.log("obj", defaultObject);
+            this.product.settings.defaultOptions = defaultObject;
+            
+            // end
             let data = {
                 configuratorId: this.ID,
                 data: this.product,
@@ -387,7 +699,7 @@ export default {
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
             if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '/storage/' + path;
-            else this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '';
+            else if (path == 'delete') this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '';
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic.action = this.logicVisible_options;
             console.log("Razvan debug 22", this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID]);
@@ -397,9 +709,9 @@ export default {
             this.optionSKU = '';
             this.optionLabel = '';
             this.selectedFile = null;
-            this.imagePreview = '';
             this.newOptionRequest = false;
             this.createNewCategoryOption = false;
+            this.imagePreview = '';
             if (this.selectedFile) this.selectedFile = '';
             this.createToast({
                 type: 'info',
@@ -413,12 +725,12 @@ export default {
             // delete current option
             // tin option pentru debug, index pentru delete.
 
-            if(index >= 0) {
+            if (index >= 0) {
                 this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.filter((value, idx) => {
-                    if(option.id == value.id) {
+                    if (option.id == value.id) {
                         // delete prima optiune selectata.
                         this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.splice(idx, 1);
-                        
+
                         // reset tot 
                         this.optionSKU = "";
                         this.imagePreview = "";
@@ -458,6 +770,7 @@ export default {
             this.imagePreview = option.option.data.value;
             this.optionLabel = option.option.data.label;
             this.logicVisible_options = option.logic.action;
+
             // resetez logica pt optiune
             this.rulesCategoryOption.logic = {
                 rules: [],
@@ -481,9 +794,9 @@ export default {
                 }
             });
             this.rulesPanelPanels.push(panels);
-
+            
             this.initLogic();
-            console.log("editChosedOption", option)
+            console.log("editChosedOption", this.product.data.panels)
         },
 
         handleFileSelect(event) {
@@ -543,6 +856,16 @@ export default {
             this.title_product = "";
             this.sku_prefix = "";
             this.selectCurrentProductIndex = -1;
+
+            this.rulesPanel.logic = {
+                rules: [],
+                action: 'hide'
+            };
+
+            this.selectedValues = {};
+            this.selectedCategories = {};
+            this.ruleLogic = {};
+
         },
 
         deleteElement(element, id = null) {
@@ -586,25 +909,25 @@ export default {
         },
 
         cloneElementConfirm(index, type) {
-            
-            if(type !== 3) {
+
+            if (type !== 3) {
                 this.cloneElement = true;
                 this.cloneElementId = index;
                 this.cloneElementType = type;
             } else {
                 this.cloneElementToPanelCategory = index;
                 this.cloneElementToPanel = true;
-            } 
+            }
         },
 
         confirmClone() {
             let makeId = this.makeid(5);
-            if(this.cloneElementToPanelId != '') {
+            if (this.cloneElementToPanelId != '') {
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementToPanelCategory]));
                 let id = currentElement.id;
 
                 this.product.data.panels.filter((value, index) => {
-                    if(value.id == this.cloneElementToPanelId) {
+                    if (value.id == this.cloneElementToPanelId) {
                         value.categories.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)))
                     }
                 })
@@ -654,7 +977,7 @@ export default {
             this.cloneElement = false;
             this.cloneElementType = {}; // 1 - panel 2 - category
             this.cloneElementId = -1; // id panel or category
-      
+
             // clone category to panel;
             this.cloneElementToPanel = false;
             this.cloneElementToPanelId = '';
@@ -708,7 +1031,7 @@ export default {
                 this.selectedProduct.description = "";
                 this.selectedProduct.extraClassName = this.extra_class_step || "";
                 this.selectedProduct.logic = this.rulesPanel.logic || {};
-                this.selectedProduct.logic.action = this.logicVisible_panels|| 'show';
+                this.selectedProduct.logic.action = this.logicVisible_panels || 'show';
 
                 this.rulesPanel.logic = {
                     rules: [],
@@ -777,6 +1100,8 @@ export default {
                 rules: [],
                 action: 'hide'
             };
+
+            console.log("End createNewProduct", object);
         },
 
         initGlobalObject(data) {
@@ -788,6 +1113,7 @@ export default {
 
         initLogic() {
             // reinit logic
+            console.log("Init logic")
             // panel
             if (!this.editCategory) {
                 this.repopulateLogic();
@@ -800,14 +1126,19 @@ export default {
                 });
 
                 this.rulesPanelPanels.push(panels);
-                if (this.rulesPanel.logic.rules?.length) {
-                    this.rulesPanel.logic.rules.forEach((value, index) => {
-                        this.selectedValues[index] = value.panel;
-                        this.selectedCategories[index] = value.category;
-                        this.ruleLogic[index] = value.option;
-                    })
+                if (this.editPanel) {
+                    if (this.rulesPanel.logic.rules?.length) {
+                        this.rulesPanel.logic.rules.forEach((value, index) => {
+                            this.selectedValues[index] = value.panel;
+                            this.selectedCategories[index] = value.category;
+                            this.ruleLogic[index] = value.option;
+                            setTimeout(() => {
+                                this.checkBoxPanels(index);
+                            }, 3000);
+                        })
+                    }
+                    this.logicVisible_panels = this.selectedProduct.logic.action;
                 }
-                this.logicVisible_panels = this.selectedProduct.logic.action;
             } else {
                 // init category
                 if (this.rulesCategory.logic.rules?.length) {
@@ -816,9 +1147,11 @@ export default {
                         this.selectedValueCategory[index] = value.panel;
                         this.selectedCategoriesCategory[index] = value.category;
                         this.ruleLogicCategory[index] = value.option;
+                        setTimeout(() => {
+                            this.checkBoxPanels(index);
+                        }, 3000);
                     })
                 }
-
                 this.logicVisible_category = this.rulesCategory.logic.action;
             }
             if (this.editOption) {
@@ -829,6 +1162,9 @@ export default {
                         this.selectedValueCategoryOption[index] = value.panel;
                         this.selectedCategoriesCategoryOption[index] = value.category;
                         this.ruleLogicCategoryOption[index] = value.option;
+                        setTimeout(() => {
+                            this.checkBoxOptions(index);
+                        }, 5000);
                     })
                 }
             }
@@ -890,8 +1226,8 @@ export default {
                         id: this.makeid(24),
                         zIndex: this.selectedProduct.categories?.length + 1, // order elements
                         type: this.typeCategory?.length ? this.typeCategory : "img",
-                        title: this.title_productCategory,
-                        extraClassName: this.extra_class_stepCategory,
+                        title: this.title_productCategory || "",
+                        extraClassName: this.extra_class_stepCategory || "",
                         panelId: this.selectedProduct ? this.selectedProduct.id : "",
                         panelID: this.selectedProduct ? this.selectedProduct.id : "",
                         options: [],
@@ -909,7 +1245,7 @@ export default {
                 // edit an category
                 if (this.selectedProduct) {
                     let title = this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title;
-                    if(title != null) {
+                    if (title != null) {
                         this.createToast({
                             type: 'info',
                             title: 'Info message',
@@ -917,9 +1253,9 @@ export default {
                         });
                     }
                     this.selectedProductCategories[this.selectCurrentProductCategoryIndex].type = this.typeCategory?.length ? this.typeCategory : "img",
-                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title = this.title_productCategory,
-                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].extraClassName = this.extra_class_stepCategory,
-                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic = this.rulesCategory.logic
+                        this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title = this.title_productCategory || "",
+                        this.selectedProductCategories[this.selectCurrentProductCategoryIndex].extraClassName = this.extra_class_stepCategory || "",
+                        this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic = this.rulesCategory.logic
                 }
             }
 
@@ -955,8 +1291,8 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            if (!this.editOption) this.addNewOption(response.data.image_path);
-                            else this.editCurrentOption(response.data.image_path);
+                            if (!this.editOption) this.addNewOption(this.path_image);
+                            else this.editCurrentOption(this.path_image);
                         })
                         .catch(error => {
                             console.log(error);
@@ -973,13 +1309,13 @@ export default {
             console.log(this.selectedProduct.categories[this.selectCurrentProductCategoryIndex])
         },
 
-        
+
         deleteCurrentImage(option, index) {
             console.log("Delete current image (options)", option, index);
             this.selectedFile = '';
             this.imagePreview = '';
             this.path_image = '';
-            this.editCurrentOption();
+            this.editCurrentOption("delete");
         },
 
         createToast(details) {
@@ -1071,7 +1407,7 @@ export default {
             this.title_productCategory = this.selectedProductCategories[index].title ?? 'No Title';
             this.typeCategory = this.selectedProductCategories[index].type;
             this.extra_class_stepCategory = this.selectedProductCategories[index].extraClassName;
-            
+
             this.logicVisible_category = this.selectedProductCategories[index].logic.action;
 
             this.rulesCategory.logic = this.selectedProductCategories[index].logic;
@@ -1133,14 +1469,14 @@ export default {
     watch: {
         logicVisible_panels: {
             handler(data) {
-                if(this.selectedProduct) {
+                if (this.selectedProduct) {
                     this.selectedProduct.logic.action = data;
                 }
             }
         },
         logicVisible_category: {
             handler(data) {
-                if(this.selectedProduct) {
+                if (this.selectedProduct) {
                     this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.action = data;
                 }
             }
@@ -1173,11 +1509,11 @@ export default {
                 }
             }
         },
-        createNewCategoryOption: {
-            handler(data) {
-                // reset values from add option x btn
-            }
-        },
+        // createNewCategoryOption: {
+        //     handler(data) {
+        //         // reset values from add option x btn
+        //     }
+        // },
         addNewProductButton: {
             handler(data) {
                 console.log("Click X Btn addNewProductButton", data);
@@ -1422,8 +1758,9 @@ export default {
                                     </div>
                                     <!-- another panel copy -->
                                     <div class="p-1">
-                                        <i @click="cloneElementConfirm(index, 3)"  class="p-1 pi pi-copy hovered" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" data-bs-title="Copy" style="font-size: 1rem"></i>
+                                        <i @click="cloneElementConfirm(index, 3)" class="p-1 pi pi-copy hovered"
+                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copy"
+                                            style="font-size: 1rem"></i>
                                     </div>
                                     <!-- <div class="p-1">
                                         <i class="p-1 pi pi-arrow-right-arrow-left hovered" data-bs-toggle="tooltip"
@@ -1565,10 +1902,12 @@ export default {
 
                                     <div>
                                         <span v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'notequal'">
-                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValues[index], selectedCategories[index])"
+                                            <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValues[index], selectedCategories[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">
-                                                    <input type="checkbox" name="checkbox">
+                                                    <input :class="`checkedPanelOp_${index}`"
+                                                        @change="checkBoxOptionsPanel($event, op, index)"
+                                                        :data-option="op.id" type="checkbox" name="checkbox">
                                                     {{ op.option.data.label }}
                                                 </label>
                                             </div>
@@ -1718,13 +2057,16 @@ export default {
                                     <div>
                                         <span
                                             v-if="ruleLogicCategory[index] == 'oneof' || ruleLogicCategory[index] == 'notequal'">
-                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategory[index], selectedCategoriesCategory[index])"
+                                            <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValueCategory[index], selectedCategoriesCategory[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">
-                                                    <input type="checkbox" name="checkbox">
+                                                    <input :class="`checkedCategoryOp_${index}`"
+                                                        @change="checkBoxOptionsCategory($event, op, index)"
+                                                        :data-option="op.id" type="checkbox" name="checkbox">
                                                     {{ op.option.data.label }}
                                                 </label>
                                             </div>
+
                                         </span>
                                     </div>
                                 </div>
@@ -1792,7 +2134,7 @@ export default {
             <Dialog v-model:visible="cloneElementToPanel" modal header="Confirm message" :style="{ width: '40vw' }">
                 <div class="d-flex m-3">
                     <p class="h6">
-                       Choose an panel
+                        Choose an panel
                     </p>
                 </div>
                 <div class="d-flex justify-center p-3">
@@ -1814,7 +2156,7 @@ export default {
                     </div>
                 </div>
 
-           
+
             </Dialog>
 
             <!-- dialog clone element -->
@@ -1915,13 +2257,15 @@ export default {
 
                                         <td class="text-td-align">
                                             <div class="p-1">
-                                                <i @click="editChosedOption(items, index)" class="p-1 pi pi-file-edit warning-hover" data-bs-toggle="tooltip"
+                                                <i @click="editChosedOption(items, index)"
+                                                    class="p-1 pi pi-file-edit warning-hover" data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom" data-bs-title="Edit"
                                                     style="font-size: 1rem"></i>
 
-                                                <i @click="deleteChosedOption(items, index)" class="p-3 pi pi-trash alerted-hover" data-bs-toggle="tooltip"
-                                                        data-bs-placement="bottom" data-bs-title="Delete"
-                                                        style="font-size: 1rem"></i>
+                                                <i @click="deleteChosedOption(items, index)"
+                                                    class="p-3 pi pi-trash alerted-hover" data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom" data-bs-title="Delete"
+                                                    style="font-size: 1rem"></i>
                                             </div>
 
                                         </td>
@@ -2033,10 +2377,12 @@ export default {
                                     <div>
                                         <span
                                             v-if="ruleLogicCategoryOption[index] == 'oneof' || ruleLogicCategoryOption[index] == 'notequal'">
-                                            <div v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index])"
+                                            <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">
-                                                    <input type="checkbox" name="checkbox">
+                                                    <input :class="`checkedOptionsOp_${index}`"
+                                                        @change="checkBoxOptionsOption($event, op, index)"
+                                                        :data-option="op.id" type="checkbox" name="checkbox">
                                                     {{ op.option.data.label }}
                                                 </label>
                                             </div>
@@ -2078,11 +2424,6 @@ export default {
                             <div class="p-2">
                                 <EditButton @click="generateNewOption()">
                                     APPLY
-                                </EditButton>
-                            </div>
-                            <div class="p-2">
-                                <EditButton @click="cancelNewOption()">
-                                    BACK
                                 </EditButton>
                             </div>
                         </div>
