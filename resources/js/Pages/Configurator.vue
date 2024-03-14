@@ -191,6 +191,7 @@ export default {
 
                     panel: "",
                     category: "",
+                    type: "panel",
                     option: "oneof",
                     operator: "||",
                     layer: "",
@@ -227,6 +228,7 @@ export default {
 
                     panel: "",
                     category: "",
+                    type: "panel",
                     option: "oneof",
                     operator: "||",
                     layer: "",
@@ -266,6 +268,7 @@ export default {
                     category: "",
                     option: "oneof",
                     operator: "||",
+                    type: "panel",
                     layer: "",
                     active: "",
                     logicRuleLabel: "",
@@ -471,8 +474,8 @@ export default {
                 if (this.selectedProductCategories) {
                     // daca este true 
                     if (event.target.checked) {
-                        if (this.selectedProductCategories[0].logic.rules?.length) {
-                            this.selectedProductCategories[0].logic.rules.forEach((e, idx) => {
+                        if (this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules?.length) {
+                            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules.forEach((e, idx) => {
                                 if (index == idx) {
                                     console.log(" this.rulesCategory", this.selectedProductCategories)
                                     if (this.rulesCategory.logic.rules[idx].options.indexOf(option.id) === -1)
@@ -482,8 +485,8 @@ export default {
                         }
                     } else {
 
-                        if (this.selectedProductCategories[0].logic.rules?.length) {
-                            this.selectedProductCategories[0].logic.rules.forEach((e, idx) => {
+                        if (this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules?.length) {
+                            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules.forEach((e, idx) => {
                                 if (index == idx) {
                                     this.rulesCategory.logic.rules[idx].options.filter((op, idx2) => {
                                         if (op == option.id) {
@@ -495,8 +498,9 @@ export default {
                             });
                         }
                     }
-                    console.log("Check box option category: ", option, this.rulesCategory.logic.rules[index].options, index);
-                } else {
+                    
+                } 
+            } else {
                     // daca este creata o regula -> fara a edita categoria
 
                     if (event.target.checked) {
@@ -518,8 +522,8 @@ export default {
                         }
 
                     }
+                    console.log("Check box option category: ", option, this.rulesCategory.logic.rules[index].options, index);
                 }
-            }
         },
 
         // options
