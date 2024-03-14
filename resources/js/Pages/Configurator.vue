@@ -533,8 +533,8 @@ export default {
                 if (option) {
                     // daca este true 
                     if (event.target.checked) {
-                        if (this.selectedProductCategories[0].options?.length) {
-                            this.selectedProductCategories[0].options.forEach((e, idx) => {
+                        if (this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options?.length) {
+                            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.forEach((e, idx) => {
                                 if (idx == this.editOptionID) {
                                     e.logic.rules.forEach((oRusle, rId) => {
                                         if (index == rId) {
@@ -547,8 +547,8 @@ export default {
                         }
                     } else {
 
-                        if (this.selectedProductCategories[0].options?.length) {
-                            this.selectedProductCategories[0].options.forEach((e, idx) => {
+                        if (this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options?.length) {
+                            this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.forEach((e, idx) => {
                                 if (idx == this.editOptionID) {
                                     e.logic.rules.forEach((oRusle, rId) => {
                                         if (index == rId) {
