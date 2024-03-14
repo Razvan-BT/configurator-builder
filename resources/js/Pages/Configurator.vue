@@ -209,7 +209,7 @@ export default {
                 else {
                     this.selectedValues[returnIndex] = 'Select Step';
                     this.selectedCategories[returnIndex] = 'Select Custom Option';
-                    this.ruleLogic[returnIndex] = 'anychoice';
+                    this.ruleLogic[returnIndex] = 'any';
                 }
 
             } else if (where == 'category') {
