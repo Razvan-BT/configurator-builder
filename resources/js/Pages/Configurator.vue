@@ -1291,8 +1291,8 @@ export default {
                     axios.post('/upload-image', formData)
                         .then(response => {
                             this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            if (!this.editOption) this.addNewOption(this.path_image);
-                            else this.editCurrentOption(this.path_image);
+                            if (!this.editOption) this.addNewOption(response.data.server_host + this.path_image);
+                            else this.editCurrentOption(response.data.server_host + this.path_image);
                         })
                         .catch(error => {
                             console.log(error);
@@ -1891,9 +1891,9 @@ export default {
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogic[index]" class="logic-list">
-                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="any" selected>Any choice</option>
                                             <option value="oneof">One Of..</option>
-                                            <option value="notequal">Not equal</option>
+                                            <option value="isnot">Not equal</option>
                                             <option
                                                 v-for="op in getOptionsAfterPanelAndCategory(selectedValues[index], selectedCategories[index])"
                                                 :value="op.id">{{ op.option.data.label }}</option>
@@ -1901,7 +1901,7 @@ export default {
                                     </span>
 
                                     <div>
-                                        <span v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'notequal'">
+                                        <span v-if="ruleLogic[index] == 'oneof' || ruleLogic[index] == 'isnot'">
                                             <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValues[index], selectedCategories[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">
@@ -2045,9 +2045,9 @@ export default {
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogicCategory[index]" class="logic-list">
-                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="any" selected>Any choice</option>
                                             <option value="oneof">One Of..</option>
-                                            <option value="notequal">Not equal</option>
+                                            <option value="isnot">Not equal</option>
                                             <option
                                                 v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategory[index], selectedCategoriesCategory[index])"
                                                 :value="op.id">{{ op.option.data.label }}</option>
@@ -2056,7 +2056,7 @@ export default {
 
                                     <div>
                                         <span
-                                            v-if="ruleLogicCategory[index] == 'oneof' || ruleLogicCategory[index] == 'notequal'">
+                                            v-if="ruleLogicCategory[index] == 'oneof' || ruleLogicCategory[index] == 'isnot'">
                                             <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValueCategory[index], selectedCategoriesCategory[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">
@@ -2365,9 +2365,9 @@ export default {
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogicCategoryOption[index]" class="logic-list">
-                                            <option value="anychoice" selected>Any choice</option>
+                                            <option value="any" selected>Any choice</option>
                                             <option value="oneof">One Of..</option>
-                                            <option value="notequal">Not equal</option>
+                                            <option value="isnot">Not equal</option>
                                             <option
                                                 v-for="op in getOptionsAfterPanelAndCategory(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index])"
                                                 :value="op.id">{{ op.option.data.label }}</option>
@@ -2376,7 +2376,7 @@ export default {
 
                                     <div>
                                         <span
-                                            v-if="ruleLogicCategoryOption[index] == 'oneof' || ruleLogicCategoryOption[index] == 'notequal'">
+                                            v-if="ruleLogicCategoryOption[index] == 'oneof' || ruleLogicCategoryOption[index] == 'isnot'">
                                             <div v-for="(op, idx) in getOptionsAfterPanelAndCategoryIfChecked(selectedValueCategoryOption[index], selectedCategoriesCategoryOption[index], index)"
                                                 class="p-2 m-2">
                                                 <label class="fs-6" for="checkBox">

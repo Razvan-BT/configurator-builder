@@ -85,11 +85,15 @@ class DashboardController extends Controller
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
-        // Store the uploaded image
-        $imagePath = $request->file('image')->store('images', 'public');
-
-        return response()->json(['message' => 'Image uploaded successfully', 'image_path' => $imagePath]);
+        try {
+            // Store the uploaded image
+            $imagePath = $request->file('image')->store('images', 'public');
+            $link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+    
+            return response()->json(['message' => 'Image uploaded successfully', 'image_path' => $imagePath, 'server_host' => $link]);
+        } catch (err) {
+            return response()->json(['message' => 'Unable to upload the image']);
+        }
     }
 
     public function getProduct_data($product) {
