@@ -943,7 +943,13 @@ export default {
                 // clonez categorya
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProductCategories[this.cloneElementId]));
                 if (currentElement) {
+                    // schimb id-uri pentru optiuni.
+                    let options = [];
+                    this.selectedProductCategories[this.cloneElementId].options.filter((op) => {
+                        options.push(JSON.parse(JSON.stringify(op).replaceAll(op.id, op.id + makeId)))
+                    });
                     let id = currentElement.id;
+                    currentElement.options = options;
                     currentElement.title += ' - COPY';
                     this.selectedProduct.categories.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)));
                     currentElement = {};
@@ -952,7 +958,12 @@ export default {
 
                 let currentElement = JSON.parse(JSON.stringify(this.selectedProduct));
                 if (currentElement) {
+                    let categories = [], options;
+                    this.selectedProduct.categories.filter((cat) => {
+                        categories.push(JSON.parse(JSON.stringify(cat).replaceAll(cat.id, cat.id + makeId)))
+                    });
                     let id = currentElement.id;
+                    currentElement.categories = categories;
                     currentElement.title += ' - COPY';
                     this.product.data.panels.push(JSON.parse(JSON.stringify(currentElement).replaceAll(id, id + makeId)));
                     currentElement = {};
