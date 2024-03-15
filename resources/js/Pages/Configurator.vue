@@ -1828,6 +1828,12 @@ export default {
                                     </select>
                                  </div>
 
+                                <!-- input options -->
+                                <div v-if="items.type == 'input' || items.type == 'inputMulti' || items.type == 'text'" class="d-flex flex-wrap">
+                                    <TextInput class="m-2 w-100" v-for="(op) in items.options" :placeholder="`${op.option.data.label}`" />
+                                </div>
+
+
                                 <!-- edit attributes -->
 
                                 <div class="d-flex p-4">
@@ -2282,15 +2288,22 @@ export default {
                                     <tr class="pointer-hover"
                                         v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
                                         <td class="image-td-align">
-                                            <div class="p-4">
+                                            <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'input' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'inputMulti' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'text'" class="p-4">
                                                 <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'select'"  class="p-1 d-flex justify-content-center">
                                                     <img style="width: 51px; height: 51px;"
                                                         :src="`${items.option.data.value}`" alt="" data-bs-toggle="tooltip"
                                                         data-bs-title="Order 1">
                                                 </div>
+                                                 <!-- drop down inputs -->
                                                 <span style="text-align: center;" class="image-td-align wrapped-text">
                                                     {{ selectedProductCategories[this.selectCurrentProductCategoryIndex].type == 'select' && items.option.data.value?.length ? '( ' +items.option.data.value+ ' )' : '' }} {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
                                                 </span>
+                                            </div>
+
+                                            <!-- input options -->
+                                            <div v-else class="p-3">
+                                                <InputLabel class="p-1" :for="`${items.option.data.label}`" :value="`${items.option.data.label}`" />
+                                                <TextInput :placeholder="`${items.sku}`"/>
                                             </div>
                                         </td>
 
