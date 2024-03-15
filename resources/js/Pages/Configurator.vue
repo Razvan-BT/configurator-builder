@@ -1822,7 +1822,7 @@ export default {
 
                                  <!-- thumb options -->
                                  <div v-if="items.type == 'select'" class="d-flex align-content-start">
-                                    <select class="w-100">
+                                    <select class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-100">
                                         <option selected>-</option>
                                         <option v-for="(op) in items.options">{{ op.sku }}</option>
                                     </select>
