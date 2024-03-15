@@ -1775,7 +1775,7 @@ export default {
                 <div class="mt-5 mb-5">
                     <div class="container-sm p-2 border-1 border-secondary">
                         <div v-if="product.data.panels?.length" class="mt-2 border-bottom border-bottom">
-                            <div v-for="(items, index) in selectedProductCategories" class="p-1">
+                            <div v-for="(items, index) in selectedProductCategories" class="border-bottom border-bottom p-1">
                                 <!-- div titlu + btn -->
                                 <div class="d-flex mt-1">
                                     <div class="p-1 flex-grow-1">
