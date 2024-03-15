@@ -1315,7 +1315,8 @@ export default {
 
                 } else {
 
-                    if (this.editOption) this.editCurrentOption();
+                    if (this.editOption) this.editCurrentOption('-');
+                    else this.addNewOption('');
 
                 }
 
@@ -1690,7 +1691,21 @@ export default {
             if (this.product.data.panels.length) {
                 return this.product.data.panels[this.selectCurrentProductIndex != -1 ? this.selectCurrentProductIndex : 0].categories;
             }
-        }
+        },
+        // isThumbnailOptions() {
+        //     if(this.selectedProductCategories) {
+        //         let type = this.selectedProductCategories.filter(op => op.type);
+        //         if(type == 'img' || type == 'multiple') return true;
+        //         else return false; 
+        //     }
+        // },
+        // isDropdownOptions() {
+        //     if(this.selectedProductCategories) {
+        //         let type = this.selectedProductCategories.filter(op => op.type);
+        //         if(type == 'select') return true;
+        //         else return false; 
+        //     }
+        // }
     },
 
 }
@@ -1794,16 +1809,9 @@ export default {
                                 </div>
                                 <!-- div poze grid -->
                                 <!-- Vor fi input + dropdown -->
-                                <div class="d-flex align-content-start flex-wrap">
+                                <!-- thumb options -->
+                                <div v-if="items.type == 'img' || items.type == 'multiple'" class="d-flex align-content-start flex-wrap">
 
-                                    <!-- <div v-if="items.type == 'text' ||
-                                        items.type == 'input' ||
-                                        items.type == 'inputMulti'
-                                        ">
-                                        <div v-for="(op) in items.options" class="p-1">
-                                            <input type="text" :placeholder="`${op.option.data.label}`">
-                                        </div>
-                                    </div> -->
                                     <div v-if="items.options?.length" class="p-4 images-layout">
                                         <div v-for="(op) in items.options" class="p-1">
                                             <img style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
@@ -1811,6 +1819,15 @@ export default {
                                         </div>
                                     </div>
                                 </div>
+
+                                 <!-- thumb options -->
+                                 <div v-if="items.type == 'select'" class="d-flex align-content-start">
+                                    <select class="w-100">
+                                        <option selected>-</option>
+                                        <option v-for="(op) in items.options">{{ op.sku }}</option>
+                                    </select>
+                                 </div>
+
                                 <!-- edit attributes -->
 
                                 <div class="d-flex p-4">
@@ -2259,13 +2276,13 @@ export default {
                                         v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
                                         <td class="image-td-align">
                                             <div class="p-4">
-                                                <div class="p-1 d-flex justify-content-center">
+                                                <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'select'"  class="p-1 d-flex justify-content-center">
                                                     <img style="width: 51px; height: 51px;"
                                                         :src="`${items.option.data.value}`" alt="" data-bs-toggle="tooltip"
                                                         data-bs-title="Order 1">
                                                 </div>
                                                 <span style="text-align: center;" class="image-td-align wrapped-text">
-                                                    {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                                    {{ selectedProductCategories[this.selectCurrentProductCategoryIndex].type == 'select' && items.option.data.value?.length ? '( ' +items.option.data.value+ ' )' : '' }} {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
                                                 </span>
                                             </div>
                                         </td>
