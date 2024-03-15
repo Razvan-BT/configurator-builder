@@ -2229,8 +2229,15 @@ export default {
                         <!-- get title of current category -->
                         <li class="breadcrumb-item active" aria-current="page">
                             <strong>
-                                <a @click="newOptionRequest = false;">{{
+                                <a>{{
                                     selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
+                            </strong>
+                        </li>
+                        <!-- get title of current option -->
+                        <li v-if="newOptionRequest && editOption" class="breadcrumb-item active" aria-current="page">
+                            <strong>
+                                <a>{{
+                                    selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label }} </a>
                             </strong>
                         </li>
                     </ol>
