@@ -214,6 +214,10 @@ export default {
                     this.ruleLogic[returnIndex] = 'any';
                 }
 
+                if(this.editPanel) {
+                    this.selectedProduct.logic = this.rulesPanel.logic;
+                }
+
             } else if (where == 'category') {
 
                 // preiau paneluriile pentru category dupa index ID
