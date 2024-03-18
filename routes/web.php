@@ -26,12 +26,12 @@ Route::get('/', [DashboardController::class, 'showData'])->middleware(['auth', '
 // API
 Route::post('/create-configurator', [DashboardController::class, 'create_new'])->middleware(['auth', 'verified']);
 Route::post('/delete-configurator', [DashboardController::class, 'deleteConfigurator'])->middleware(['auth', 'verified']);
+Route::post('/duplicate-configurator', [DashboardController::class, 'duplicateConfigurator'])->middleware(['auth', 'verified']);
 // API configurator
 Route::get('/configurator/{id_c}', [DashboardController::class, 'view_config'])->middleware(['auth', 'verified'])->name('configurator');
 Route::post('/saveProduct', [DashboardController::class, 'save_product'])->middleware(['auth', 'verified']);
 
 // API END
-
 Route::get('/dashboard', [DashboardController::class, 'showData'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -113,4 +113,36 @@ class DashboardController extends Controller
         $deleted = DB::table('configurators')->where('configurator_id', '=', $id)->delete();
         return response()->json(['status' => 'Configurator '. $id .' was removed successfull!', 'debug' => $deleted]);
     }
+
+    public function duplicateConfigurator(Request $request) {
+        $id = $request->input('id');
+        $title = $request->input('title');
+        $detail = $request->input('detail');
+
+        $path = Storage::disk('public')->path("products/{$id}.json");
+        if(file_exists($path)) {
+            // citesc JSON
+            $fileContent = Storage::disk('public')->get("products/{$id}.json");
+            $fileContent = json_decode($fileContent);
+            // generez ID de conf nou
+            $generatedConfiguratorID = mt_rand(100000000000, 999999999999);
+            if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
+                $configID = mt_rand(100000000000, 999999999999);
+    
+                $data = array('configurator_id' => $configID, 
+                        'configurator_title' => $title . ' - COPY', 
+                        'configurator_detail' => (isset($detail) && $detail != '') ? $detail : '-', 
+                        'added_by' => '-'
+                );
+    
+                DB::table('configurators')->insert($data);
+
+                $jsonData = json_encode($fileContent, JSON_PRETTY_PRINT);
+
+                Storage::disk('products')->put($configID . '.json', $jsonData);
+            
+                return response()->json(['status' => 1, 'message' => $id . ' cloned successfully!', 'configurator' => $configID]);
+            } else return response()->json(['status' => 0, 'message' => 'Error to clone this configurator: conflict.']);
+        } else return response()->json(['status' => 0, 'message' => 'Error to reading JSON file path.']);
+    }
 }

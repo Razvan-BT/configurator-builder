@@ -73,6 +73,32 @@ export default {
             window.location.href = routed;
         },
 
+        async duplicateConfigurator(id, title, details = "-") {
+            let response = await this.axiosAPI('/duplicate-configurator', {
+                id: id,
+                title: title,
+                details: details
+            });
+
+            if(response.status === 200) {
+                switch(response.data.status) {
+                    case 0: {
+                        this.$toast.add({ severity: 'error', summary: 'Info Message', detail: response.data.message, life: 3000 });
+                        break;
+                    }
+                    case 1: { // created
+                        this.$toast.add({ severity: 'info', summary: 'Info Message', detail: response.data.message, life: 3000 });
+
+                        setTimeout(() => {
+                            location.href = "/configurator/" + response.data.configurator;
+                        }, 4000);
+
+                        break;
+                    }
+                }
+            }
+        },
+
         async deleteConf(id) {
             let response = await this.axiosAPI('/delete-configurator', {
                 id: id
@@ -141,6 +167,9 @@ export default {
                                 <div class="d-flex flex-center">
                                     <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
                                             @click="routeToConf(items.configurator_id)" />
+                                    </div>
+                                    <div class="p-2"><Button label="Clone" icon="pi pi-clone"
+                                            @click="duplicateConfigurator(items.configurator_id, items.configurator_title, items.configurator_detail)" />
                                     </div>
                                     <div class="p-2"><Button label="Delete" icon="pi pi-trash" @click="deleteConf(items.configurator_id)"/></div>
                                     <!-- <div class="p-2"><Button label="Clone" icon="pi pi-clone" /></div> -->
