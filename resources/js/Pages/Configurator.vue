@@ -97,9 +97,6 @@ export default {
             rulesPanelCategories: [],
             selectedCategories: {},
 
-            rulesCategories: [],
-            rulesOptions: [],
-
             panelLogicOptions: [],
             optionLogicOptionsCategories: [],
             ruleLogicOptions: [],
@@ -292,6 +289,10 @@ export default {
                     this.selectedValueCategoryOptionLogicRule[returnIndex] = '||';
                     this.selectedCategoriesCategoryOption[returnIndex] = 'Select Custom Option';
                     this.ruleLogicCategoryOption[returnIndex] = 'any';
+                }
+
+                if(this.editOption) {
+                    this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
                 }
             }
         },
@@ -536,13 +537,13 @@ export default {
 
         // options
         checkBoxOptionsOption(event, option, index) {
-            console.log("[checkBoxOptionsOption] Debug options", this.selectedProductCategories, this.editOptionID)
             if (this.editOption) {
                 if (option) {
                     // daca este true 
                     if (event.target.checked) {
                         if (this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options?.length) {
                             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options.forEach((e, idx) => {
+                                console.log("Optiune debug", e);
                                 if (idx == this.editOptionID) {
                                     e.logic.rules.forEach((oRusle, rId) => {
                                         if (index == rId) {
@@ -1128,6 +1129,12 @@ export default {
             this.extra_class_step = "";
             this.title_product = "";
             this.sku_prefix = "";
+
+            this.selectedValues = {};
+            this.selectedValuesLogicRule = {};
+            this.selectedCategories = {};
+            this.ruleLogic = {};
+
             this.rulesPanel.logic = {
                 rules: [],
                 action: 'hide'
