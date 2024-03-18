@@ -93,6 +93,7 @@ export default {
             // panel
             rulesPanelPanels: [],
             selectedValues: {},
+            selectedValuesLogicRule: {},
             rulesPanelCategories: [],
             selectedCategories: {},
 
@@ -105,11 +106,13 @@ export default {
 
             // category
             selectedValueCategory: {},
+            selectedValueCategoryLogicRule: {},
             ruleLogicCategory: {},
             selectedCategoriesCategory: {},
 
             // options
             selectedValueCategoryOption: {},
+            selectedValueCategoryOptionLogicRule: {},
             ruleLogicCategoryOption: {},
             selectedCategoriesCategoryOption: {},
 
@@ -209,6 +212,7 @@ export default {
                 if (returnIndex == 0) this.selectedValues[0] = 'Select Step';
                 else {
                     this.selectedValues[returnIndex] = 'Select Step';
+                    this.selectedValuesLogicRule[returnIndex] = "||";
                     this.selectedCategories[returnIndex] = 'Select Custom Option';
                     this.ruleLogic[returnIndex] = 'any';
                 }
@@ -246,6 +250,7 @@ export default {
                 if (returnIndex == 0) this.selectedValueCategory[0] = 'Select Step';
                 else {
                     this.selectedValueCategory[returnIndex] = 'Select Step';
+                    this.selectedValueCategoryLogicRule[returnIndex] = "||";
                     this.selectedCategoriesCategory[returnIndex] = 'Select Custom Option';
                     this.ruleLogicCategory[returnIndex] = 'any';
                 }
@@ -284,6 +289,7 @@ export default {
                 if (returnIndex == 0) this.selectedValueCategoryOption[0] = 'Select Step';
                 else {
                     this.selectedValueCategoryOption[returnIndex] = 'Select Step';
+                    this.selectedValueCategoryOptionLogicRule[returnIndex] = '||';
                     this.selectedCategoriesCategoryOption[returnIndex] = 'Select Custom Option';
                     this.ruleLogicCategoryOption[returnIndex] = 'any';
                 }
@@ -361,6 +367,7 @@ export default {
             // category
 
             // this.selectedProductCategories.filter((value, index) => {
+            if(this.selectCurrentProductCategoryIndex != -1 && this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules?.length) {
                 this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules.filter((rulesf, idx) => {
                     if (idx == ruleId) {
                         if (rulesf.options?.length) {
@@ -381,6 +388,7 @@ export default {
                         }
                     }
                 })
+            }
             // })
         },
 
@@ -597,6 +605,7 @@ export default {
 
         deleteCurrentLogic(index) {
             delete this.selectedValues[index];
+            delete this.selectedValuesLogicRule[index];
             delete this.selectedCategories[index];
             delete this.ruleLogic[index];
 
@@ -606,6 +615,7 @@ export default {
             this.rulesPanel.logic.rules.forEach((value, idx) => {
                 this.selectedValues[index] = value.panel;
                 this.selectedCategories[index] = value.category;
+                this.selectedValuesLogicRule[index] = value.operator;
                 this.ruleLogic[index] = 'any';
             });
         },
@@ -615,6 +625,7 @@ export default {
         // logic category start
         deleteCurrentLogicCategory(index) {
             delete this.selectedValueCategory[index];
+            delete this.selectedValueCategoryLogicRule[index];
             delete this.selectedCategoriesCategory[index];
             delete this.ruleLogicCategory[index];
 
@@ -623,6 +634,7 @@ export default {
             this.rulesCategory.logic.rules.forEach((value, idx) => {
                 this.selectedValueCategory[index] = value.panel;
                 this.selectedCategoriesCategory[index] = value.category;
+                this.selectedValueCategoryLogicRule[index] = value.operator;
                 this.ruleLogicCategory[index] = 'any';
             });
         },
@@ -630,6 +642,7 @@ export default {
         // logic cat option start
         deleteCurrentLogicCategoryOption(index) {
             delete this.selectedValueCategoryOption[index];
+            delete this.selectedValueCategoryOptionLogicRule[index];
             delete this.selectedCategoriesCategoryOption[index];
             delete this.ruleLogicCategoryOption[index];
 
@@ -638,6 +651,7 @@ export default {
             this.rulesCategoryOption.logic.rules.forEach((value, idx) => {
                 this.selectedValueCategoryOption[index] = value.panel;
                 this.selectedCategoriesCategoryOption[index] = value.category;
+                this.selectedValueCategoryOptionLogicRule[index] = value.operator;
                 this.ruleLogicCategoryOption[index] = 'any';
             });
         },
@@ -702,7 +716,7 @@ export default {
             if (!this.editOption) return;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].sku = this.optionSKU;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label = this.optionLabel;
-            if (path?.length) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = path;
+            if (path?.length && path.length > 1) this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = path;
             else if (path == 'delete') this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.value = '';
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic = this.rulesCategoryOption.logic;
             this.selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].logic.action = this.logicVisible_options;
@@ -747,6 +761,7 @@ export default {
                         };
 
                         this.selectedValueCategoryOption = {};
+                        this.selectedValueCategoryOptionLogicRule = {};
                         this.selectedCategoriesCategoryOption = {};
                         this.ruleLogicCategoryOption = {};
 
@@ -782,6 +797,7 @@ export default {
             };
 
             this.selectedValueCategoryOption = {};
+            this.selectedValueCategoryOptionLogicRule = {};
             this.selectedCategoriesCategoryOption = {};
             this.ruleLogicCategoryOption = {};
 
@@ -867,6 +883,7 @@ export default {
             };
 
             this.selectedValues = {};
+            this.selectedValuesLogicRule = {};
             this.selectedCategories = {};
             this.ruleLogic = {};
 
@@ -1145,6 +1162,7 @@ export default {
                     if (this.rulesPanel.logic.rules?.length) {
                         this.rulesPanel.logic.rules.forEach((value, index) => {
                             this.selectedValues[index] = value.panel;
+                            this.selectedValuesLogicRule[index] = value.operator;
                             this.selectedCategories[index] = value.category;
                             this.ruleLogic[index] = value.option;
                             setTimeout(() => {
@@ -1160,6 +1178,7 @@ export default {
                     this.rulesCategory.logic.rules.forEach((value, index) => {
                         console.log("Init logic category", value)
                         this.selectedValueCategory[index] = value.panel;
+                        this.selectedValueCategoryLogicRule[index] = value.operator;
                         this.selectedCategoriesCategory[index] = value.category;
                         this.ruleLogicCategory[index] = value.option;
                         setTimeout(() => {
@@ -1175,6 +1194,7 @@ export default {
                     this.rulesCategoryOption.logic.rules.forEach((value, index) => {
                         console.log("Init logic category option", value)
                         this.selectedValueCategoryOption[index] = value.panel;
+                        this.selectedValueCategoryOptionLogicRule[index] = value.operator;
                         this.selectedCategoriesCategoryOption[index] = value.category;
                         this.ruleLogicCategoryOption[index] = value.option;
                         setTimeout(() => {
@@ -1206,6 +1226,7 @@ export default {
                 }
 
                 this.selectedValueCategory = {};
+                this.selectedValueCategoryLogicRule = {};
                 this.selectedCategoriesCategory = {};
                 this.ruleLogicCategory = {};
 
@@ -1284,6 +1305,7 @@ export default {
 
             this.rulesPanel.logic.rules = [];
             this.selectedValues = {};
+            this.selectedValuesLogicRule = {};
             this.selectedCategories = {};
             this.ruleLogic = {};
         },
@@ -1414,6 +1436,7 @@ export default {
             }
 
             this.selectedValueCategory = {};
+            this.selectedValueCategoryLogicRule = {};
             this.selectedCategoriesCategory = {};
             this.ruleLogicCategory = {};
 
@@ -1513,6 +1536,7 @@ export default {
                     };
 
                     this.selectedValueCategoryOption = {};
+                    this.selectedValueCategoryOptionLogicRule = {};
                     this.selectedCategoriesCategoryOption = {};
                     this.ruleLogicCategoryOption = {};
 
@@ -1547,6 +1571,22 @@ export default {
                         if (index == i) {
                             val.panel = newValues[i];
                             this.selectedValues[index - 1];
+                        }
+                    });
+                }
+            },
+        },
+        selectedValuesLogicRule: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValuesLogicRule) {
+
+                    this.rulesPanel.logic.rules.filter((val, index) => {
+                        if(index > 0) {
+                            if (index == i) {
+                                val.operator = newValues[i];
+                                this.selectedValuesLogicRule[index - 1];
+                            }
                         }
                     });
                 }
@@ -1597,6 +1637,20 @@ export default {
                 }
             },
         },
+        selectedValueCategoryLogicRule: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValueCategoryLogicRule) {
+
+                    this.rulesCategory.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.operator = newValues[i];
+                            this.selectedValueCategoryLogicRule[index - 1];
+                        }
+                    });
+                }
+            },
+        },
         selectedCategoriesCategory: {
             deep: true,
             handler(newValue, oldValue) {
@@ -1637,6 +1691,20 @@ export default {
                         if (index == i) {
                             val.panel = newValues[i];
                             this.selectedValueCategoryOption[index - 1];
+                        }
+                    });
+                }
+            },
+        },
+        selectedValueCategoryOptionLogicRule: {
+            deep: true,
+            handler(newValues, oldValues) {
+                for (let i in this.selectedValueCategoryOptionLogicRule) {
+
+                    this.rulesCategoryOption.logic.rules.filter((val, index) => {
+                        if (index == i) {
+                            val.operator = newValues[i];
+                            this.selectedValueCategoryOptionLogicRule[index - 1];
                         }
                     });
                 }
@@ -1914,7 +1982,11 @@ export default {
                         <div class="container mb-3">
                             <div v-for="(value, index) in rulesPanel.logic.rules" :key="index" class="d-flex m-2">
                                 <div class="p-2 w-100 p-2 m-2">
-                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <span v-if="index == 0" class="fs-5 p-1">If</span>
+                                    <select v-if="index > 0" v-model="selectedValuesLogicRule[index]" class="logic-list m-1">
+                                        <option value="||">OR</option>
+                                        <option value="&&">AND</option>
+                                    </select>
                                     <select v-model="selectedValues[index]" class="logic-list">
                                         <option>Select Step</option>
                                         <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
@@ -2068,7 +2140,11 @@ export default {
                         <div class="container mb-3">
                             <div v-for="(value, index) in rulesCategory.logic.rules" :key="index" class="d-flex m-2">
                                 <div class="p-2 w-100 p-2 m-2">
-                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <span v-if="index == 0" class="fs-5 p-1">If</span>
+                                    <select v-if="index > 0" v-model="selectedValueCategoryLogicRule[index]" class="logic-list m-1">
+                                        <option value="||">OR</option>
+                                        <option value="&&">AND</option>
+                                    </select>
                                     <select v-model="selectedValueCategory[index]" class="logic-list">
                                         <option>Select Step</option>
                                         <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
@@ -2401,7 +2477,11 @@ export default {
                         <div class="container mb-3">
                             <div v-for="(value, index) in rulesCategoryOption.logic.rules" :key="index" class="d-flex m-2">
                                 <div class="p-2 w-100 p-2 m-2">
-                                    <span class="fs-5 p-1">{{ index == 0 ? 'If' : 'Or' }}</span>
+                                    <span v-if="index == 0" class="fs-5 p-1">If</span>
+                                    <select v-if="index > 0" v-model="selectedValueCategoryOptionLogicRule[index]" class="logic-list m-1">
+                                        <option value="||">OR</option>
+                                        <option value="&&">AND</option>
+                                    </select>
                                     <select v-model="selectedValueCategoryOption[index]" class="logic-list">
                                         <option>Select Step</option>
                                         <option v-for="op in rulesPanelPanels[0].panels" :value="op.id">{{ op.title }}
