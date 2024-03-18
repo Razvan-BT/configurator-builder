@@ -2057,6 +2057,13 @@ export default {
                                 </select>
                             </div>
                         </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <div class="p-2">
+                                <EditButton @click="createNewProduct">
+                                    APPLY
+                                </EditButton>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2215,7 +2222,13 @@ export default {
                                 </select>
                             </div>
                         </div>
-
+                        <div class="d-flex justify-content-end mt-3">
+                            <div class="p-2">
+                                <EditButton @click="createNewCategoryPanel">
+                                    APPLY
+                                </EditButton>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2551,12 +2564,12 @@ export default {
                                     <option value="hide">Hidden</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="d-flex flex-row m-3">
-                            <div class="p-2">
-                                <EditButton @click="generateNewOption()">
-                                    APPLY
-                                </EditButton>
+                            <div class="d-flex justify-content-end mt-3">
+                                <div class="p-2">
+                                    <EditButton @click="generateNewOption()">
+                                        APPLY
+                                    </EditButton>
+                                </div>
                             </div>
                         </div>
 
