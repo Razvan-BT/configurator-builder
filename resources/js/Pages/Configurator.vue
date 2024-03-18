@@ -1801,7 +1801,7 @@ export default {
             <ConfirmPopup></ConfirmPopup>
             <div class="d-flex flex-row-reverse bld-bar">
                 <div class="py-1 px-2">
-                    <WarningButton @click="saveProduct">
+                    <WarningButton data-toggle="tooltip"  data-placement="bottom" title="Save product" @click="saveProduct">
                         SAVE PRODUCT
                     </WarningButton>
                 </div>
@@ -1834,17 +1834,17 @@ export default {
                             <p class="p-3 h4">{{ product.data.panels?.length ? selectedProduct.title : 'No title' }}</p>
                         </div>
                         <div class="pt-4 px-2">
-                            <i @click="editCurrentPanel()" class="p-1 pi pi-file-edit hovered" data-bs-toggle="tooltip"
-                                data-bs-placement="bottom" data-bs-title="Edit" style="font-size: 1rem"></i>
+                            <i @click="editCurrentPanel()" class="p-1 pi pi-file-edit hovered" data-toggle="tooltip"  data-placement="bottom" title="Edit"
+                            style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
                             <i @click="cloneElementConfirm(index, 1)" class="p-1 pi pi-clone hovered"
-                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone"
+                                data-toggle="tooltip"  data-placement="bottom" title="Clone"
                                 style="font-size: 1rem"></i>
                         </div>
                         <div class="pt-4 px-2">
                             <i @click="deleteElement('panel')" class="p-1 pi pi-trash hovered alerted-hover"
-                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Delete"
+                                data-toggle="tooltip"  data-placement="bottom" title="Delete"
                                 style="font-size: 1rem"></i>
                         </div>
                     </div>
@@ -1862,13 +1862,13 @@ export default {
                                     </div>
                                     <div class="p-1">
                                         <i @click="editCurrentCategory(index)" class="p-1 pi pi-file-edit hovered"
-                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Edit"
+                                            data-toggle="tooltip"  data-placement="bottom" title="Edit"
                                             style="font-size: 1rem"></i>
                                     </div>
                                     <!-- another panel copy -->
                                     <div class="p-1">
                                         <i @click="cloneElementConfirm(index, 3)" class="p-1 pi pi-copy hovered"
-                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copy"
+                                            data-toggle="tooltip"  data-placement="bottom" title="Copy"
                                             style="font-size: 1rem"></i>
                                     </div>
                                     <!-- <div class="p-1">
@@ -1877,13 +1877,13 @@ export default {
                                     </div> -->
                                     <div class="p-1">
                                         <i @click="cloneElementConfirm(index, 2)" class="p-1 pi pi-clone hovered"
-                                            data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Clone"
+                                            data-toggle="tooltip"  data-placement="bottom" title="Clone"
                                             style="font-size: 1rem"></i>
                                     </div>
                                     <div class="p-1">
                                         <i @click="deleteElement('category', items)"
-                                            class="p-1 pi pi-trash hovered alerted-hover" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" data-bs-title="Delete" style="font-size: 1rem"></i>
+                                            class="p-1 pi pi-trash hovered alerted-hover" data-toggle="tooltip"  data-placement="bottom" title="Delete"
+                                             style="font-size: 1rem"></i>
                                     </div>
                                 </div>
                                 <!-- div poze grid -->
@@ -1893,7 +1893,7 @@ export default {
 
                                     <div v-if="items.options?.length" class="p-4 images-layout">
                                         <div v-for="(op) in items.options" class="p-1">
-                                            <img style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
+                                            <img data-toggle="tooltip"  data-placement="bottom" :title="`${op.option.data.label}`" style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
                                                 alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
                                         </div>
                                     </div>
@@ -1903,13 +1903,13 @@ export default {
                                  <div v-if="items.type == 'select'" class="d-flex align-content-start">
                                     <select class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-100">
                                         <option selected>-</option>
-                                        <option v-for="(op) in items.options">{{ op.sku }}</option>
+                                        <option v-for="(op) in items.options" data-toggle="tooltip"  data-placement="bottom" :title="`${op.option.data.label}`" >{{ op.sku }}</option>
                                     </select>
                                  </div>
 
                                 <!-- input options -->
                                 <div v-if="items.type == 'input' || items.type == 'inputMulti' || items.type == 'text'" class="d-flex flex-wrap">
-                                    <TextInput class="m-2 w-100" v-for="(op) in items.options" :placeholder="`${op.option.data.label}`" />
+                                    <TextInput class="m-2 w-100" v-for="(op) in items.options" data-toggle="tooltip"  data-placement="bottom" :title="`${op.option.data.label}`"  :placeholder="`${op.option.data.label}`" />
                                 </div>
 
 
@@ -2381,7 +2381,7 @@ export default {
                                 <thead>
                                     <tr>
                                         <th class="image-td-align" scope="col">Option</th>
-                                        <th scope="col">Edit</th>
+                                        <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2391,8 +2391,7 @@ export default {
                                             <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'input' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'inputMulti' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'text'" class="p-4">
                                                 <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'select'"  class="p-1 d-flex justify-content-center">
                                                     <img style="width: 51px; height: 51px;"
-                                                        :src="`${items.option.data.value}`" alt="" data-bs-toggle="tooltip"
-                                                        data-bs-title="Order 1">
+                                                        :src="`${items.option.data.value}`" alt="" data-toggle="tooltip"  data-placement="bottom" :title="`${items.option.data.label}`" >
                                                 </div>
                                                  <!-- drop down inputs -->
                                                 <span style="text-align: center;" class="image-td-align wrapped-text">
@@ -2410,13 +2409,11 @@ export default {
                                         <td class="text-td-align">
                                             <div class="p-1">
                                                 <i @click="editChosedOption(items, index)"
-                                                    class="p-1 pi pi-file-edit warning-hover" data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom" data-bs-title="Edit"
+                                                    class="p-1 pi pi-file-edit warning-hover" data-toggle="tooltip"  data-placement="bottom" title="Edit" 
                                                     style="font-size: 1rem"></i>
 
                                                 <i @click="deleteChosedOption(items, index)"
-                                                    class="p-3 pi pi-trash alerted-hover" data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom" data-bs-title="Delete"
+                                                    class="p-3 pi pi-trash alerted-hover" data-toggle="tooltip"  data-placement="bottom" title="Delete" 
                                                     style="font-size: 1rem"></i>
                                             </div>
 

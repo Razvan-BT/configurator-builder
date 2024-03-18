@@ -49,7 +49,7 @@ export default {
                 let data = {
                     templateName: this.configurator_name,
                     templateDetails: this.configurator_details,
-                    addedBy: '-',
+                    addedBy: usePage().props.auth.user.name,
                     shopifyId: this.configurator_shopify
                 }
                 let response = await this.axiosAPI('/create-configurator', data);
@@ -170,7 +170,7 @@ export default {
                             </th> -->
                             <td>{{ items.configurator_title }}</td>
                             <!-- <td>{{ items.configurator_detail }}</td> -->
-                            <td>{{ items.configurator_id }}</td>
+                            <td data-toggle="tooltip"  data-placement="bottom" :title="`${items.configurator_title}`" >{{ items.configurator_id }}</td>
                             <td>
                                 <div class="d-flex flex-center">
                                     <div class="p-2"><Button label="Edit" icon="pi pi-spin pi-cog"
