@@ -34,6 +34,7 @@ export default {
             visible: false,
             configurator_name: '',
             configurator_details: '',
+            configurator_shopify: '',
         };
     },
     mounted() {
@@ -43,25 +44,32 @@ export default {
     },
     methods: {
         async sendData() {
+       
             if (this.configurator_name != '') {
                 let data = {
                     templateName: this.configurator_name,
                     templateDetails: this.configurator_details,
+                    addedBy: '-',
+                    shopifyId: this.configurator_shopify
                 }
                 let response = await this.axiosAPI('/create-configurator', data);
 
                 this.configurator_name = '';
                 this.configurator_details = '';
+                this.configurator_shopify = '';
                 this.visible = false;
 
-                // console.log(response.data.data.configurator_id)
-                let details = 'Configurator ' + response.data.data.configurator_id + ' was added';
-                this.$toast.add({ severity: 'info', summary: 'Info Message', detail: details, life: 3000 });
+                    // console.log(response.data.data.configurator_id)
+                if(response.status === 200) {
+                    let details = 'Configurator ' + response.data.data.configurator_id + ' was added';
+                    this.$toast.add({ severity: 'info', summary: 'Info Message', detail: details, life: 3000 });
 
-                setTimeout(() => {
-                    location.href = "/configurator/" + response.data.data.configurator_id;
-                }, 4000);
+                    setTimeout(() => {
+                        location.href = "/configurator/" + response.data.data.configurator_id;
+                    }, 4000);
+                }
             }
+            
         },
 
         editConfigurator(n, i) {
@@ -201,6 +209,22 @@ export default {
                             autocomplete="configurator_details" />
 
                     </div>
+
+                    <div class="p-3">
+
+                        <h2 class="text-lg font-medium text-gray-900">Shopify</h2>
+
+                        <p class="mt-1 mb-1 text-sm text-gray-600">
+                            Import data from shopify using only a valid configurator ID.
+                        </p>
+
+                        <InputLabel for="configurator_shopify" value="Shopify configurator ID" />
+
+                        <TextInput v-model="configurator_shopify" type="text" class="mt-1 block w-full" autofocus
+                            autocomplete="configurator_shopify" />
+
+                    </div>
+
                     <div class="flex items-center justify-end mt-4">
                         <PrimaryButton @click="sendData" class="ml-4">
                             add

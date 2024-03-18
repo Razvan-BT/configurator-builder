@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
+    public $UrlShopify = 'https://storage.googleapis.com/custom-product-builder/45402292382/';
+
     public function showData() {
         $data = Configurators::all();
         $products = [
@@ -27,6 +29,9 @@ class DashboardController extends Controller
         // template name
         $products = $request->input('templateName');
         $detail = $request->input('templateDetails');
+        $addedBy = $request->input('addedBy');
+        $shopifyId = $request->input('shopifyId');
+
         $data = array();
         // // create new config ID
         $generatedConfiguratorID = mt_rand(100000000000, 999999999999);
@@ -36,10 +41,17 @@ class DashboardController extends Controller
             $data = array('configurator_id' => $configID, 
                 'configurator_title' => $products, 
                 'configurator_detail' => $detail, 
-                'added_by' => '-'
+                'added_by' => $addedBy
             );
             // Configurators::insert();
 
+            
+            if(isset($shopifyId) && $shopifyId != '') {
+                $shopifyId = intval($shopifyId);
+                $response = file_get_contents($this->UrlShopify . $shopifyId . '.json');
+                // $jsonData = json_decode($response, JSON_PRETTY_PRINT);
+                Storage::disk('products')->put($configID . '.json', $response);
+            }
             DB::table('configurators')->insert($data);
         }
 
