@@ -33,26 +33,41 @@ class DashboardController extends Controller
         $shopifyId = $request->input('shopifyId');
 
         $data = array();
-        // // create new config ID
+        
         $generatedConfiguratorID = mt_rand(100000000000, 999999999999);
-        if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
-            $configID = mt_rand(100000000000, 999999999999);
+        if(isset($shopifyId) && $shopifyId != '') {
+            $shopifyId = intval($shopifyId);
+            $response = file_get_contents($this->UrlShopify . $shopifyId . '.json');
+            // $jsonData = json_decode($response, JSON_PRETTY_PRINT);
+            Storage::disk('products')->put($shopifyId . '.json', $response);
 
-            $data = array('configurator_id' => $configID, 
-                'configurator_title' => $products, 
-                'configurator_detail' => $detail, 
-                'added_by' => $addedBy
-            );
-            // Configurators::insert();
-
+            if(!Configurators::where('configurator_id', '=', $shopifyId)->exists()) {
+    
+                $data = array('configurator_id' => $shopifyId, 
+                    'configurator_title' => $products, 
+                    'configurator_detail' => $detail, 
+                    'added_by' => $addedBy
+                );
+                // Configurators::insert();
+    
             
-            if(isset($shopifyId) && $shopifyId != '') {
-                $shopifyId = intval($shopifyId);
-                $response = file_get_contents($this->UrlShopify . $shopifyId . '.json');
-                // $jsonData = json_decode($response, JSON_PRETTY_PRINT);
-                Storage::disk('products')->put($configID . '.json', $response);
+                DB::table('configurators')->insert($data);
             }
-            DB::table('configurators')->insert($data);
+        } else {
+            // // create new config ID
+            if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
+                $configID = mt_rand(100000000000, 999999999999);
+    
+                $data = array('configurator_id' => $configID, 
+                    'configurator_title' => $products, 
+                    'configurator_detail' => $detail, 
+                    'added_by' => $addedBy
+                );
+                // Configurators::insert();
+    
+            
+                DB::table('configurators')->insert($data);
+            }
         }
 
         return response()->json(['data' => $data]);
