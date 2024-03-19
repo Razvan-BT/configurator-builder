@@ -127,9 +127,88 @@ export default {
             cloneElementToPanelCategory: -1,
 
             checkPanelOption: true,
+        
+            exportElements: false,
+            exportData: '',
+            exportDatalocal: localStorage.getItem('productCopyed') || '-',
         }
     },
     methods: {
+        importElementsFunc() {
+            if(this.exportDatalocal != null && this.exportDatalocal != '') {
+                if(this.exportDatalocal == 'panou') {
+
+                    let productJSON = localStorage.getItem('productJSON');
+                    if(productJSON != null) this.product.data.panels.push(JSON.parse(localStorage.getItem('productJSON').replaceAll(localStorage.getItem('productID'), this.makeid(17))));
+                    
+                    localStorage.removeItem('productCopyed');
+                    localStorage.removeItem('productID'); // pentru replacement
+                    localStorage.removeItem('productJSON'); 
+                    this.exportDatalocal = '';
+                    
+                    this.createToast({
+                        type: 'success',
+                        title: 'Info message',
+                        details: "Panel imported!"
+                    });
+
+                } else if(this.exportDatalocal == 'category') {
+
+                    let productJSON = localStorage.getItem('productJSON');
+                    if(productJSON != null) this.selectedProductCategories.push(JSON.parse(localStorage.getItem('productJSON').replaceAll(localStorage.getItem('productID'), this.makeid(17))));
+
+                    localStorage.removeItem('productCopyed');
+                    localStorage.removeItem('productID'); // pentru replacement
+                    localStorage.removeItem('productJSON'); 
+                    this.exportDatalocal = '';
+
+                    this.createToast({
+                        type: 'success',
+                        title: 'Info message',
+                        details: "Category imported!"
+                    });
+
+                }
+            }
+        },
+        
+        exportElementsFunc(index, type) {
+            switch(type) {
+                case 'panel': {
+                    this.exportElements = true;
+                    this.exportData = JSON.stringify(this.selectedProduct);
+                    console.log("[PANOU] this.exportData", true);
+
+                    localStorage.setItem('productCopyed', 'panou');
+                    localStorage.setItem('productID', this.selectedProduct.id); // pentru replacement
+                    localStorage.setItem('productJSON', this.exportData);
+                    break;
+                }
+
+                case 'category': {
+                    this.exportElements = true;
+                    this.exportData = JSON.stringify(this.selectedProductCategories[index]);
+                    console.log("[CATEGORY] this.exportData", true);
+
+                    localStorage.setItem('productCopyed', 'category');
+                    localStorage.setItem('productID', this.selectedProductCategories[index].id); // pentru replacement
+                    localStorage.setItem('productJSON', this.exportData);
+                    break;
+                }
+
+                default: {
+                    console.error("Unknown type of element to export..");
+                    this.exportElements = false;
+                    this.exportData = '';
+
+                    localStorage.removeItem('productCopyed');
+                    localStorage.removeItem('productID'); // pentru replacement
+                    localStorage.removeItem('productJSON');
+                    break;
+                }
+            }
+        },
+
         simulateLoading() {
             setTimeout(() => {
                 // simulare loading + check daca data exist
@@ -1764,6 +1843,13 @@ export default {
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // console.log("Init configurator ID: ", this.ID, usePage().props.auth.user.name);
         this.simulateLoading();
+
+        setInterval(() => {
+            localStorage.removeItem('productCopyed');
+            localStorage.removeItem('productID'); // pentru replacement
+            localStorage.removeItem('productJSON');
+            this.exportDatalocal = '';
+        }, 60000)
     },
 
     computed: {
@@ -1829,6 +1915,10 @@ export default {
                             <SuccesButton @click="createTypeOfProduct">
                                 <i class="pi pi-plus" style="font-size: 1rem"></i>
                             </SuccesButton>
+
+                            <WarningButton v-if="exportDatalocal == 'panou'" class="mx-1" @click="importElementsFunc()">
+                                <i class="pi pi-plus" style="font-size: 1rem"></i>
+                            </WarningButton>
                         </div>
                     </div>
                 </div>
@@ -1839,6 +1929,12 @@ export default {
                         <div class="p-2 flex-grow-1">
                             <p class="p-3 h4">{{ product.data.panels?.length ? selectedProduct.title : 'No title' }}</p>
                         </div>
+    
+                        <div class="pt-4 px-2">
+                            <i @click="exportElementsFunc(index, 'panel')" class="p-1 pi pi-share-alt hovered" data-toggle="tooltip"  data-placement="bottom" title="Export"
+                            style="font-size: 1rem"></i>
+                        </div>
+
                         <div class="pt-4 px-2">
                             <i @click="editCurrentPanel()" class="p-1 pi pi-file-edit hovered" data-toggle="tooltip"  data-placement="bottom" title="Edit"
                             style="font-size: 1rem"></i>
@@ -1866,6 +1962,11 @@ export default {
                                     <div class="p-1 flex-grow-1">
                                         <p class="px-3 h5">{{ items.title }}</p>
                                     </div>
+                                    <div class="p-1">
+                                        <i @click="exportElementsFunc(index, 'category')" class="p-1 pi pi-share-alt hovered" data-toggle="tooltip"  data-placement="bottom" title="Export"
+                                        style="font-size: 1rem"></i>
+                                    </div>
+
                                     <div class="p-1">
                                         <i @click="editCurrentCategory(index)" class="p-1 pi pi-file-edit hovered"
                                             data-toggle="tooltip"  data-placement="bottom" title="Edit"
@@ -1906,7 +2007,8 @@ export default {
                                 </div>
 
                                  <!-- thumb options -->
-                                 <div v-if="items.type == 'select'" class="d-flex align-content-start">
+                                 <div v-if="items.type == 'select'" class="d-flex align-content-start flex-wrap">
+                                    <div class="mx-3 m-1 font-italic">{{ items.description?.length ? items.description.replace("<p>", "").replace("</p>", "") : ''  }}</div>
                                     <select class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-100">
                                         <option selected>-</option>
                                         <option v-for="(op) in items.options" data-toggle="tooltip"  data-placement="bottom" :title="`${op.option.data.label}`" >{{ op.sku }}</option>
@@ -1929,10 +2031,15 @@ export default {
                             </div>
                         </div>
 
-                        <div class="p-4 d-flex justify-center">
+                        <div class="p-4 d-flex justify-center flex-wrap">
                             <SuccesButton @click="createNewOptionForProduct">
                                 Add new custom option
                             </SuccesButton>
+                        </div>
+                        <div v-if="exportDatalocal == 'category'" class="d-flex justify-center flex-wrap">
+                            <WarningButton @click="importElementsFunc()">
+                                Import category
+                            </WarningButton>
                         </div>
                     </div>
                 </div>
@@ -1940,7 +2047,7 @@ export default {
 
 
             <!-- modal add new product -->
-
+       
             <Dialog v-model:visible="addNewProductButton" modal header="Product" :style="{ width: '60vw' }">
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -2599,6 +2706,12 @@ export default {
                     </div>
                 </div>
             </Dialog>
+
+        <!-- modal add new product -->
+           <Dialog v-model:visible="exportElements" modal header="Export ( in 1 minute expires )" :style="{ width: '60vw' }">
+                <code>{{ JSON.parse(exportData)  }}</code>
+            </Dialog>   
+        
         </div>
         <div v-if="isOverlayVisible" class="overlay"></div>
     </AuthenticatedLayout>
