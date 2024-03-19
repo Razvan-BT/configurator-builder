@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Configurators;
+use App\Models\Logs;
 use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 use Inertia\Inertia;
@@ -23,6 +24,33 @@ class DashboardController extends Controller
 
         // dd($products);
         return Inertia::render('Dashboard', $products);
+    }
+
+    public function showLogs() {
+        $data = Logs::all();
+        $logs = [
+            'logs' => $data,
+        ];
+        return Inertia::render('Logs', $logs);
+    }
+
+    /**
+     * $name -> who make action
+     * $params -> prefer conf data,
+     * $action -> what action make it
+     * 
+     * @params
+     */
+    public function insertLogs($name, $params, $action, $configurator) {
+
+        $data = array(
+            'by_' => $name,
+            'params' => $params,
+            'action' => $action,
+            'configurator' => $configurator
+        );
+
+        DB::table('logs')->insert($data);
     }
 
     public function create_new(Request $request) {
@@ -50,7 +78,8 @@ class DashboardController extends Controller
                 );
                 // Configurators::insert();
     
-            
+                $action = 'Shopify'; 
+                self::insertLogs($addedBy, $response, $action, $shopifyId);
                 DB::table('configurators')->insert($data);
             }
         } else {
@@ -65,7 +94,8 @@ class DashboardController extends Controller
                 );
                 // Configurators::insert();
     
-            
+                $action = 'New'; 
+                self::insertLogs($addedBy, $response, $action, $configID);
                 DB::table('configurators')->insert($data);
             }
         }
@@ -76,7 +106,10 @@ class DashboardController extends Controller
     public function view_config($id_c) {
         // dd($id_c);
         $data = Configurators::where('configurator_id', '=', $id_c)->get();
-        return Inertia::render('Configurator', ['ID' => $data[0]['configurator_id'], 'title' => $data[0]['configurator_title']]);
+        if(count($data) > 0) {
+            return Inertia::render('Configurator', ['ID' => $data[0]['configurator_id'], 'title' => $data[0]['configurator_title']]);
+        }
+        else abort(404, 'File not found');
     }
 
     public function save_product(Request $request) { 
@@ -89,6 +122,9 @@ class DashboardController extends Controller
 
         Storage::disk('products')->put($fileData['configuratorId'] . '.json', $jsonData);
 
+        $action = 'Edit'; 
+        self::insertLogs($fileData['by'], $jsonData, $action, $fileData['configuratorId']);
+        
         return response()->json(['message' => "You configurator was saved successfull!"]);
     }
 
@@ -137,7 +173,12 @@ class DashboardController extends Controller
 
     public function deleteConfigurator(Request $request) {
         $id = $request->input('id');
+        $by = $request->input('by');
         $deleted = DB::table('configurators')->where('configurator_id', '=', $id)->delete();
+
+        $action = 'Delete'; 
+        self::insertLogs($by, "", $action, $id);
+        
         return response()->json(['status' => 'Configurator '. $id .' was removed successfull!', 'debug' => $deleted]);
     }
 
@@ -145,7 +186,7 @@ class DashboardController extends Controller
         $id = $request->input('id');
         $title = $request->input('title');
         $detail = $request->input('detail');
-
+        $by = $request->input('by');
         $path = Storage::disk('public')->path("products/{$id}.json");
         if(file_exists($path)) {
             // citesc JSON
@@ -155,19 +196,21 @@ class DashboardController extends Controller
             $generatedConfiguratorID = mt_rand(100000000000, 999999999999);
             if(!Configurators::where('configurator_id', '=', $generatedConfiguratorID)->exists()) {
                 $configID = mt_rand(100000000000, 999999999999);
-    
+                
                 $data = array('configurator_id' => $configID, 
                         'configurator_title' => $title . ' - COPY', 
                         'configurator_detail' => (isset($detail) && $detail != '') ? $detail : '-', 
-                        'added_by' => '-'
+                        'added_by' => $by
                 );
     
                 DB::table('configurators')->insert($data);
 
                 $jsonData = json_encode($fileContent, JSON_PRETTY_PRINT);
-
+                $action = 'Duplicate '. $id; 
+                self::insertLogs($by, $jsonData, $action, $configID);
                 Storage::disk('products')->put($configID . '.json', $jsonData);
-            
+                
+                
                 return response()->json(['status' => 1, 'message' => $id . ' cloned successfully!', 'configurator' => $configID]);
             } else return response()->json(['status' => 0, 'message' => 'Error to clone this configurator: conflict.']);
         } else return response()->json(['status' => 0, 'message' => 'Error to reading JSON file path.']);

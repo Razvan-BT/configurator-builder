@@ -698,6 +698,7 @@ export default {
             let data = {
                 configuratorId: this.ID,
                 data: this.product,
+                by: usePage().props.auth.user.name
             }
             let response = await this.axiosAPI('/saveProduct', data);
             console.log("PRODUCT", response);

@@ -33,6 +33,7 @@ Route::post('/saveProduct', [DashboardController::class, 'save_product'])->middl
 
 // API END
 Route::get('/dashboard', [DashboardController::class, 'showData'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/logs', [DashboardController::class, 'showLogs'])->middleware(['auth', 'verified'])->name('logs');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

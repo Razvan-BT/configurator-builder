@@ -11,7 +11,7 @@ import axios from 'axios';
 
 <script>
 // import { ProductService } from '@/ProductsServices';
-
+import { usePage } from '@inertiajs/vue3';
 export default {
     props: {
         configurators: Array,
@@ -85,7 +85,8 @@ export default {
             let response = await this.axiosAPI('/duplicate-configurator', {
                 id: id,
                 title: title,
-                details: details
+                details: details,
+                by: usePage().props.auth.user.name
             });
 
             if(response.status === 200) {
@@ -109,7 +110,8 @@ export default {
 
         async deleteConf(id) {
             let response = await this.axiosAPI('/delete-configurator', {
-                id: id
+                id: id,
+                by: usePage().props.auth.user.name
             });
 
             if(response.status == 200) {
