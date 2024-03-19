@@ -79,7 +79,7 @@ class DashboardController extends Controller
                 // Configurators::insert();
     
                 $action = 'Shopify'; 
-                self::insertLogs($addedBy, $response, $action, $shopifyId);
+                self::insertLogs($addedBy, "", $action, $shopifyId);
                 DB::table('configurators')->insert($data);
             }
         } else {
@@ -95,7 +95,7 @@ class DashboardController extends Controller
                 // Configurators::insert();
     
                 $action = 'New'; 
-                self::insertLogs($addedBy, $response, $action, $configID);
+                self::insertLogs($addedBy, "", $action, $configID);
                 DB::table('configurators')->insert($data);
             }
         }
@@ -123,7 +123,7 @@ class DashboardController extends Controller
         Storage::disk('products')->put($fileData['configuratorId'] . '.json', $jsonData);
 
         $action = 'Edit'; 
-        self::insertLogs($fileData['by'], $jsonData, $action, $fileData['configuratorId']);
+        self::insertLogs($fileData['by'], "", $action, $fileData['configuratorId']);
         
         return response()->json(['message' => "You configurator was saved successfull!"]);
     }
@@ -207,7 +207,7 @@ class DashboardController extends Controller
 
                 $jsonData = json_encode($fileContent, JSON_PRETTY_PRINT);
                 $action = 'Duplicate '. $id; 
-                self::insertLogs($by, $jsonData, $action, $configID);
+                self::insertLogs($by, "", $action, $configID);
                 Storage::disk('products')->put($configID . '.json', $jsonData);
                 
                 
