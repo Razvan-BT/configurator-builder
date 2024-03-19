@@ -9,7 +9,7 @@ import WarningButton from '@/Components/WarningButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-
+import TextareaInput from '@/components/TextareaInput.vue';
 </script>
 <script>
 import { usePage } from '@inertiajs/vue3';
@@ -41,6 +41,7 @@ export default {
             extra_class_stepCategory: "",
             title_productCategory: "",
             typeCategory: "img", // default
+            categoryDescription: "",
 
             createNewCategoryOption: false,
             newOptionRequest: false,
@@ -1242,6 +1243,7 @@ export default {
                 this.ruleLogicCategory = {};
 
                 this.title_productCategory = '';
+                this.categoryDescription = '';
                 this.typeCategory = 'select';
                 this.extra_class_stepCategory = '';
 
@@ -1261,6 +1263,7 @@ export default {
             this.createNewCategory = false;
             this.extra_class_stepCategory = "";
             this.title_productCategory = "";
+            this.categoryDescription = "";
             this.selectCurrentProductCategoryIndex = -1;
             this.editCategory = false;
         },
@@ -1274,6 +1277,7 @@ export default {
                         zIndex: this.selectedProduct.categories?.length + 1, // order elements
                         type: this.typeCategory?.length ? this.typeCategory : "img",
                         title: this.title_productCategory || "",
+                        description: this.categoryDescription || "",
                         extraClassName: this.extra_class_stepCategory || "",
                         panelId: this.selectedProduct ? this.selectedProduct.id : "",
                         panelID: this.selectedProduct ? this.selectedProduct.id : "",
@@ -1301,6 +1305,7 @@ export default {
                     }
                     this.selectedProductCategories[this.selectCurrentProductCategoryIndex].type = this.typeCategory?.length ? this.typeCategory : "img",
                         this.selectedProductCategories[this.selectCurrentProductCategoryIndex].title = this.title_productCategory || "",
+                        this.selectedProductCategories[this.selectCurrentProductCategoryIndex].description = this.categoryDescription || "",
                         this.selectedProductCategories[this.selectCurrentProductCategoryIndex].extraClassName = this.extra_class_stepCategory || "",
                         this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic = this.rulesCategory.logic
                 }
@@ -1457,7 +1462,7 @@ export default {
             this.title_productCategory = this.selectedProductCategories[index].title ?? 'No Title';
             this.typeCategory = this.selectedProductCategories[index].type;
             this.extra_class_stepCategory = this.selectedProductCategories[index].extraClassName;
-
+            this.categoryDescription = this.selectedProductCategories[index].description;
             this.logicVisible_category = this.selectedProductCategories[index].logic.action;
 
             this.rulesCategory.logic = this.selectedProductCategories[index].logic;
@@ -2139,6 +2144,15 @@ export default {
                                     autofocus autocomplete="" />
 
                             </div>
+
+                            <div class="p-3">
+                                <InputLabel for="categoryDescription" value="Description" />
+
+                                <TextareaInput v-model="categoryDescription" type="text" class="mt-1 block w-full" autofocus
+                                    autocomplete="" />
+
+                            </div>
+
                             <div class="flex items-center justify-end mt-4">
                                 <SuccesButton @click="createNewCategoryPanel" class="ml-4">
                                     Apply
