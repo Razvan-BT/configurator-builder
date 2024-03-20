@@ -154,5 +154,13 @@ const showingNavigationDropdown = ref(false);
                 <slot />
             </main>
         </div>
+
+        <footer>
+            <div class="d-flex justify-center pb-2">
+                <p class="text-sm text-gray-500">
+                    @ AIT Artificial Intelligence Tailoring - {{ new Date().getFullYear() }} 
+                </p>
+            </div>
+        </footer>
     </div>
 </template>

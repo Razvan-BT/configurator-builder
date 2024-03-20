@@ -5,5 +5,5 @@
         />
     </svg> -->
 
-    <img src="/storage/fms/images/logofms.png"/>
+    <img src="/storage/fms/images/AIT_logo.jpg"/>
 </template>

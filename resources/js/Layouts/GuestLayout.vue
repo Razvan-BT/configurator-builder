@@ -7,7 +7,7 @@ import { Link } from '@inertiajs/vue3';
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
         <div>
             <Link href="/">
-                <ApplicationLogo class="fill-current text-gray-500" />
+                <ApplicationLogo class="h-20 w-auto fill-current text-gray-500" />
             </Link>
         </div>
 
@@ -17,4 +17,11 @@ import { Link } from '@inertiajs/vue3';
             <slot />
         </div>
     </div>
+    <footer>
+        <div class="d-flex justify-center pb-2">
+            <p class="text-sm text-gray-500">
+                @ AIT Artificial Intelligence Tailoring - {{ new Date().getFullYear() }} 
+            </p>
+        </div>
+    </footer>
 </template>
