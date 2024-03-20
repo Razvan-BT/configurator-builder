@@ -156,28 +156,29 @@ export default {
 
     <Head title="Main" />
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Configurators</h2>
-
-                <div class="p-3 bg-slate-100 rounded shadow-2xl">
-                    <TextInput placeholder="Search an configurator" @change="searchElement($event)"/>
-                    <div v-if="searchedElements?.length" class="bg-white rounded p-3">
-                        <ul>
-                            <li v-for="(value) in searchedElements" class="p-3 border-bottom font-italic"><i class="pi pi-file-o" style="font-size: 1rem"></i> <a :href="`/configurator/${value.configurator_id}`">{{ value.configurator_title }}</a></li>
-                        </ul>
-                    </div>
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-3 px-2 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap align-items-center justify-content-start">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Configurators</h2>
                 </div>
             </div>
-
-        </template>
+        </header>
         <Toast />
 
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <!-- tabel optiuni -->
-                <div class="flex flex-wrap align-items-center justify-content-end gap-2 mt-3">
+                <div class="flex align-items-center justify-content-around">
+                    <div class="p-3 bg-slate-100 rounded shadow w-3/4">
+                        <TextInput class="w-full" placeholder="Search an configurator" @change="searchElement($event)"/>
+                        <div v-if="searchedElements?.length" class="bg-white rounded p-3">
+                            <ul>
+                                <li v-for="(value) in searchedElements" class="p-3 border-bottom font-italic"><i class="pi pi-file-o" style="font-size: 1rem"></i> <a :href="`/configurator/${value.configurator_id}`">{{ value.configurator_title }}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <SuccesButton @click.stop="visible = true">
                         <span class="px-1">Create new</span>
                         <i class="pi pi-plus" style="font-size: 1rem"></i>
