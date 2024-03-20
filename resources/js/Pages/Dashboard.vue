@@ -174,7 +174,7 @@ export default {
                         <TextInput class="w-full" placeholder="Search an configurator" @change="searchElement($event)"/>
                         <div v-if="searchedElements?.length" class="bg-white rounded p-3">
                             <ul>
-                                <li v-for="(value) in searchedElements" class="p-3 border-bottom font-italic"><i class="pi pi-file-o" style="font-size: 1rem"></i> <a :href="`/configurator/${value.configurator_id}`">{{ value.configurator_title }}</a></li>
+                                <li v-for="(value) in searchedElements" class="p-3 border-bottom text-black font-italic"><i class="pi pi-file-o" style="font-size: 1rem"></i> <a :href="`/configurator/${value.configurator_id}`">{{ value.configurator_title }} - {{ value.configurator_id }}</a></li>
                             </ul>
                         </div>
                     </div>
