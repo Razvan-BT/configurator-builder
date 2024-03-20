@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public $UrlShopify = 'https://storage.googleapis.com/custom-product-builder/45402292382/';
 
     public function showData() {
-        $data = Configurators::all();
+        $data = DB::table('configurators')->orderBy('id', 'desc')->get();
         $products = [
             'configurators' => $data,
         ];
@@ -27,7 +27,7 @@ class DashboardController extends Controller
     }
 
     public function showLogs() {
-        $data = Logs::all();
+        $data = DB::table('logs')->orderBy('id', 'desc')->get();
         $logs = [
             'logs' => $data,
         ];
