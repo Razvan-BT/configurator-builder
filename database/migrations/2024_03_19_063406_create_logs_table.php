@@ -17,8 +17,8 @@ return new class extends Migration
             $table->longText('params');
             $table->string('action');
             $table->string('configurator');
+            $table->timestamp('created_at')->useCurrent();
             $table->timestamps();
-            $table->timestamp('created_at')->nullable();
         });
     }
 

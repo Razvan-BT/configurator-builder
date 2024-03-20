@@ -16,7 +16,28 @@ export default {
 
         console.log(this.logs);
     },
-    methods: {}
+    methods: {
+        convertData(data) {
+            // Parse the timestamp string
+            const timestamp = new Date(data);
+
+            // Options for formatting the date
+            const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            timeZone: "UTC",
+            timeZoneName: "short"
+            };
+
+            // Format the date according to the options
+            const formattedDate = timestamp.toLocaleString("en-US", options);
+            return formattedDate;
+        }
+    }
 };
 </script>
 
@@ -37,12 +58,14 @@ export default {
                     <thead>
                         <tr>
                             <th scope="col" style="text-align: center;">By</th>
+                            <th scope="col" style="text-align: center;">At</th>
                             <th scope="col" style="text-align: center;">Log</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(items) in logs" style="text-align: center;">
                             <td>{{ items.by_ }}</td>
+                            <td>{{ convertData(items.created_at) }}</td>
                             <td v-if="items.action == 'New'">
                                 Generated new configurator <a :href="`/configurator/${items.configurator}`">{{ items.configurator }}</a>.
                             </td>

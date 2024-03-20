@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('configurator_id');
             $table->string('configurator_title');
             $table->string('configurator_detail');
-            $table->timestamps();
+            $table->timestamps()->useCurrent();
         });
     }
 
