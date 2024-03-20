@@ -154,8 +154,21 @@ export default {
 
                 } else if(this.exportDatalocal == 'category') {
 
+                    if(!this.selectedProduct) {
+                        this.createToast({
+                            type: 'error',
+                            title: 'Info message',
+                            details: "Please first select the product!"
+                        });
+
+                        return;
+                    }
+
                     let productJSON = localStorage.getItem('productJSON');
-                    if(productJSON != null) this.selectedProductCategories.push(JSON.parse(localStorage.getItem('productJSON').replaceAll(localStorage.getItem('productID'), this.makeid(17))));
+                    const element = JSON.parse(productJSON);
+
+                    // console.log("Get panelId to replace", element.panelId);
+                    if(productJSON != null) this.selectedProductCategories.push(JSON.parse(localStorage.getItem('productJSON').replaceAll(localStorage.getItem('productID'), this.makeid(17)).replaceAll(element.panelId, this.selectedProduct.id)));
 
                     localStorage.removeItem('productCopyed');
                     localStorage.removeItem('productID'); // pentru replacement
