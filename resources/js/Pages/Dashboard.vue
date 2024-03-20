@@ -35,6 +35,7 @@ export default {
             configurator_name: '',
             configurator_details: '',
             configurator_shopify: '',
+            searchedElements: []
         };
     },
     mounted() {
@@ -70,6 +71,18 @@ export default {
                 }
             }
 
+        },
+
+        async searchElement(e) {
+            this.searchedElements = [];
+            let data = {
+                search: e.target.value,
+            }
+            let response = await this.axiosAPI('/search-configurator', data);
+
+            if(response.status == 200) {
+                this.searchedElements = response.data.searched;
+            }
         },
 
         editConfigurator(n, i) {
@@ -144,7 +157,19 @@ export default {
     <Head title="Main" />
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Configurators</h2>
+            <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Configurators</h2>
+
+                <div class="p-3 bg-slate-100 rounded shadow-2xl">
+                    <TextInput placeholder="Search an configurator" @change="searchElement($event)"/>
+                    <div v-if="searchedElements?.length" class="bg-white rounded p-3">
+                        <ul>
+                            <li v-for="(value) in searchedElements" class="p-3 border-bottom font-italic"><i class="pi pi-file-o" style="font-size: 1rem"></i> <a :href="`/configurator/${value.configurator_id}`">{{ value.configurator_title }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </template>
         <Toast />
 

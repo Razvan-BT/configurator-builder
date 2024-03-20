@@ -182,6 +182,18 @@ class DashboardController extends Controller
         return response()->json(['status' => 'Configurator '. $id .' was removed successfull!', 'debug' => $deleted]);
     }
 
+    public function searchConfigurators(Request $request) {
+        $input = $request->input('search');
+        $elements = array();
+        if(strlen($input) > 0) {
+            $conf = DB::table('configurators')->select('*');
+            $conf->where('configurator_id', 'like', '%'.$input.'%')->orWhere('configurator_title', 'like', '%'.$input.'%');
+            $elements = $conf->get();
+        }
+
+        return response()->json(['searched' => $elements]);
+    }
+
     public function duplicateConfigurator(Request $request) {
         $id = $request->input('id');
         $title = $request->input('title');

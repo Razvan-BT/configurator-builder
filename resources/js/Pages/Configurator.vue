@@ -758,6 +758,16 @@ export default {
         async saveProduct() {
             // console.log("TEEST", this.selectedProduct.logic)
             let errorSaving = false;
+
+            if(!this.product.data.panels?.length) {
+                this.createToast({
+                    type: 'error',
+                    title: 'Info message',
+                    details: "Error to saving your progress... because you have an product created."
+                }); 
+                errorSaving = true;
+            }
+
             this.product.data.panels.filter((i) => {
                     if(!i.categories.length) {
                         this.createToast({
