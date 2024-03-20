@@ -24,24 +24,24 @@ export default {
 <template>
     <Head title="Logs" />
     <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Logs</h2>
+        </template>
         <Toast />
 
-        <div class="card px-8">
-
-            <!-- tabel optiuni -->
-            <div class="flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <span class="text-xl text-900 font-bold">Logs</span>
-            </div>
-            <div class="d-flex justify-content-center">
-                <table class="table">
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <section>
+                        <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">By</th>
-                            <th scope="col">Log</th>
+                            <th scope="col" style="text-align: center;">By</th>
+                            <th scope="col" style="text-align: center;">Log</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(items) in logs">
+                        <tr v-for="(items) in logs" style="text-align: center;">
                             <td>{{ items.by_ }}</td>
                             <td v-if="items.action == 'New'">
                                 Generated new configurator <a :href="`/configurator/${items.configurator}`">{{ items.configurator }}</a>.
@@ -61,9 +61,10 @@ export default {
                         </tr>
                     </tbody>
                 </table>
+                    </section>
+                </div>
             </div>
         </div>
-
     </AuthenticatedLayout>
 </template>
 
