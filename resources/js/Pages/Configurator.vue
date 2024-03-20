@@ -223,7 +223,8 @@ export default {
         },
 
         simulateLoading() {
-            setTimeout(() => {
+            this.isLoading = true;
+            // setTimeout(() => {
                 // simulare loading + check daca data exist
                 // Atunci incarc ce am in JSON 
                 let response = axios.get("/get-product/" + this.ID);
@@ -245,7 +246,7 @@ export default {
                     console.log(error);
                     this.isLoading = false;
                 });
-            }, 3000); // Simulating a 3-second loading time
+            // }, 3000); // Simulating a 3-second loading time
         },
 
         repopulateLogic() {
