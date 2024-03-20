@@ -757,6 +757,19 @@ export default {
         // end
         async saveProduct() {
             // console.log("TEEST", this.selectedProduct.logic)
+            let errorSaving = false;
+            this.product.data.panels.filter((i) => {
+                    if(!i.categories.length) {
+                        this.createToast({
+                        type: 'error',
+                        title: 'Info message',
+                        details: "Error to saving your progress... because you have an product without category."
+                    }); 
+                    errorSaving = true;
+                }
+            });
+            
+            if(errorSaving) return;
             this.isOverlayVisible = true;
 
             //  refac default options
