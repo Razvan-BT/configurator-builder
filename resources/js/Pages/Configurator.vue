@@ -1962,7 +1962,7 @@ export default {
 
                 <!-- Container Elemente -->
                 <div class="mt-5">
-                    <div class="container-sm d-flex p-2 border-1 border-secondary">
+                    <div class="bg-slate-100 rounded shadow container-sm d-flex p-2">
                         <div class="p-2 flex-grow-1">
                             <p class="p-3 h4">{{ product.data.panels?.length ? selectedProduct.title : 'No title' }}</p>
                         </div>
@@ -1991,7 +1991,7 @@ export default {
 
                 <!-- Container Content -->
                 <div class="mt-5 mb-5">
-                    <div class="container-sm p-2 border-1 border-secondary">
+                    <div class="bg-slate-100 rounded shadow container-sm p-2">
                         <div v-if="product.data.panels?.length" class="mt-2 border-bottom border-bottom">
                             <div v-for="(items, index) in selectedProductCategories" class="border-bottom border-bottom p-1">
                                 <!-- div titlu + btn -->
