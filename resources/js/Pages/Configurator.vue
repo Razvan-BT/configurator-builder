@@ -2036,7 +2036,7 @@ export default {
                                 <div v-if="items.type == 'img' || items.type == 'multiple'" class="d-flex align-content-start flex-wrap">
 
                                     <div v-if="items.options?.length" class="p-4 images-layout">
-                                        <div v-for="(op) in items.options" class="p-1">
+                                        <div v-for="(op) in items.options" class="p-1 rounded shadow">
                                             <img data-toggle="tooltip"  data-placement="bottom" :title="`${op.option.data.label}`" style="width: 160px; height: 160px;" :src="`${op.option.data.value}`"
                                                 alt="" data-bs-toggle="tooltip" data-bs-title="Order 1">
                                         </div>
