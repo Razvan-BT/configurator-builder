@@ -834,14 +834,28 @@ export default {
             let response = await this.axiosAPI('/saveProduct', data);
             console.log("PRODUCT", response);
 
-            this.createToast({
-                type: 'success',
-                title: 'Info message',
-                details: response.data.message
-            });
+            if(response.status == 200) {
+                this.createToast({
+                    type: 'success',
+                    title: 'Info message',
+                    details: response.data.message
+                });
 
-            if (response?.data.message) {
+                if (response?.data.message) {
+                    this.isOverlayVisible = false;
+                }
+            } else if(response.status == 401) {
+                this.createToast({
+                    type: 'warning',
+                    title: 'Info message',
+                    details: "Session of authentication expired. Reload page in 3 seconds.."
+                });
+
                 this.isOverlayVisible = false;
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
             }
         },
 
