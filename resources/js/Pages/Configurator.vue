@@ -466,7 +466,7 @@ export default {
             // category
 
             // this.selectedProductCategories.filter((value, index) => {
-            if(this.selectCurrentProductCategoryIndex != -1 && this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules?.length) {
+            if((this.selectCurrentProductCategoryIndex != -1 && this.selectCurrentProductCategoryIndex != 'undefined') && this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules?.length) {
                 this.selectedProductCategories[this.selectCurrentProductCategoryIndex].logic.rules.filter((rulesf, idx) => {
                     if (idx == ruleId) {
                         if (rulesf.options?.length) {
@@ -779,6 +779,21 @@ export default {
                 }
             });
             
+            this.product.data.panels.filter((i) => {
+                    if(i.categories.length) {
+                        i.categories.filter((o) => {
+                            if(!o.options?.length) {
+                                this.createToast({
+                                    type: 'error',
+                                    title: 'Info message',
+                                    details: "Error to saving your progress... because you have an category without option set."
+                                }); 
+                                errorSaving = true;
+                        }
+                    })
+                }
+            });
+
             if(errorSaving) return;
             this.isOverlayVisible = true;
 
@@ -2158,7 +2173,7 @@ export default {
                                         <select v-model="selectedCategories[index]" class="logic-list">
                                             <option>Select Custom Option</option>
                                             <option v-for="op in getCategoriesAfterPanel(selectedValues[index])"
-                                                :value="op.id">{{ op.title }}</option>
+                                                :value="op.id">{{ !op.title?.length ? '-' : op.title }}</option>
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogic[index]" class="logic-list">
@@ -2332,7 +2347,7 @@ export default {
                                         <select v-model="selectedCategoriesCategory[index]" class="logic-list">
                                             <option>Select Custom Option</option>
                                             <option v-for="op in getCategoriesAfterPanel(selectedValueCategory[index])"
-                                                :value="op.id">{{ op.title }}</option>
+                                                :value="op.id">{{ !op.title?.length ? '-' : op.title }}</option>
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogicCategory[index]" class="logic-list">
@@ -2673,7 +2688,7 @@ export default {
                                             <option>Select Custom Option</option>
                                             <option
                                                 v-for="op in getCategoriesAfterPanel(selectedValueCategoryOption[index])"
-                                                :value="op.id">{{ op.title }}</option>
+                                                :value="op.id">{{ !op.title?.length ? '-' : op.title }}</option>
                                         </select>
                                         <span class="fs-5 p-1">is</span>
                                         <select v-model="ruleLogicCategoryOption[index]" class="logic-list">
