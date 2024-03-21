@@ -844,7 +844,9 @@ export default {
                 if (response?.data.message) {
                     this.isOverlayVisible = false;
                 }
-            } else if(response.status == 401) {
+            } 
+
+            if('response' in response && response.response.status == 401) {
                 this.createToast({
                     type: 'warning',
                     title: 'Info message',
@@ -1007,6 +1009,7 @@ export default {
                 dataResponse = response;
             }).catch(function (error) {
                 console.log("[Error from API]: ", error);
+                dataResponse = error;
             });
             return dataResponse;
         },
