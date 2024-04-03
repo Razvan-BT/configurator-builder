@@ -1966,18 +1966,18 @@ export default {
                         SAVE PRODUCT
                     </WarningButton>
                 </div>
-                <div class="p-2 px-5">ID: {{ this.ID }}</div>
+                <div class="p-2 px-5">ID: {{ ID }}</div>
             </div>
             <Toast />
             <div class="container">
                 <div class="container-sm">
-                    <p class="p-3 h2">{{ this.title?.length ? this.title : "No Titles" }}</p>
+                    <p class="p-3 h2">{{ title?.length ? title : "No Titles" }}</p>
                 </div>
 
                 <!-- Butoane selectie  -->
                 <div class="container-sm d-flex flex-wrap">
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div v-for="(items, index) in this.product.data.panels" class="btn-group me-2 mt-2" role="group">
+                        <div v-for="(items, index) in product.data.panels" class="btn-group me-2 mt-2" role="group">
                             <PrimarButton @click="getCurrentProduct(items, index)">{{ items.title }}</PrimarButton>
                         </div>
                         <div class="btn-group me-2 mt-2" role="group">
