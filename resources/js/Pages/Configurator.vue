@@ -1488,17 +1488,39 @@ export default {
             if (this.selectedProduct) {
                 if (this.selectedFile) {
                     const formData = new FormData();
-                    formData.append('image', this.selectedFile);
+                    formData.append('file', this.selectedFile);
 
-                    axios.post('/upload-image', formData)
-                        .then(response => {
-                            this.path_image = response.data?.image_path ? response.data.image_path : '';
-                            if (!this.editOption) this.addNewOption(response.data.server_host + '/storage/' + this.path_image);
-                            else this.editCurrentOption(response.data.server_host + '/storage/' + this.path_image);
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
+                    // axios.post('/upload-image', formData)
+                    //     .then(response => {
+                    //         this.path_image = response.data?.image_path ? response.data.image_path : '';
+                    //         if (!this.editOption) this.addNewOption(response.data.server_host + '/storage/' + this.path_image);
+                    //         else this.editCurrentOption(response.data.server_host + '/storage/' + this.path_image);
+                    //     })
+                    //     .catch(error => {
+                    //         console.log(error);
+                    //     });
+                    
+
+                    let image_name = this.makeid(20);
+                    const url = 'https://l43yywhxj7.execute-api.eu-central-1.amazonaws.com/DeployS3/product-builder-img/'+image_name+'.png'; // Replace with your endpoint URL
+                    const contentType = this.selectedFile.type;
+
+                    axios.put(url, this.selectedFile, {
+                        headers: {
+                        'Content-Type': contentType
+                        }
+                    }).then(response => {
+                        this.path_image = 'https://product-builder-img.s3.eu-central-1.amazonaws.com/'+image_name+'.png';
+                        if (!this.editOption) this.addNewOption(this.path_image);
+                        else this.editCurrentOption(this.path_image);
+                    })
+                    .catch(error => {
+                        this.path_image = 'https://product-builder-img.s3.eu-central-1.amazonaws.com/'+image_name+'.png';
+                        if (!this.editOption) this.addNewOption(this.path_image);
+                        else this.editCurrentOption(this.path_image);
+                    });
+
+
 
                 } else {
 
@@ -2469,7 +2491,7 @@ export default {
                 <div class="d-flex justify-center p-3">
                     <select class="w-100" v-model="cloneElementToPanelId">
                         <option value="">Select panel</option>
-                        <option v-for="element in this.product.data.panels" :value="element.id">{{ element.title }}</option>
+                        <option v-for="element in product.data.panels" :value="element.id">{{ element.title }}</option>
                     </select>
                 </div>
                 <div class="d-flex flex-row m-3">
@@ -2527,14 +2549,14 @@ export default {
                         <li class="breadcrumb-item active" aria-current="page">
                             <strong>
                                 <a>{{
-                                    selectedProductCategories[this.selectCurrentProductCategoryIndex].title }}</a>
+                                    selectedProductCategories[selectCurrentProductCategoryIndex].title }}</a>
                             </strong>
                         </li>
                         <!-- get title of current option -->
                         <li v-if="newOptionRequest && editOption" class="breadcrumb-item active" aria-current="page">
                             <strong>
                                 <a>{{
-                                    selectedProductCategories[this.selectCurrentProductCategoryIndex].options[this.editOptionID].option.data.label }} </a>
+                                    selectedProductCategories[selectCurrentProductCategoryIndex].options[editOptionID].option.data.label }} </a>
                             </strong>
                         </li>
                     </ol>
@@ -2577,16 +2599,16 @@ export default {
                                 </thead>
                                 <tbody>
                                     <tr class="pointer-hover"
-                                        v-for="(items, index) in selectedProductCategories[this.selectCurrentProductCategoryIndex].options">
+                                        v-for="(items, index) in selectedProductCategories[selectCurrentProductCategoryIndex].options">
                                         <td class="image-td-align">
-                                            <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'input' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'inputMulti' && selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'text'" class="p-4">
-                                                <div v-if="selectedProductCategories[this.selectCurrentProductCategoryIndex].type != 'select'"  class="p-1 d-flex justify-content-center">
+                                            <div v-if="selectedProductCategories[selectCurrentProductCategoryIndex].type != 'input' && selectedProductCategories[selectCurrentProductCategoryIndex].type != 'inputMulti' && selectedProductCategories[selectCurrentProductCategoryIndex].type != 'text'" class="p-4">
+                                                <div v-if="selectedProductCategories[selectCurrentProductCategoryIndex].type != 'select'"  class="p-1 d-flex justify-content-center">
                                                     <img style="width: 51px; height: 51px;"
                                                         :src="`${items.option.data.value}`" alt="" data-toggle="tooltip"  data-placement="bottom" :title="`${items.option.data.label}`" >
                                                 </div>
                                                  <!-- drop down inputs -->
                                                 <span style="text-align: center;" class="image-td-align wrapped-text">
-                                                    {{ selectedProductCategories[this.selectCurrentProductCategoryIndex].type == 'select' && items.option.data.value?.length ? '( ' +items.option.data.value+ ' )' : '' }} {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
+                                                    {{ selectedProductCategories[selectCurrentProductCategoryIndex].type == 'select' && items.option.data.value?.length ? '( ' +items.option.data.value+ ' )' : '' }} {{ items.sku?.length ? '[ ' + items.sku + ' ]' : '' }}
                                                 </span>
                                             </div>
 
